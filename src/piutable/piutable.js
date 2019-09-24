@@ -3,6 +3,7 @@ import axios from 'axios';
 import txtPIU from './txtpiu';
 import './piu-custom.css';
 import UserDialog from './UserInfoDialog';
+import PatternUpdateDialog from './PatternUpdateDialog';
 
 import {
     Container,
@@ -42,6 +43,11 @@ class PIUTable extends Component {
         super(props);
 
         this.newUserHandler = this.newUserHandler.bind(this);
+        this.newUser = this.newUser.bind(this);
+        this.updatePatternDialog = this.updatePatternDialog.bind(this);
+        this.updateData = this.updateData.bind(this);
+        this.rankreset = this.rankreset.bind(this);
+        this.updateRankData = this.updateRankData.bind(this);
 
         this.state = {
             // userinfo
@@ -69,10 +75,11 @@ class PIUTable extends Component {
 
             ptidlist: [],
 
-            // screen
+            // screen and dialog
             loaded: false,
             newuser: false,
             changerank: false,
+            pattern: false,
 
             // category text
             catOV: "",
@@ -86,7 +93,12 @@ class PIUTable extends Component {
 
             // current page
             steptype: "",
-            steplv: 0
+            steplv: 0,
+
+            // update pt info
+            updaterank: "",
+            currentpt: 0,
+            isOver: false
         }
     }
 
@@ -170,7 +182,7 @@ class PIUTable extends Component {
         if(type == "d" && level == "25") {
             axios.post(piuDataUrl+"/over/"+type)
             .then((res) => {
-                this.updateTableOver(res.data);
+                this.updateTable(res.data, true);
                 steptype = "Double";
                 steplv = level+" Over";
                 catez = "25 E";
@@ -184,7 +196,7 @@ class PIUTable extends Component {
         else if(type == 's' && level == '24') {
             axios.post(piuDataUrl+"/over/"+type)
             .then((res) => {
-                this.updateTableOver(res.data);
+                this.updateTable(res.data, true);
                 steptype = "Single";
                 steplv = level+" Over";
                 catnh = level+1;
@@ -195,7 +207,7 @@ class PIUTable extends Component {
         else {
             axios.post(piuDataUrl+"/"+type+"/"+level)
             .then((res) => {
-                this.updateTable(res.data);
+                this.updateTable(res.data, false);
                 if(type == "s") steptype = "Single";
                 if(type == "d") steptype = "Double";
                 steplv = level;
@@ -241,136 +253,7 @@ class PIUTable extends Component {
         */
     }
 
-    updateTableOver(data) {
-        arrOV.length = 0;
-        arrHI.length = 0;
-        arrNH.length = 0;
-        arrNR.length = 0;
-        arrNE.length = 0;
-        arrEZ.length = 0;
-        arrBE.length = 0;
-        arrRD.length = 0;
-    
-        cntov = 0;
-        cnthi = 0;
-        cntnh = 0;
-        cntnr = 0;
-        cntne = 0;
-        cntez = 0;
-        cntbe = 0;
-        cntrd = 0;
-
-        const ptidlist = [];
-        let all = 0;
-        
-        for(let i = 0; i < data.patterns.length; i++) {
-            const current = data.patterns[i];
-            ptidlist.push(current.ptid);
-            all++;
-
-            const obj = {};
-            
-            if(current.removed == 0) {
-                obj.songtype = current.songtype;
-                obj.ptid = current.ptid;
-                obj.titleko = current.title_ko;
-                obj.titleen = current.title_en;
-                obj.musicid = current.musicid;
-                obj.steptype = current.steptype;
-                obj.rank = "np";
-
-                if(userstat.has(current.ptid)) {
-                    switch(userstat.get(current.ptid.toString())) {
-                    case "0":
-                        obj.rank = "ss";
-                        break;
-                    case "1":
-                        obj.rank = "gs";
-                        break;
-                    case "2":
-                        obj.rank = "s";
-                        break;
-                    case "3":
-                        obj.rank = "aon";
-                        break;
-                    case "4":
-                        obj.rank = "aoff";
-                        break;
-                    case "5":
-                        obj.rank = "bcdoff";
-                        break;
-                    case "6":
-                        obj.rank = "f";
-                        break;
-                    case "7":
-                        obj.rank = "np";
-                        break;
-                    case "8":
-                        obj.rank = "bcdon";
-                        break;
-                    }
-                }
-                
-                if(current.type == 0) {
-                    switch(current.lv) {
-                    case 24:
-                        cntnh++;
-                        arrNH.push(obj);
-                        break;
-                    case 25:
-                        cnthi++;
-                        arrHI.push(obj);
-                        break;
-                    case 26:
-                        cntov++;
-                        arrOV.push(obj);
-                        break;
-                    }
-                }
-                if(current.type == 1) {
-                    switch(current.lv) {
-                    case 25:
-                        if(current.difftype == 1) {
-                            cntez++;
-                            arrEZ.push(obj);
-                        }
-                        if(current.difftype == 2) {
-                            cntne++;
-                            arrNE.push(obj);
-                        }
-                        if(current.difftype == 3) {
-                            cntnr++;
-                            arrNR.push(obj);
-                        }
-                        break;
-                    case 26:
-                        cntnh++;
-                        arrNH.push(obj);
-                        break;
-                    case 27:
-                        cnthi++;
-                        arrHI.push(obj);
-                        break;
-                    case 28:
-                        cntov++;
-                        arrOV.push(obj);
-                        break;
-                    }
-                }
-            }
-        }
-
-        this.setState({
-            ptidlist: ptidlist,
-            all: all
-        });
-
-        this.rankreset();
-        this.updateRankData();
-        this.updateRanks();
-    }
-
-    updateTable(data) {
+    updateTable(data, isOver) {
         arrOV.length = 0;
         arrHI.length = 0;
         arrNH.length = 0;
@@ -408,83 +291,130 @@ class PIUTable extends Component {
                 obj.steptype = current.steptype;
                 obj.rank = "np";
 
-                if(userstat.has(current.ptid)) {
-                    switch(userstat.get(current.ptid.toString())) {
-                    case "0":
-                        obj.rank = "ss";
-                        break;
-                    case "1":
-                        obj.rank = "gs";
-                        break;
-                    case "2":
-                        obj.rank = "s";
-                        break;
-                    case "3":
-                        obj.rank = "aon";
-                        break;
-                    case "4":
-                        obj.rank = "aoff";
-                        break;
-                    case "5":
-                        obj.rank = "bcdoff";
-                        break;
-                    case "6":
-                        obj.rank = "f";
-                        break;
-                    case "7":
-                        obj.rank = "np";
-                        break;
-                    case "8":
-                        obj.rank = "bcdon";
-                        break;
+                if(isOver) {
+                    if(current.type == 0) {
+                        switch(current.lv) {
+                        case 24:
+                            cntnh++;
+                            arrNH.push(obj);
+                            break;
+                        case 25:
+                            cnthi++;
+                            arrHI.push(obj);
+                            break;
+                        case 26:
+                            cntov++;
+                            arrOV.push(obj);
+                            break;
+                        }
+                    }
+                    if(current.type == 1) {
+                        switch(current.lv) {
+                        case 25:
+                            if(current.difftype == 1) {
+                                cntez++;
+                                arrEZ.push(obj);
+                            }
+                            if(current.difftype == 2) {
+                                cntne++;
+                                arrNE.push(obj);
+                            }
+                            if(current.difftype == 3) {
+                                cntnr++;
+                                arrNR.push(obj);
+                            }
+                            break;
+                        case 26:
+                            cntnh++;
+                            arrNH.push(obj);
+                            break;
+                        case 27:
+                            cnthi++;
+                            arrHI.push(obj);
+                            break;
+                        case 28:
+                            cntov++;
+                            arrOV.push(obj);
+                            break;
+                        }
                     }
                 }
-                
-                switch(current.difftype) {
-                case 0:
-                    cntbe++;
-                    arrBE.push(obj);
-                    break;
-                case 1:
-                    cntez++;
-                    arrEZ.push(obj);
-                    break;
-                case 2:
-                    cntne++;
-                    arrNE.push(obj);
-                    break;
-                case 3: // 2->3
-                    cntnr++;
-                    arrNR.push(obj);
-                    break;
-                case 4:
-                    cntnh++;
-                    arrNH.push(obj);
-                    break;
-                case 5: // 3->5
-                    cnthi++;
-                    arrHI.push(obj);
-                    break;
-                case 6: // 4->6
-                    cntov++;
-                    arrOV.push(obj);
-                    break;
-                case 7: // 5->7
-                    cntrd++;
-                    arrRD.push(obj);
-                    break;
+                else {
+                    if(userstat.has(current.ptid)) {
+                        switch(userstat.get(current.ptid.toString())) {
+                        case "0":
+                            obj.rank = "ss";
+                            break;
+                        case "1":
+                            obj.rank = "gs";
+                            break;
+                        case "2":
+                            obj.rank = "s";
+                            break;
+                        case "3":
+                            obj.rank = "aon";
+                            break;
+                        case "4":
+                            obj.rank = "aoff";
+                            break;
+                        case "5":
+                            obj.rank = "bcdoff";
+                            break;
+                        case "6":
+                            obj.rank = "f";
+                            break;
+                        case "7":
+                            obj.rank = "np";
+                            break;
+                        case "8":
+                            obj.rank = "bcdon";
+                            break;
+                        }
+                    }
+                    
+                    switch(current.difftype) {
+                    case 0:
+                        cntbe++;
+                        arrBE.push(obj);
+                        break;
+                    case 1:
+                        cntez++;
+                        arrEZ.push(obj);
+                        break;
+                    case 2:
+                        cntne++;
+                        arrNE.push(obj);
+                        break;
+                    case 3: // 2->3
+                        cntnr++;
+                        arrNR.push(obj);
+                        break;
+                    case 4:
+                        cntnh++;
+                        arrNH.push(obj);
+                        break;
+                    case 5: // 3->5
+                        cnthi++;
+                        arrHI.push(obj);
+                        break;
+                    case 6: // 4->6
+                        cntov++;
+                        arrOV.push(obj);
+                        break;
+                    case 7: // 5->7
+                        cntrd++;
+                        arrRD.push(obj);
+                        break;
+                    }
                 }
             }
         }
 
         this.setState({
             ptidlist: ptidlist,
-            all: all
+            all: all,
+            isOver: isOver
         });
-    
-        this.rankreset();
-        this.updateRankData();
-        this.updateRanks();
     }
 
     rankreset() {
@@ -551,6 +481,8 @@ class PIUTable extends Component {
             rankbcd: rankbcd,
             rankbcdo: rankbcdo,
             rankf: rankf
+        }, () => {
+            this.updateRanks();
         });
     }
 
@@ -567,6 +499,43 @@ class PIUTable extends Component {
                     "F: "+st.rankf+" | "+
                     "No Play: "+(st.all-st.ranksss-st.rankss-st.ranks-st.ranka-st.rankao-st.rankbcd-st.rankbcdo-st.rankf)
         });
+    }
+
+    updateData(ptid, rank) {
+        userstat.set(ptid.toString(), rank);
+        this.updateRecord(ptid);
+        this.rankreset();
+        this.updateRankData();
+    }
+
+    updatePatternDialog(ptid, title) {
+        const self = this;
+        this.setState({
+            pattern: !self.state.pattern,
+            currentpt: ptid
+        });
+    }
+
+    updateRecord(ptid) {
+        const div = document.getElementById("cs"+ptid);
+        const rankval = userstat.get(ptid.toString());
+
+        let rank = "";
+        switch(parseInt(rankval)) {
+            case 0: rank = "ss"; break;
+            case 1: rank = "gs"; break;
+            case 2: rank = "s"; break;
+            case 3: rank = "aon"; break;
+            case 4: rank = "aoff"; break;
+            case 5: rank = "bcdon"; break;
+            case 6: rank = "f"; break;
+            case 7: rank = "np"; break;
+            case 8: rank = "bcdoff"; break;
+        }
+
+        div.innerHTML = "\
+            <img style='width: 60%; position: 'absolute';\
+                right: '0px' src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
     }
 
     render() {
@@ -756,7 +725,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvOver">
-                                            <PIUTableObj list={arrOV} />
+                                            <PIUTableObj list={arrOV}
+                                                    key="ov"
+                                                    pattern={self.state.pattern}
+                                                    updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
                                 </Row>
@@ -770,7 +742,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvHigh">
-                                            <PIUTableObj list={arrHI} />
+                                            <PIUTableObj list={arrHI}
+                                                    key="hi"
+                                                    pattern={self.state.pattern}
+                                                    updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
                                 </Row>
@@ -784,7 +759,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvNH">
-                                            <PIUTableObj list={arrNH} />
+                                            <PIUTableObj list={arrNH}
+                                                    key="nh"
+                                                    pattern={self.state.pattern}
+                                                    updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
                                 </Row>
@@ -798,7 +776,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvNormal">
-                                            <PIUTableObj list={arrNR} />
+                                            <PIUTableObj list={arrNR}
+                                                    key="nr"
+                                                    pattern={self.state.pattern}
+                                                    updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
                                 </Row>
@@ -812,7 +793,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvNE">
-                                            <PIUTableObj list={arrNE} />
+                                            <PIUTableObj list={arrNE}
+                                                    key="ne"
+                                                    pattern={self.state.pattern}
+                                                    updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
                                 </Row>
@@ -826,7 +810,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvEasy">
-                                            <PIUTableObj list={arrEZ} />
+                                            <PIUTableObj list={arrEZ}
+                                                    key="ez"
+                                                    pattern={self.state.pattern}
+                                                    updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
                                 </Row>
@@ -840,7 +827,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvBelow">
-                                            <PIUTableObj list={arrBE} />
+                                            <PIUTableObj list={arrBE}
+                                                    key="be"
+                                                    pattern={self.state.pattern}
+                                                    updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
                                 </Row>
@@ -853,7 +843,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvRandom">
-                                            <PIUTableObj list={arrRD} />
+                                            <PIUTableObj list={arrRD}
+                                                    key="rd"
+                                                    pattern={self.state.pattern}
+                                                    updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
                                 </Row>
@@ -868,7 +861,15 @@ class PIUTable extends Component {
                 <UserDialog title={txtPIU.newuserdiv[lang]}
                     button={txtPIU.newuserbtn[lang]}
                     display={self.state.newuser}
-                    handler={self.newUserHandler} />
+                    handler={self.newUserHandler}
+                    toggle={self.newUser} />
+                <PatternUpdateDialog title={txtPIU.updatedivtitle[lang]}
+                    button={txtPIU.update[lang]}
+                    handler={self.patternHandler}
+                    display={self.state.pattern}
+                    ptid={self.state.currentpt}
+                    updateData={self.updateData}
+                    updatePatternDialog={self.updatePatternDialog} />
             </Container>
         )
     }

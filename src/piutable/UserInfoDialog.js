@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 
 import {
-    Row,
-    Col,
-    Button,
-    Card,
-    CardHeader,
-    CardBody
+    Modal,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Button
 } from 'reactstrap';
 
 class UserDialog extends Component {
@@ -35,41 +34,39 @@ class UserDialog extends Component {
             alert("Not enough info");
             //alert(txtPIU.newuserempty[lang]);
         }
+        
+        this.props.toggle();
+    }
+
+    closeDialog() {
+        this.props.toggle();
     }
 
     render() {
         const prop = this.props;
         const self = this;
-        if(!prop.display) {
-            return null;
-        }
-        else {
-            return (
-                <Row style={{//display: prop.newuser ? "block" : "none",
-                            display: "fixed",
-                            borderRadius: 5, maxWidth: 500, minHeight: 300,
-                            margin: "0 auto", padding: 30}}>
-                    <Col xs="12">
-                        <Card>
-                            <CardHeader>
-                                {prop.title}
-                            </CardHeader>
-                            <CardBody>
-                                <input ref={this.nameinput} className='form-control'
-                                    type='text' id='newname' placeholder='NAME'
-                                    onKeyUp={() => self.nameValidCheck()} />
-                                <input ref={this.lvinput} className='form-control'
-                                    type='number' min='1' step='1' id='newlv'
-                                    onKeyPress={(event) => (event.charCode >= 48 && event.charCode <= 57)} placeholder='LEVEL'/>
-                                <Button onClick={() => self.addNewUser()}>
-                                    {prop.button}
-                                </Button>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-            )
-        }
+
+        return (
+            <Modal isOpen={prop.display}>
+                <ModalHeader>{prop.title}</ModalHeader>
+                <ModalBody>
+                    <input ref={this.nameinput} className='form-control'
+                        type='text' id='newname' placeholder='NAME'
+                        onKeyUp={() => self.nameValidCheck()} />
+                    <input ref={this.lvinput} className='form-control'
+                        type='number' min='1' step='1' id='newlv'
+                        onKeyPress={(event) => (event.charCode >= 48 && event.charCode <= 57)} placeholder='LEVEL'/>
+                </ModalBody>
+                <ModalFooter>
+                    <Button onClick={() => self.closeDialog()}>
+                        Close
+                    </Button>
+                    <Button onClick={() => self.addNewUser()}>
+                        {prop.button}
+                    </Button>
+                </ModalFooter>
+            </Modal>
+        )
     }
 }
 
