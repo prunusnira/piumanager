@@ -18,7 +18,7 @@ class PatternUpdateDialog extends Component {
         dlg = this;
 
         this.state = {
-            rank: 0
+            rank: "0"
         }
     }
 
@@ -60,10 +60,17 @@ class PatternUpdateDialog extends Component {
                         </div>
                     </ModalBody>
                     <ModalFooter>
-                        <Button onClick={() => prop.updatePatternDialog()}>
+                        <Button onClick={() => prop.updatePatternDialog(0, "")}>
                             Close
                         </Button>
-                        <Button onClick={() => prop.updateData(prop.ptid, self.state.rank)}>
+                        <Button onClick={() => {
+                            if(prop.type === 0) {
+                                prop.updateData(prop.ptid, self.state.rank);
+                            }
+                            else {
+                                prop.updateMultipleData(self.state.rank);
+                            }
+                            }}>
                             {prop.button}
                         </Button>
                     </ModalFooter>

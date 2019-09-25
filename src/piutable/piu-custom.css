@@ -12,18 +12,12 @@ html {
 	height: 100%;
 }
 
-body {
-	background-color: black;
-	background-position: center;
-	font-family: 'Noto Sans KR', sans-serif;
-	color: white;
-	min-height:100%;
-	position:relative;
-	padding-bottom: 50px;
-}
-
 span {
 	/* 테마 변경에 따라 달라짐 */
+	color: white;
+}
+
+div {
 	color: white;
 }
 
@@ -35,8 +29,8 @@ p {
 .innerhref {
 	color:white;
 	font-weight:bold;
-	text-shadow: 2px 0 1px darkblue, -2px 0 1px darkblue,
-				0 2px 1px darkblue, 0 -2px 1px darkblue;
+	text-shadow: 2px 0 1px black, -2px 0 1px black,
+				0 2px 1px black, 0 -2px 1px black;
 }
 
 .div-lineadd {
@@ -52,6 +46,22 @@ p {
 	font-size: 200%;
 	border: solid 1px;
 	text-align: center;
-	color: white;
+	color: black;
 	width: 100%;
+}
+
+.card-header {
+	background-color: rgb(37, 37, 37);
+}
+
+.card-body {
+	background-color: rgb(65, 65, 65);
+}
+
+.modal-header {
+	background-color: rgb(37, 37, 37);
+}
+
+.modal-body {
+	background-color: rgb(65, 65, 65);
 }

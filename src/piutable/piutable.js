@@ -4,6 +4,7 @@ import txtPIU from './txtpiu';
 import './piu-custom.css';
 import UserDialog from './UserInfoDialog';
 import PatternUpdateDialog from './PatternUpdateDialog';
+import Lang from './language';
 
 import {
     Container,
@@ -16,29 +17,19 @@ import {
 } from 'reactstrap';
 import PIUTableObj from './tablerow';
 
-const userstat = new Map();
-const lang = "ko";
-const piuDataUrl = "https://data.gitadora.info/piu/data/";
-
-const arrOV = [];
-const arrHI = [];
-const arrNH = [];
-const arrNR = [];
-const arrNE = [];
-const arrEZ = [];
-const arrBE = [];
-const arrRD = [];
-
-let cntov = 0;
-let cnthi = 0;
-let cntnh = 0;
-let cntnr = 0;
-let cntne = 0;
-let cntez = 0;
-let cntbe = 0;
-let cntrd = 0;
-
 class PIUTable extends Component {
+    lang = Lang.getLang();
+    piuDataUrl = "https://data.gitadora.info/piu/data/";
+
+    cntov = 0;
+    cnthi = 0;
+    cntnh = 0;
+    cntnr = 0;
+    cntne = 0;
+    cntez = 0;
+    cntbe = 0;
+    cntrd = 0;
+
     constructor(props) {
         super(props);
 
@@ -46,6 +37,7 @@ class PIUTable extends Component {
         this.newUser = this.newUser.bind(this);
         this.updatePatternDialog = this.updatePatternDialog.bind(this);
         this.updateData = this.updateData.bind(this);
+        this.updateMultipleData = this.updateMultipleData.bind(this);
         this.rankreset = this.rankreset.bind(this);
         this.updateRankData = this.updateRankData.bind(this);
 
@@ -53,7 +45,11 @@ class PIUTable extends Component {
             // userinfo
             username: "",
             userlv: 0,
-            userrank: "",
+            userrank1: "",
+            userrank2: "",
+            userstat: new Map(),
+            userdlgTitle: "",
+            userdlgButton: "",
 
             // rank
             ranksss: 0,
@@ -80,16 +76,29 @@ class PIUTable extends Component {
             newuser: false,
             changerank: false,
             pattern: false,
+            showrank: true,
+            showcheck: true,
 
             // category text
-            catOV: "",
-            catHD: "",
-            catNH: "",
-            catNR: "",
-            catNE: "",
-            catEZ: "",
-            catBE: "",
-            catRD: "",
+            category: {
+                catOV: "",
+                catHD: "",
+                catNH: "",
+                catNR: "",
+                catNE: "",
+                catEZ: "",
+                catBE: "",
+                catRD: ""
+            },
+
+            arrOV: [],
+            arrHI: [],
+            arrNH: [],
+            arrNR: [],
+            arrNE: [],
+            arrEZ: [],
+            arrBE: [],
+            arrRD: [],
 
             // current page
             steptype: "",
@@ -98,13 +107,25 @@ class PIUTable extends Component {
             // update pt info
             updaterank: "",
             currentpt: 0,
-            isOver: false
+            isOver: false,
+            updatedlgTitle: "",
+            updatedlgType: 0
         }
     }
 
     newUser() {
         this.setState({
-            newuser: !this.state.newuser
+            newuser: !this.state.newuser,
+            userdlgTitle: txtPIU.newuserdiv[this.lang],
+            userdlgButton: txtPIU.newuserbtn[this.lang]
+        });
+    }
+
+    editUser() {
+        this.setState({
+            newuser: !this.state.newuser,
+            userdlgTitle: txtPIU.edituserdiv[this.lang],
+            userdlgButton: txtPIU.edituserbtn[this.lang]
         });
     }
 
@@ -119,7 +140,7 @@ class PIUTable extends Component {
     loadUser() {
         // 파일 열기 대화상자를 열고 데이터를 가져옴
         if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-            alert(txtPIU.loadwarn[lang]);
+            alert(txtPIU.loadwarn[this.lang]);
         }
 
         const self = this;
@@ -153,7 +174,7 @@ class PIUTable extends Component {
         for(let i = 1; i < str.length; i++) {
             const cur = str[i].split(",");
             if(cur[0] != "")
-                userstat.set(cur[0], cur[1]);
+                this.state.userstat.set(cur[0], cur[1]);
         }
 
         this.setState({
@@ -164,114 +185,165 @@ class PIUTable extends Component {
     }
 
     saveUser() {
+        let text = "";
+        text += this.state.username+","+this.state.userlv+"\n";
+        
+        const keys = this.state.userstat.keys();
+        for(let i = 0; i < this.state.userstat.size; i++) {
+            const ckey = keys.next();
+            if(ckey.value != "")
+                text += ckey.value + ","+this.state.userstat.get(ckey.value) + "\n";
+        }
+        
+        // 데이터를 새 파일(임시)에 쓰고 다운로드
+        const elem = document.createElement("a");
+        elem.setAttribute("href", "data:text/plain;charset=utf-8,"+encodeURIComponent(text));
+        elem.setAttribute("download", "piudata_"+this.state.username+"_"+this.unixTimeToText(new Date().getTime())+".csv");
+        elem.style.display = 'none';
+        document.body.appendChild(elem);
+        elem.click();
+        document.body.removeChild(elem);
+    }
 
+    unixTimeToText(uxtime) {
+        const now = new Date(uxtime);
+        const time = now.getFullYear()
+            + ((now.getMonth()+1)<10?'0':'') + (now.getMonth()+1)
+            + (now.getDate()<10?'0':'') + now.getDate() + "_"
+            + now.getHours()
+            + (now.getMinutes()<10?'0':'') + now.getMinutes()
+            + (now.getSeconds()<10?'0':'') + now.getSeconds();
+        return time;
     }
 
     getPatterns(type, level) {
-        let catrd = "";
-        let catbe = "";
-        let catez = "";
-        let catne = "";
-        let catnr = "";
-        let catnh = "";
-        let cathi = "";
-        let catov = "";
+        const cat = {};
         let steptype = "";
         let steplv = "";
 
+        // 테이블을 모두 리셋헤야함
+        // 데이터는 다 저장되어 있음
+        this.resetTable();
+
         if(type == "d" && level == "25") {
-            axios.post(piuDataUrl+"/over/"+type)
+            axios.post(this.piuDataUrl+"/over/"+type)
             .then((res) => {
                 this.updateTable(res.data, true);
                 steptype = "Double";
                 steplv = level+" Over";
-                catez = "25 E";
-                catne = "25 N";
-                catnr = "25 H";
-                catnh = level+1;
-                cathi = level+2;
-                catov = level+3;
+                cat.catez = "25 E";
+                cat.catne = "25 N";
+                cat.catnr = "25 H";
+                cat.catnh = level+1;
+                cat.cathi = level+2;
+                cat.catov = level+3;
+
+                if(this.cntov === 0) cat.catov = "";
+                if(this.cnthi === 0) cat.cathi = "";
+                if(this.cntnh === 0) cat.catnh = "";
+                if(this.cntnr === 0) cat.catnr = "";
+                if(this.cntne === 0) cat.catne = "";
+                if(this.cntez === 0) cat.catez = "";
+                if(this.cntbe === 0) cat.catbe = "";
+                if(this.cntrd === 0) cat.catrd = "";
+
+                this.categoryUpdater(cat, steptype, steplv);
             });
         }
         else if(type == 's' && level == '24') {
-            axios.post(piuDataUrl+"/over/"+type)
+            axios.post(this.piuDataUrl+"/over/"+type)
             .then((res) => {
                 this.updateTable(res.data, true);
                 steptype = "Single";
                 steplv = level+" Over";
-                catnh = level+1;
-                cathi = level+2;
-                catov = level+3;
+                cat.catnh = level+1;
+                cat.cathi = level+2;
+                cat.catov = level+3;
+
+                if(this.cntov === 0) cat.catov = "";
+                if(this.cnthi === 0) cat.cathi = "";
+                if(this.cntnh === 0) cat.catnh = "";
+                if(this.cntnr === 0) cat.catnr = "";
+                if(this.cntne === 0) cat.catne = "";
+                if(this.cntez === 0) cat.catez = "";
+                if(this.cntbe === 0) cat.catbe = "";
+                if(this.cntrd === 0) cat.catrd = "";
+
+                this.categoryUpdater(cat, steptype, steplv);
             });
         }
         else {
-            axios.post(piuDataUrl+"/"+type+"/"+level)
+            axios.post(this.piuDataUrl+"/"+type+"/"+level)
             .then((res) => {
                 this.updateTable(res.data, false);
                 if(type == "s") steptype = "Single";
                 if(type == "d") steptype = "Double";
                 steplv = level;
-                catrd = txtPIU.diff.random[lang];
-                catbe = (level*1-1)+txtPIU.diff.below[lang];
-                catez = txtPIU.diff.easy[lang];
-                catne = txtPIU.diff.ne[lang];
-                catnr = txtPIU.diff.normal[lang];
-                catnh = txtPIU.diff.nh[lang];
-                cathi = txtPIU.diff.high[lang];
-                catov = (level*1+1)+txtPIU.diff.over[lang];
+                cat.catrd = txtPIU.diff.random[this.lang];
+                cat.catbe = (level*1-1)+txtPIU.diff.below[this.lang];
+                cat.catez = txtPIU.diff.easy[this.lang];
+                cat.catne = txtPIU.diff.ne[this.lang];
+                cat.catnr = txtPIU.diff.normal[this.lang];
+                cat.catnh = txtPIU.diff.nh[this.lang];
+                cat.cathi = txtPIU.diff.high[this.lang];
+                cat.catov = (level*1+1)+txtPIU.diff.over[this.lang];
+
+                if(this.cntov === 0) cat.catov = "";
+                if(this.cnthi === 0) cat.cathi = "";
+                if(this.cntnh === 0) cat.catnh = "";
+                if(this.cntnr === 0) cat.catnr = "";
+                if(this.cntne === 0) cat.catne = "";
+                if(this.cntez === 0) cat.catez = "";
+                if(this.cntbe === 0) cat.catbe = "";
+                if(this.cntrd === 0) cat.catrd = "";
+
+                this.categoryUpdater(cat, steptype, steplv);
             });
         }
-    
-        if(cntov === 0) catov = "";
-        if(cnthi === 0) cathi = "";
-        if(cntnh === 0) catnh = "";
-        if(cntnr === 0) catnr = "";
-        if(cntne === 0) catne = "";
-        if(cntez === 0) catez = "";
-        if(cntbe === 0) catbe = "";
-        if(cntrd === 0) catrd = "";
+    }
 
+    categoryUpdater(cat, steptype, steplv) {
         this.setState({
-            catOV: catov,
-            catHD: cathi,
-            catNH: catnh,
-            catNR: catnr,
-            catNE: catne,
-            catEZ: catez,
-            catBE: catbe,
-            catRD: catrd,
+            catOV: cat.catov,
+            catHD: cat.cathi,
+            catNH: cat.catnh,
+            catNR: cat.catnr,
+            catNE: cat.catne,
+            catEZ: cat.catez,
+            catBE: cat.catbe,
+            catRD: cat.catrd,
             steptype: steptype,
             steplv: steplv
         });
+    }
+
+    resetTable() {
+        this.setState({
+            arrOV: [],
+            arrHI: [],
+            arrNH: [],
+            arrNR: [],
+            arrNE: [],
+            arrEZ: [],
+            arrBE: [],
+            arrRD: [],
+            musarcade: true,
+            musshort: true,
+            musfull: true,
+            musremix: true
+        });
     
-        //checkboxReset();
-        /*
-        $("input:checkbox[id='musarcade']").prop('checked', true);
-        $("input:checkbox[id='musshort']").prop('checked', true);
-        $("input:checkbox[id='musfull']").prop('checked', true);
-        $("input:checkbox[id='musremix']").prop('checked', true);
-        */
+        this.cntov = 0;
+        this.cnthi = 0;
+        this.cntnh = 0;
+        this.cntnr = 0;
+        this.cntne = 0;
+        this.cntez = 0;
+        this.cntbe = 0;
+        this.cntrd = 0;
     }
 
     updateTable(data, isOver) {
-        arrOV.length = 0;
-        arrHI.length = 0;
-        arrNH.length = 0;
-        arrNR.length = 0;
-        arrNE.length = 0;
-        arrEZ.length = 0;
-        arrBE.length = 0;
-        arrRD.length = 0;
-    
-        cntov = 0;
-        cnthi = 0;
-        cntnh = 0;
-        cntnr = 0;
-        cntne = 0;
-        cntez = 0;
-        cntbe = 0;
-        cntrd = 0;
-    
         const ptidlist = [];
         let all = 0;
         
@@ -295,16 +367,16 @@ class PIUTable extends Component {
                     if(current.type == 0) {
                         switch(current.lv) {
                         case 24:
-                            cntnh++;
-                            arrNH.push(obj);
+                            this.cntnh++;
+                            this.state.arrNH.push(obj);
                             break;
                         case 25:
-                            cnthi++;
-                            arrHI.push(obj);
+                            this.cnthi++;
+                            this.state.arrHI.push(obj);
                             break;
                         case 26:
-                            cntov++;
-                            arrOV.push(obj);
+                            this.cntov++;
+                            this.state.arrOV.push(obj);
                             break;
                         }
                     }
@@ -312,36 +384,36 @@ class PIUTable extends Component {
                         switch(current.lv) {
                         case 25:
                             if(current.difftype == 1) {
-                                cntez++;
-                                arrEZ.push(obj);
+                                this.cntez++;
+                                this.state.arrEZ.push(obj);
                             }
                             if(current.difftype == 2) {
-                                cntne++;
-                                arrNE.push(obj);
+                                this.cntne++;
+                                this.state.arrNE.push(obj);
                             }
                             if(current.difftype == 3) {
-                                cntnr++;
-                                arrNR.push(obj);
+                                this.cntnr++;
+                                this.state.arrNR.push(obj);
                             }
                             break;
                         case 26:
-                            cntnh++;
-                            arrNH.push(obj);
+                            this.cntnh++;
+                            this.state.arrNH.push(obj);
                             break;
                         case 27:
-                            cnthi++;
-                            arrHI.push(obj);
+                            this.cnthi++;
+                            this.state.arrHI.push(obj);
                             break;
                         case 28:
-                            cntov++;
-                            arrOV.push(obj);
+                            this.cntov++;
+                            this.state.arrOV.push(obj);
                             break;
                         }
                     }
                 }
                 else {
-                    if(userstat.has(current.ptid)) {
-                        switch(userstat.get(current.ptid.toString())) {
+                    if(this.state.userstat.has(current.ptid)) {
+                        switch(this.state.userstat.get(current.ptid.toString())) {
                         case "0":
                             obj.rank = "ss";
                             break;
@@ -374,36 +446,36 @@ class PIUTable extends Component {
                     
                     switch(current.difftype) {
                     case 0:
-                        cntbe++;
-                        arrBE.push(obj);
+                        this.cntbe++;
+                        this.state.arrBE.push(obj);
                         break;
                     case 1:
-                        cntez++;
-                        arrEZ.push(obj);
+                        this.cntez++;
+                        this.state.arrEZ.push(obj);
                         break;
                     case 2:
-                        cntne++;
-                        arrNE.push(obj);
+                        this.cntne++;
+                        this.state.arrNE.push(obj);
                         break;
                     case 3: // 2->3
-                        cntnr++;
-                        arrNR.push(obj);
+                        this.cntnr++;
+                        this.state.arrNR.push(obj);
                         break;
                     case 4:
-                        cntnh++;
-                        arrNH.push(obj);
+                        this.cntnh++;
+                        this.state.arrNH.push(obj);
                         break;
                     case 5: // 3->5
-                        cnthi++;
-                        arrHI.push(obj);
+                        this.cnthi++;
+                        this.state.arrHI.push(obj);
                         break;
                     case 6: // 4->6
-                        cntov++;
-                        arrOV.push(obj);
+                        this.cntov++;
+                        this.state.arrOV.push(obj);
                         break;
                     case 7: // 5->7
-                        cntrd++;
-                        arrRD.push(obj);
+                        this.cntrd++;
+                        this.state.arrRD.push(obj);
                         break;
                     }
                 }
@@ -414,6 +486,16 @@ class PIUTable extends Component {
             ptidlist: ptidlist,
             all: all,
             isOver: isOver
+        }, () => {
+            const statmap = this.state.userstat;
+            for(let i = 0; i < data.patterns.length; i++) {
+                const ptid = data.patterns[i].ptid;
+
+                if(statmap.has(ptid.toString())) {
+                    const rank = statmap.get(ptid.toString());
+                    this.updateData(ptid, rank);
+                }
+            }
         });
     }
 
@@ -442,8 +524,8 @@ class PIUTable extends Component {
         let rankbcd = 0;
 
         for(let i = 0; i < this.state.ptidlist.length; i++) {
-            if(userstat.has(this.state.ptidlist[i].toString())) {
-                switch(userstat.get(this.state.ptidlist[i].toString())) {
+            if(this.state.userstat.has(this.state.ptidlist[i].toString())) {
+                switch(this.state.userstat.get(this.state.ptidlist[i].toString())) {
                 case "0":
                     ranksss++;
                     break;
@@ -489,12 +571,12 @@ class PIUTable extends Component {
     updateRanks() {
         const st = this.state;
         this.setState({
-            userrank: "SSS: "+st.ranksss+" | "+
+            userrank1: "SSS: "+st.ranksss+" | "+
                     "SS: "+st.rankss+" | "+
                     "S: "+st.ranks+" | "+
                     "A: "+st.ranka+" | "+
-                    "BCD: "+st.rankbcd+"<br/>"+
-                    "A: "+st.rankao+" (Break Off) | "+
+                    "BCD: "+st.rankbcd,
+            userrank2: "A: "+st.rankao+" (Break Off) | "+
                     "BCD: "+st.rankbcdo+" (Break Off) | "+
                     "F: "+st.rankf+" | "+
                     "No Play: "+(st.all-st.ranksss-st.rankss-st.ranks-st.ranka-st.rankao-st.rankbcd-st.rankbcdo-st.rankf)
@@ -502,23 +584,53 @@ class PIUTable extends Component {
     }
 
     updateData(ptid, rank) {
-        userstat.set(ptid.toString(), rank);
+        this.state.userstat.set(ptid.toString(), rank);
         this.updateRecord(ptid);
         this.rankreset();
         this.updateRankData();
+
+        // 창 닫기
+        if(this.state.pattern) {
+            this.updatePatternDialog(ptid);
+        }
     }
 
-    updatePatternDialog(ptid, title) {
-        const self = this;
+    updateMultipleData(rank) {
+        const checked = document.querySelectorAll("input[id=ptnsel]:checked");
+        for(let i = 0; i < checked.length; i++) {
+            const ptid = checked[i].value;
+            this.state.userstat.set(ptid.toString(), rank);
+            this.updateRecord(ptid);
+        }
+        this.rankreset();
+        this.updateRankData();
+
+        // 창 닫기
+        if(this.state.pattern) {
+            this.updatePatternDialog(0);
+        }
+    }
+
+    updatePatternDialog(ptid) {
         this.setState({
-            pattern: !self.state.pattern,
-            currentpt: ptid
+            pattern: !this.state.pattern,
+            currentpt: ptid,
+            updatedlgType: 0,
+            updatedlgTitle: txtPIU.updatedivtitle[this.lang]
+        });
+    }
+
+    updatePatternMultiple() {
+        this.setState({
+            pattern: !this.state.pattern,
+            updatedlgType: 1,
+            updatedlgTitle: txtPIU.updatealldiv[this.lang]
         });
     }
 
     updateRecord(ptid) {
         const div = document.getElementById("cs"+ptid);
-        const rankval = userstat.get(ptid.toString());
+        const rankval = this.state.userstat.get(ptid.toString());
 
         let rank = "";
         switch(parseInt(rankval)) {
@@ -538,26 +650,82 @@ class PIUTable extends Component {
                 right: '0px' src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
     }
 
+    hideRank() {
+        this.setState({
+            showrank: !this.state.showrank
+        });
+    }
+
+    hideCheckbox() {
+        this.setState({
+            showcheck: !this.state.showcheck
+        });
+    }
+
+    handleMusicType(type) {
+        switch(type) {
+        case 0:
+            this.setState({
+                musarcade: !this.state.musarcade
+            }, () => this.musicTypeOnOff(0, "musarcade"));
+            break;
+        case 1:
+            this.setState({
+                musshort: !this.state.musshort
+            }, () => this.musicTypeOnOff(1, "musshort"));
+            break;
+        case 2:
+            this.setState({
+                musfull: !this.state.musfull
+            }, () => this.musicTypeOnOff(2, "musfull"));
+            break;
+        case 3:
+            this.setState({
+                musremix: !this.state.musremix
+            }, () => this.musicTypeOnOff(3, "musremix"))
+            break;
+        }
+    }
+
+    musicTypeOnOff(type, bid) {
+        const box = document.getElementById(bid);
+        const divs = document.querySelectorAll("[data-songtype='"+type+"']");
+        if(box.checked) {
+            for(let i = 0; i < divs.length; i++) {
+                divs[i].parentNode.style.display = "block";
+            }
+        }
+        else {
+            for(let i = 0; i < divs.length; i++) {
+                divs[i].parentNode.style.display = "none";
+            }
+        }
+    }
+
     render() {
         const self = this;
+
+        const chback = {
+            backgroundColor: 'rgb(37, 37, 37)'
+        }
 
         return (
             <Container>
                 <Row>
                     <Col xs="12">
                         <Card>
-                            <CardHeader>
+                            <CardHeader style={chback}>
                                 <h3>Pump It Up XX</h3>
-                                <p>{txtPIU.subtitle[lang]}</p>
+                                <p>{txtPIU.subtitle[self.lang]}</p>
                             </CardHeader>
                             <CardBody>
                                 <Col xs="12" id="howto">
-                                    {txtPIU.howto1[lang]}<br/>
-                                    1. {txtPIU.howto2[lang]}<br/>
-                                    2. <b><font color='red'>{txtPIU.howto3[lang]}</font></b><br/>
-                                    3. {txtPIU.howto4[lang]}<br/>
-                                    4. {txtPIU.howto5[lang]}<br/>
-                                    5. {txtPIU.howto6[lang]}
+                                    {txtPIU.howto1[self.lang]}<br/>
+                                    1. {txtPIU.howto2[self.lang]}<br/>
+                                    2. <b><font color='red'>{txtPIU.howto3[self.lang]}</font></b><br/>
+                                    3. {txtPIU.howto4[self.lang]}<br/>
+                                    4. {txtPIU.howto5[self.lang]}<br/>
+                                    5. {txtPIU.howto6[self.lang]}
                                 </Col>
                             </CardBody>
                         </Card>
@@ -567,19 +735,19 @@ class PIUTable extends Component {
                 <Row>
                     <Col xs="12">
                         <Card>
-                            <CardHeader>
-                                <h3>{txtPIU.functitle[lang]}</h3>
+                            <CardHeader style={chback}>
+                                <h3>{txtPIU.functitle[self.lang]}</h3>
                             </CardHeader>
                             <CardBody className="text-center btn-group">
                                 <Button onClick={() => self.newUser()}>
-                                    {txtPIU.newuser[lang]}
+                                    {txtPIU.newuser[self.lang]}
                                 </Button>
 
                                 <Button onClick={() => self.loadUser()}>
-                                    {txtPIU.load[lang]}
+                                    {txtPIU.load[self.lang]}
                                 </Button>
                                 <Button onClick={() => self.saveUser()}>
-                                    {txtPIU.save[lang]}
+                                    {txtPIU.save[self.lang]}
                                 </Button>
                             </CardBody>
                         </Card>
@@ -588,8 +756,8 @@ class PIUTable extends Component {
                 <Row style={{display: self.state.loaded ? "block" : "none"}}>
                     <Col xs="12">
                         <Card>
-                            <CardHeader id="seldiffSingletitle">
-                                <h3>{txtPIU.single[lang]}</h3>
+                            <CardHeader id="seldiffSingletitle" style={chback}>
+                                <h3>{txtPIU.single[self.lang]}</h3>
                             </CardHeader>
                             <CardBody className="text-center" id="seldiffSingle">
                                 <Button onClick={() => self.getPatterns('s', '13')}>S13</Button>
@@ -612,8 +780,8 @@ class PIUTable extends Component {
                 <Row style={{display: self.state.loaded ? "block" : "none"}}>
                     <Col xs="12">
                         <Card>
-                            <CardHeader id="seldiffDoubletitle">
-                                <h3>{txtPIU.double[lang]}</h3>
+                            <CardHeader id="seldiffDoubletitle" style={chback}>
+                                <h3>{txtPIU.double[self.lang]}</h3>
                             </CardHeader>
                             <CardBody className="text-center" id="seldiffDouble">
                                 <Button onClick={() => self.getPatterns('d', '13')}>D13</Button>
@@ -637,7 +805,7 @@ class PIUTable extends Component {
                 <Row style={{display: self.state.loaded ? "block" : "none"}}>
                     <Col xs="12">
                         <Card id="userinfo">
-                            <CardHeader>
+                            <CardHeader style={chback}>
                                 <h3>User Info and Options</h3>
                             </CardHeader>
                             <CardBody>
@@ -660,16 +828,16 @@ class PIUTable extends Component {
                                 <Row className="text-center">
                                     <Col xs="12" className="text-center">
                                         <Button onClick={() => self.editUser()}>
-                                            {txtPIU.edit[lang]}
+                                            {txtPIU.edit[self.lang]}
                                         </Button>
                                         <Button onClick={() => self.updatePatternMultiple()}>
-                                            {txtPIU.updatecheckedbtn[lang]}
+                                            {txtPIU.updatecheckedbtn[self.lang]}
                                         </Button>
                                         <Button onClick={() => self.hideCheckbox()}>
-                                            {txtPIU.hidechkbox[lang]}
+                                            {txtPIU.hidechkbox[self.lang]}
                                         </Button>
                                         <Button onClick={() => self.hideRank()}>
-                                            {txtPIU.hiderank[lang]}
+                                            {txtPIU.hiderank[self.lang]}
                                         </Button>
                                     </Col>
                                 </Row>
@@ -681,21 +849,25 @@ class PIUTable extends Component {
                 <Row style={{display: self.state.loaded ? "block" : "none"}}>
                     <Col xs="12">
                         <Card>
-                            <CardHeader>
-                                <h3>{txtPIU.songtype[lang]}</h3>
+                            <CardHeader style={chback}>
+                                <h3>{txtPIU.songtype[self.lang]}</h3>
                             </CardHeader>
                             <CardBody className="text-center">
                                 <input id="musarcade" type="checkbox" value="musarcade"
-                                    onChange={() => self.handleMusicType(this, 0)} checked/>
+                                    onChange={() => self.handleMusicType(0)}
+                                    checked={self.state.musarcade} />
                                 <label htmlFor="musarcade">Arcade</label>
                                 <input id="musshort" type="checkbox" value="musshort"
-                                    onChange={() => self.handleMusicType(this, 1)} checked/>
+                                    onChange={() => self.handleMusicType(1)}
+                                    checked={self.state.musshort} />
                                 <label htmlFor="musshort">Shortcut</label>
                                 <input id="musfull" type="checkbox" value="musfull"
-                                    onChange={() => self.handleMusicType(this, 2)} checked/>
+                                    onChange={() => self.handleMusicType(2)}
+                                    checked={self.state.musshort} />
                                 <label htmlFor="musfull">Fullsong</label>
                                 <input id="musremix" type="checkbox" value="musremix"
-                                    onChange={() => self.handleMusicType(this, 3)} checked/>
+                                    onChange={() => self.handleMusicType(3)}
+                                    checked={self.state.musremix} />
                                 <label htmlFor="musremix">Remix</label>
                             </CardBody>
                         </Card>
@@ -705,7 +877,7 @@ class PIUTable extends Component {
                 <Row style={{display: self.state.loaded ? "block" : "none"}}>
                     <Col xs="12">
                         <Card id="targetTable">
-                            <CardHeader className="text-center">
+                            <CardHeader className="text-center" style={chback}>
                                 <Col xs="12">
                                     <h3>Pump It Up XX</h3>
                                     <h4><span id="type"></span> Lv.<span id="lv"></span> Clear Table</h4>
@@ -713,11 +885,14 @@ class PIUTable extends Component {
                                 <Col xs="12" id="username2">
                                     Player: {self.state.username} / Lv. {self.state.userlv}
                                 </Col>
-                                <Col xs="12" id="ranks"></Col>
+                                <Col xs="12" id="ranks">
+                                    {self.state.userrank1}<br/>
+                                    {self.state.userrank2}
+                                </Col>
                             </CardHeader>
                             <CardBody>
                                 <Row className="div-lineadd" id="divOver"
-                                    style={{backgroundColor: "#8a0273"}}>
+                                    style={{backgroundColor: "#ffadc5"}}>
                                     <Col xs="12">
                                         <Row>
                                             <Col xs="12" className="piu-left" id="catOver">
@@ -725,8 +900,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvOver">
-                                            <PIUTableObj list={arrOV}
+                                            <PIUTableObj list={self.state.arrOV}
                                                     key="ov"
+                                                    showrank={self.state.showrank}
+                                                    showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
@@ -734,7 +911,7 @@ class PIUTable extends Component {
                                 </Row>
                             
                                 <Row className="div-lineadd" id="divHigh"
-                                    style={{backgroundColor: "#790202"}}>
+                                    style={{backgroundColor: "#ffa9b0"}}>
                                     <Col xs="12">
                                         <Row>
                                             <Col xs="12" className="piu-left" id="catHigh">
@@ -742,8 +919,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvHigh">
-                                            <PIUTableObj list={arrHI}
+                                            <PIUTableObj list={self.state.arrHI}
                                                     key="hi"
+                                                    showrank={self.state.showrank}
+                                                    showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
@@ -751,7 +930,7 @@ class PIUTable extends Component {
                                 </Row>
                                 
                                 <Row className="div-lineadd" id="divNH"
-                                    style={{backgroundColor: "#8a5301"}}>
+                                    style={{backgroundColor: "#ffdda6"}}>
                                     <Col xs="12">
                                         <Row>
                                             <Col xs="12" className="piu-left" id="catNH">
@@ -759,8 +938,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvNH">
-                                            <PIUTableObj list={arrNH}
+                                            <PIUTableObj list={self.state.arrNH}
                                                     key="nh"
+                                                    showrank={self.state.showrank}
+                                                    showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
@@ -768,7 +949,7 @@ class PIUTable extends Component {
                                 </Row>
                                 
                                 <Row className="div-lineadd" id="divNormal"
-                                    style={{backgroundColor: "#8a8a01"}}>
+                                    style={{backgroundColor: "#f8e5d0"}}>
                                     <Col xs="12">
                                         <Row>
                                             <Col xs="12" className="piu-left" id="catNormal">
@@ -776,8 +957,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvNormal">
-                                            <PIUTableObj list={arrNR}
+                                            <PIUTableObj list={self.state.arrNR}
                                                     key="nr"
+                                                    showrank={self.state.showrank}
+                                                    showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
@@ -785,7 +968,7 @@ class PIUTable extends Component {
                                 </Row>
                                     
                                 <Row className="div-lineadd" id="divNE"
-                                    style={{backgroundColor: "#028502"}}>
+                                    style={{backgroundColor: "#a9e2c5"}}>
                                     <Col xs="12">
                                         <Row>
                                             <Col xs="12" className="piu-left" id="catNE">
@@ -793,8 +976,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvNE">
-                                            <PIUTableObj list={arrNE}
+                                            <PIUTableObj list={self.state.arrNE}
                                                     key="ne"
+                                                    showrank={self.state.showrank}
+                                                    showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
@@ -802,7 +987,7 @@ class PIUTable extends Component {
                                 </Row>
                                 
                                 <Row className="div-lineadd" id="divEasy"
-                                    style={{backgroundColor: "#009494"}}>
+                                    style={{backgroundColor: "#bbd1e8"}}>
                                     <Col xs="12">
                                         <Row>
                                             <Col xs="12" className="piu-left" id="catEasy">
@@ -810,8 +995,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvEasy">
-                                            <PIUTableObj list={arrEZ}
+                                            <PIUTableObj list={self.state.arrEZ}
                                                     key="ez"
+                                                    showrank={self.state.showrank}
+                                                    showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
@@ -819,7 +1006,7 @@ class PIUTable extends Component {
                                 </Row>
                                 
                                 <Row className="div-lineadd" id="divBelow"
-                                    style={{backgroundColor: "#00007e"}}>
+                                    style={{backgroundColor: "#c6d6f7"}}>
                                     <Col xs="12">
                                         <Row>
                                             <Col xs="12" className="piu-left" id="catBelow">
@@ -827,15 +1014,18 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvBelow">
-                                            <PIUTableObj list={arrBE}
+                                            <PIUTableObj list={self.state.arrBE}
                                                     key="be"
+                                                    showrank={self.state.showrank}
+                                                    showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
                                 </Row>
                                 
-                                <Row id="divRandom" style={{backgroundColor: "#43008f"}}>
+                                <Row id="divRandom"
+                                    style={{backgroundColor: "#ab95d4"}}>
                                     <Col xs="12">
                                         <Row>
                                             <Col xs="12" className="piu-left" id="catRandom">
@@ -843,8 +1033,10 @@ class PIUTable extends Component {
                                             </Col>
                                         </Row>
                                         <Row id="lvRandom">
-                                            <PIUTableObj list={arrRD}
+                                            <PIUTableObj list={self.state.arrRD}
                                                     key="rd"
+                                                    showrank={self.state.showrank}
+                                                    showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
@@ -858,17 +1050,21 @@ class PIUTable extends Component {
                 <input id="fileopen" accept=".csv" type="file"
                     name="fileopen" style={{display:"none"}} />
 
-                <UserDialog title={txtPIU.newuserdiv[lang]}
-                    button={txtPIU.newuserbtn[lang]}
+                <UserDialog title={self.state.userdlgTitle}
+                    curname={self.state.username}
+                    curlv={self.state.userlv}
+                    button={self.state.userdlgButton}
                     display={self.state.newuser}
                     handler={self.newUserHandler}
                     toggle={self.newUser} />
-                <PatternUpdateDialog title={txtPIU.updatedivtitle[lang]}
-                    button={txtPIU.update[lang]}
+                <PatternUpdateDialog title={self.state.updatedlgTitle}
+                    type={self.state.updatedlgType}
+                    button={txtPIU.update[self.lang]}
                     handler={self.patternHandler}
                     display={self.state.pattern}
                     ptid={self.state.currentpt}
                     updateData={self.updateData}
+                    updateMultipleData={self.updateMultipleData}
                     updatePatternDialog={self.updatePatternDialog} />
             </Container>
         )

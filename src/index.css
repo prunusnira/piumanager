@@ -5,6 +5,15 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  
+	background-color: black;
+	background-position: center;
+	font-family: 'Noto Sans KR', sans-serif;
+	color: white;
+	min-height:100%;
+	position:relative;
+	padding-bottom: 50px;
 }
 
 code {

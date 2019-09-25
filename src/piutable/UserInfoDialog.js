@@ -13,6 +13,8 @@ class UserDialog extends Component {
         super(props);
         this.nameinput = React.createRef();
         this.lvinput = React.createRef();
+        this.curname = props.curname;
+        this.curlv = props.curlv;
     }
 
     nameValidCheck() {
@@ -27,7 +29,7 @@ class UserDialog extends Component {
         const name = this.nameinput.current.value;
         const lv = this.lvinput.current.value;
         
-        if(name != "" && lv != "") {
+        if(name !== "" && lv !== "") {
             this.props.handler(name, lv);
         }
         else {
@@ -42,6 +44,11 @@ class UserDialog extends Component {
         this.props.toggle();
     }
 
+    componentWillReceiveProps(props) {
+        this.curname = props.curname;
+        this.curlv = props.curlv;
+    }
+
     render() {
         const prop = this.props;
         const self = this;
@@ -52,9 +59,11 @@ class UserDialog extends Component {
                 <ModalBody>
                     <input ref={this.nameinput} className='form-control'
                         type='text' id='newname' placeholder='NAME'
+                        defaultValue={self.curname}
                         onKeyUp={() => self.nameValidCheck()} />
                     <input ref={this.lvinput} className='form-control'
                         type='number' min='1' step='1' id='newlv'
+                        defaultValue={self.curlv}
                         onKeyPress={(event) => (event.charCode >= 48 && event.charCode <= 57)} placeholder='LEVEL'/>
                 </ModalBody>
                 <ModalFooter>
