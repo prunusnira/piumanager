@@ -19,7 +19,8 @@ import PIUTableObj from './tablerow';
 
 class PIUTable extends Component {
     lang = Lang.getLang();
-    piuDataUrl = "https://data.gitadora.info/piu/data/";
+    piuDataUrl = "https://piu.gitadora.info/d";
+    //piuDataUrl = "http://localhost:8081/d";
 
     cntov = 0;
     cnthi = 0;
@@ -226,7 +227,7 @@ class PIUTable extends Component {
         this.resetTable();
 
         if(type == "d" && level == "25") {
-            axios.post(this.piuDataUrl+"/over/"+type)
+            axios.get(this.piuDataUrl+"/over/"+type)
             .then((res) => {
                 this.updateTable(res.data, true);
                 steptype = "Double";
@@ -251,7 +252,7 @@ class PIUTable extends Component {
             });
         }
         else if(type == 's' && level == '24') {
-            axios.post(this.piuDataUrl+"/over/"+type)
+            axios.get(this.piuDataUrl+"/over/"+type)
             .then((res) => {
                 this.updateTable(res.data, true);
                 steptype = "Single";
@@ -273,7 +274,7 @@ class PIUTable extends Component {
             });
         }
         else {
-            axios.post(this.piuDataUrl+"/"+type+"/"+level)
+            axios.get(this.piuDataUrl+"/"+type+"/"+level)
             .then((res) => {
                 this.updateTable(res.data, false);
                 if(type == "s") steptype = "Single";
@@ -347,8 +348,8 @@ class PIUTable extends Component {
         const ptidlist = [];
         let all = 0;
         
-        for(let i = 0; i < data.patterns.length; i++) {
-            const current = data.patterns[i];
+        for(let i = 0; i < data.length; i++) {
+            const current = data[i];
             ptidlist.push(current.ptid);
             all++;
 
@@ -488,8 +489,8 @@ class PIUTable extends Component {
             isOver: isOver
         }, () => {
             const statmap = this.state.userstat;
-            for(let i = 0; i < data.patterns.length; i++) {
-                const ptid = data.patterns[i].ptid;
+            for(let i = 0; i < data.length; i++) {
+                const ptid = data[i].ptid;
 
                 if(statmap.has(ptid.toString())) {
                     const rank = statmap.get(ptid.toString());
@@ -863,7 +864,7 @@ class PIUTable extends Component {
                                 <label htmlFor="musshort">Shortcut</label>
                                 <input id="musfull" type="checkbox" value="musfull"
                                     onChange={() => self.handleMusicType(2)}
-                                    checked={self.state.musshort} />
+                                    checked={self.state.musfull} />
                                 <label htmlFor="musfull">Fullsong</label>
                                 <input id="musremix" type="checkbox" value="musremix"
                                     onChange={() => self.handleMusicType(3)}
