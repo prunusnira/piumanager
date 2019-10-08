@@ -11,4 +11,5 @@
 
 기존 웹페이지를 ReactJS로 전환완료  
 기존에 GITADORA Info에서 관리하던 서버 로직을 Node.js+Express로 변경 완료  
-DBMS는 MariaDB로 유지하되 별도의 데이터베이스를 구축
+DBMS는 MariaDB로 유지하되 별도의 데이터베이스를 구축  
+*중요: 서버의 DB 접속 정보 파일은 업로드되지 않음*
