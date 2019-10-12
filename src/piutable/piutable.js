@@ -5,6 +5,7 @@ import './piu-custom.css';
 import UserDialog from './UserInfoDialog';
 import PatternUpdateDialog from './PatternUpdateDialog';
 import Lang from './language';
+import html2canvas from 'html2canvas';
 
 import {
     Container,
@@ -703,6 +704,26 @@ class PIUTable extends Component {
         }
     }
 
+    scrShot(divname, filename) {
+        window.scrollTo(0, 0);
+        const div = document.getElementById(divname);
+        html2canvas(div, {
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: "#000000",
+            scale: 1
+        })
+        .then(function(canvas) {
+            const el = document.createElement("a");
+            el.href = canvas.toDataURL("image/jpeg");
+            el.download = filename;
+            el.click();
+        })
+        .catch(function (error) {
+            console.error('oops, something went wrong!', error);
+        });
+    }
+
     render() {
         const self = this;
 
@@ -723,10 +744,9 @@ class PIUTable extends Component {
                                 <Col xs="12" id="howto">
                                     {txtPIU.howto1[self.lang]}<br/>
                                     1. {txtPIU.howto2[self.lang]}<br/>
-                                    2. <b><font color='red'>{txtPIU.howto3[self.lang]}</font></b><br/>
+                                    2. {txtPIU.howto3[self.lang]}<br/>
                                     3. {txtPIU.howto4[self.lang]}<br/>
-                                    4. {txtPIU.howto5[self.lang]}<br/>
-                                    5. {txtPIU.howto6[self.lang]}
+                                    4. {txtPIU.howto5[self.lang]}
                                 </Col>
                             </CardBody>
                         </Card>
@@ -851,6 +871,30 @@ class PIUTable extends Component {
                     <Col xs="12">
                         <Card>
                             <CardHeader style={chback}>
+                                <h3>{txtPIU.scrshot[this.lang]}</h3>
+                            </CardHeader>
+                            <CardBody>
+                                <Row>
+                                    <Col xs="12">
+                                        {txtPIU.scrdesc[this.lang]}
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col xs="12" className="text-center">
+                                        <Button onClick={() => self.scrShot('targetTable', "piu_"+self.state.username+"_"+self.state.steptype+"_"+self.state.steplv+"_"+this.unixTimeToText(new Date().getTime())+".jpg")}>
+                                            {txtPIU.scrbtn[this.lang]}
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                </Row>
+
+                <Row style={{display: self.state.loaded ? "block" : "none"}}>
+                    <Col xs="12">
+                        <Card>
+                            <CardHeader style={chback}>
                                 <h3>{txtPIU.songtype[self.lang]}</h3>
                             </CardHeader>
                             <CardBody className="text-center">
@@ -875,13 +919,15 @@ class PIUTable extends Component {
                     </Col>
                 </Row>
 
-                <Row style={{display: self.state.loaded ? "block" : "none"}}>
+                <Row
+                    style={{display: self.state.loaded ? "block" : "none"}}
+                    id="targetTable">
                     <Col xs="12">
-                        <Card id="targetTable">
+                        <Card>
                             <CardHeader className="text-center" style={chback}>
                                 <Col xs="12">
                                     <h3>Pump It Up XX</h3>
-                                    <h4><span id="type"></span> Lv.<span id="lv"></span> Clear Table</h4>
+                                    <h4>{self.state.steptype} Lv.{self.state.steplv} Clear Table</h4>
                                 </Col>
                                 <Col xs="12" id="username2">
                                     Player: {self.state.username} / Lv. {self.state.userlv}

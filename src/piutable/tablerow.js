@@ -1,10 +1,8 @@
 import React, {Component, Fragment} from 'react';
-import txtPIU from './txtpiu';
 
 import { Col } from 'reactstrap';
 
-const piuimg = "https://data.gitadora.info/img/piumusic/";
-const lang = "ko";
+const piuimg = "https://piu.gitadora.info/jacket/";
 
 class PIUTableObj extends Component {
     constructor(props) {

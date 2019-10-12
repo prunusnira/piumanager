@@ -15,26 +15,21 @@ const txtPIU = {
         "en":"How to use:"
     },
     howto2: {
-        "jp":"Android, PCで使えます (ファイル保存問題)",
-        "ko":"Android, PC에서만 사용 가능 (파일 다운로드 문제)",
-        "en":"Only usable for Android and PC (File download problem)"
+        "jp":"Android, iOS 13+, PCで使えます (ファイル保存問題)",
+        "ko":"Android, iOS 13 이상, PC에서만 사용 가능 (파일 다운로드 문제)",
+        "en":"Only usable for Android, iOS 13+ and PC (File download problem)"
     },
     howto3: {
-        "jp":"必ずGoogle Chrome系のブラウザを使用 (モバイル環境も)",
-        "ko":"반드시 구글 크롬 계열의 브라우저를 사용한다 (모바일도 마찬가지)",
-        "en":"MUST USE Google Chrome based browsers (Including mobile environment)"
-    },
-    howto4: {
         "jp":"「新規作成」や「ファイル読み」でユーザー情報を読み出す",
         "ko":"「신규유저」나「파일열기」버튼을 눌러 정보를 불러옴",
         "en":"Load user information with 「New user」 or 「Load File」"
     },
-    howto5: {
+    howto4: {
         "jp":"難易度を選択して譜面を選び、ランク情報を設定",
         "ko":"난이도/패턴을 선택하여 랭크 정보를 설정",
         "en":"Select levels and patterns to load list, and then click each pattern to set rank status"
     },
-    howto6: {
+    howto5: {
         "jp":"「ファイル保存」でCSVファイルをダウンロード",
         "ko":"「파일저장」버튼을 누르고 CSV 파일을 보관",
         "en":"「Save File」 to save your progress via CSV file"
@@ -208,6 +203,21 @@ const txtPIU = {
             "ko":"급",
             "en":"+"
         }
+    },
+    scrshot: {
+        "jp":"スクショを取る",
+        "ko":"스크린샷 찍기",
+        "en":"Screenshot"
+    },
+    scrdesc: {
+        "jp":"現在のクリア表を撮ってファイルで保存します",
+        "ko":"현재 클리어 표에 대한 스크린샷을 찍어 파일로 저장합니다",
+        "en":"Save screenshot for current clear table"
+    },
+    scrbtn: {
+        "jp":"スクショを取る (ファイルダウンロード)",
+        "ko":"스크린샷 찍기 (파일 다운로드)",
+        "en":"Take Screenshot (File download)"
     }
 }
 

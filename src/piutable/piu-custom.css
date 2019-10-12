@@ -8,7 +8,7 @@
  * 2. Also, products and libraries used to implement
  *    this server are on USED-LIBRARIES file on root
  *****************************************************/
-html {
+html, body {
 	height: 100%;
 }
 
@@ -64,4 +64,9 @@ p {
 
 .modal-body {
 	background-color: rgb(65, 65, 65);
+}
+
+.hide-scrollbar {
+    overflow: "-moz-hidden-unscrollable";
+	overflow: "hidden";
 }
