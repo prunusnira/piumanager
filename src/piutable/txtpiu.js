@@ -9,6 +9,11 @@
  *    this server are on USED-LIBRARIES file on root
  *****************************************************/
 const txtPIU = {
+    test: {
+        "jp":"サイトのアドレスをpiu.nira.oneに変更しました。piu.gitadora.infoは2020年4月13日まで使えます。",
+        "ko":"사이트의 주소를 piu.nira.one으로 변경하였습니다. piu.gitadora.info는 2020년 4월 13일까지 사용 가능합니다.",
+        "en":"Address is changed to piu.nira.one . piu.gitadora.info can be used until Apr. 13, 2020"
+    },
     howto1: {
         "jp":"How to use:",
         "ko":"How to use:",
@@ -204,20 +209,59 @@ const txtPIU = {
             "en":"+"
         }
     },
-    scrshot: {
-        "jp":"スクショを取る",
-        "ko":"스크린샷 찍기",
-        "en":"Screenshot"
+    share: {
+        "jp":"共有",
+        "ko":"공유",
+        "en":"Share"
     },
-    scrdesc: {
-        "jp":"現在のクリア表を撮ってファイルで保存します",
-        "ko":"현재 클리어 표에 대한 스크린샷을 찍어 파일로 저장합니다",
-        "en":"Save screenshot for current clear table"
+    sharedesc: {
+        "jp":"現在のクリア表を共有できます",
+        "ko":"현재 클리어 표를 공유할 수 있습니다.",
+        "en":"Share current clear table"
     },
     scrbtn: {
-        "jp":"スクショを取る (ファイルダウンロード)",
-        "ko":"스크린샷 찍기 (파일 다운로드)",
-        "en":"Take Screenshot (File download)"
+        "jp":"スクショを撮る (ダウンロード)",
+        "ko":"스크린샷 찍기 (다운로드)",
+        "en":"Take Screenshot (Download)"
+    },
+    urlshare: {
+        "jp":"URLで共有",
+        "ko":"URL로 공유",
+        "en":"Share with URL"
+    },
+    sharedlg: {
+        title: {
+            "jp":"共有URL",
+            "ko":"공유 URL",
+            "en":"Sharable URL"
+        },
+        cont: {
+            "jp":"以下のURLを使ってデータを共有できます。このURLは一週から二週の間で有効です。",
+            "ko":"다음 URL을 복사하여 공유할 수 있습니다. 이 URL은 최소 일주일, 최대 2주일 유효합니다.",
+            "en":"You can share your status with URL below. This url will be maintained for one week or two weeks"
+        },
+        error: {
+            "jp":"エラーが発生しました",
+            "ko":"에러가 발생하였습니다",
+            "en":"Error Occurred"
+        }
+    },
+    sharepage: {
+        subtitle: {
+            "jp":"共有ページ",
+            "ko":"서열표 공유 페이지",
+            "en":"Share page"
+        },
+        about1: {
+            "jp":"",
+            "ko":"서열표 데이터를 공유하는 페이지입니다.",
+            "en":""
+        },
+        about2: {
+            "jp":"データ管理はこちら→",
+            "ko":"데이터 관리는 여기서 →",
+            "en":"You can have you own here→"
+        }
     }
 }
 

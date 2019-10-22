@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
 import axios from 'axios';
 import txtPIU from './txtpiu';
 import './piu-custom.css';
-import UserDialog from './UserInfoDialog';
-import PatternUpdateDialog from './PatternUpdateDialog';
-import ShareDialog from './ShareDialog';
 import Lang from './language';
 import html2canvas from 'html2canvas';
 
@@ -20,7 +18,7 @@ import {
 } from 'reactstrap';
 import PIUTableObj from './tablerow';
 
-class PIUTable extends Component {
+class SavedTable extends Component {
     lang = Lang.getLang();
     piuDataUrl = "https://piu.nira.one/d";
     //piuDataUrl = "http://localhost:8081/d";
@@ -37,14 +35,11 @@ class PIUTable extends Component {
     constructor(props) {
         super(props);
 
-        this.newUserHandler = this.newUserHandler.bind(this);
-        this.newUser = this.newUser.bind(this);
         this.updatePatternDialog = this.updatePatternDialog.bind(this);
         this.updateData = this.updateData.bind(this);
         this.updateMultipleData = this.updateMultipleData.bind(this);
         this.rankreset = this.rankreset.bind(this);
         this.updateRankData = this.updateRankData.bind(this);
-        this.shareDlgClose = this.shareDlgClose.bind(this);
 
         this.state = {
             // userinfo
@@ -72,17 +67,13 @@ class PIUTable extends Component {
             musarcade: true,
             musshort: true,
             musfull: true,
-            muxremix: true,
+            musremix: true,
 
             ptidlist: [],
 
             // screen and dialog
-            loaded: false,
-            newuser: false,
-            changerank: false,
-            pattern: false,
             showrank: true,
-            showcheck: true,
+            showcheck: false,
 
             // category text
             category: {
@@ -108,111 +99,84 @@ class PIUTable extends Component {
             // current page
             steptype: "",
             steplv: 0,
+            songtype: 0,
 
             // update pt info
             updaterank: "",
             currentpt: 0,
-            isOver: false,
-            updatedlgTitle: "",
-            updatedlgType: 0,
-
-            // sharedlg
-            shareDlgShow: false,
-            shareDlgCont1: "",
-            shareDlgCont2: ""
+            isOver: false
         }
     }
 
-    newUser() {
-        this.setState({
-            newuser: !this.state.newuser,
-            userdlgTitle: txtPIU.newuserdiv[this.lang],
-            userdlgButton: txtPIU.newuserbtn[this.lang]
+    componentDidMount() {
+        this.loadFile(this.props.match.params);
+    }
+
+    loadFile(urlparam) {
+        const self = this;
+        axios.get(this.piuDataUrl+"/saved/"+urlparam.name+"/"+
+                urlparam.type+"/"+urlparam.lv+"/"+urlparam.date)
+            .then((res) => {
+                const json = res.data;
+
+                if(json.status === "ok") {
+                    const table = JSON.parse(json.msg);
+                    self.loadUserData(table.username, table.userlv);
+                    self.loadTable(table.lvdata);
+                    self.loadData(table.stat);
+                }
+                else if(json.status === "error") {
+
+                }
+            }
+        );
+
+        self.setState({
+            steptype: urlparam.type,
+            steplv: urlparam.lv
         });
     }
 
-    editUser() {
-        this.setState({
-            newuser: !this.state.newuser,
-            userdlgTitle: txtPIU.edituserdiv[this.lang],
-            userdlgButton: txtPIU.edituserbtn[this.lang]
-        });
-    }
-
-    newUserHandler(name, lv) {
+    loadUserData(name, lv) {
         this.setState({
             username: name,
-            userlv: lv,
-            loaded: true
+            userlv: lv
         });
     }
 
-    loadUser() {
-        // 파일 열기 대화상자를 열고 데이터를 가져옴
-        if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-            alert(txtPIU.loadwarn[this.lang]);
-        }
-
-        const self = this;
-        const fileopen = document.getElementById("fileopen");
-        //$("#fileopen").trigger("click");
-        fileopen.click();
-        fileopen.onchange = function(e) {
-            self.handleFileSelect(e.srcElement.files[0]);
-            // 데이터 열기
-            self.setState({
-                loaded: true
-            });
-        }
-    }
-
-    handleFileSelect(file) {
-        const self = this;
-        const fr = new FileReader();
-        fr.onload = function(e) {
-            const result = e.target.result;
-            self.callbackOpen(result);
-        };
-        fr.readAsText(file);
-    }
-    
-    callbackOpen(result) {
-        const str = result.split("\n");
-        
-        const userinfo = str[0].split(",");
-        
-        for(let i = 1; i < str.length; i++) {
-            const cur = str[i].split(",");
-            if(cur[0] != "")
-                this.state.userstat.set(cur[0], cur[1]);
-        }
-
+    loadTable(lvdata) {
         this.setState({
-            username: userinfo[0],
-            userlv: userinfo[1],
-            loaded: true
+            arrOV: lvdata.ov,
+            arrHI: lvdata.hi,
+            arrNH: lvdata.nh,
+            arrNR: lvdata.nr,
+            arrNE: lvdata.ne,
+            arrEZ: lvdata.ez,
+            arrBE: lvdata.be,
+            arrRD: lvdata.rd,
+            all: lvdata.ov.length+
+                lvdata.hi.length+
+                lvdata.nh.length+
+                lvdata.nr.length+
+                lvdata.ne.length+
+                lvdata.ez.length+
+                lvdata.be.length+
+                lvdata.rd.length
         });
     }
 
-    saveUser() {
-        let text = "";
-        text += this.state.username+","+this.state.userlv+"\n";
+    loadData(stat) {
+        const self = this;
+        const ptidlist = [];
+        const keys = Object.keys(stat);
+
+        keys.forEach(function(e) {
+            ptidlist.push(e);
+            self.state.userstat.set(e, stat[e]);
+            self.updateRecord(e);
+        });
         
-        const keys = this.state.userstat.keys();
-        for(let i = 0; i < this.state.userstat.size; i++) {
-            const ckey = keys.next();
-            if(ckey.value != "")
-                text += ckey.value + ","+this.state.userstat.get(ckey.value) + "\n";
-        }
-        
-        // 데이터를 새 파일(임시)에 쓰고 다운로드
-        const elem = document.createElement("a");
-        elem.setAttribute("href", "data:text/plain;charset=utf-8,"+encodeURIComponent(text));
-        elem.setAttribute("download", "piudata_"+this.state.username+"_"+this.unixTimeToText(new Date().getTime())+".csv");
-        elem.style.display = 'none';
-        document.body.appendChild(elem);
-        elem.click();
-        document.body.removeChild(elem);
+        this.updateRankData();
     }
 
     unixTimeToText(uxtime, onlyday = false) {
@@ -641,6 +605,7 @@ class PIUTable extends Component {
     }
 
     updateRecord(ptid) {
+        //console.log(ptid);
         const div = document.getElementById("cs"+ptid);
         const rankval = this.state.userstat.get(ptid.toString());
 
@@ -734,153 +699,6 @@ class PIUTable extends Component {
         });
     }
 
-    shareURL() {
-        const lv = this.state.steplv;
-        const type = this.state.steptype;
-        const sharedata = {};
-        sharedata.ov = this.state.arrOV;
-        sharedata.hi = this.state.arrHI;
-        sharedata.nh = this.state.arrNH;
-        sharedata.nr = this.state.arrNR;
-        sharedata.ne = this.state.arrNE;
-        sharedata.ez = this.state.arrEZ;
-        sharedata.be = this.state.arrBE;
-        sharedata.rd = this.state.arrRD;
-        
-        const clearstatus = {};
-        const keys = this.state.userstat.keys();
-        
-        let end = false;
-        while(!end) {
-            const itor = keys.next();
-
-            if(itor.value !== undefined) {
-                // 1. ptid 값이 들어있는지 확인
-                let has = false;
-
-                for(let i = 0; i < this.state.arrOV.length - 1; i++) {
-                    if(this.state.arrOV[i].ptid === parseInt(itor.value)) {
-                        has = true;
-                        break;
-                    }
-                }
-
-                if(!has) {
-                    for(let i = 0; i < this.state.arrHI.length - 1; i++) {
-                        if(this.state.arrHI[i].ptid === parseInt(itor.value)) {
-                            has = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(!has) {
-                    for(let i = 0; i < this.state.arrNH.length - 1; i++) {
-                        if(this.state.arrNH[i].ptid === parseInt(itor.value)) {
-                            has = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(!has) {
-                    for(let i = 0; i < this.state.arrNR.length - 1; i++) {
-                        if(this.state.arrNR[i].ptid === parseInt(itor.value)) {
-                            has = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(!has) {
-                    for(let i = 0; i < this.state.arrNE.length - 1; i++) {
-                        if(this.state.arrNE[i].ptid === parseInt(itor.value)) {
-                            has = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(!has) {
-                    for(let i = 0; i < this.state.arrEZ.length - 1; i++) {
-                        if(this.state.arrEZ[i].ptid === parseInt(itor.value)) {
-                            has = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(!has) {
-                    for(let i = 0; i < this.state.arrBE.length - 1; i++) {
-                        if(this.state.arrBE[i].ptid === parseInt(itor.value)) {
-                            has = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(!has) {
-                    for(let i = 0; i < this.state.arrRD.length - 1; i++) {
-                        if(this.state.arrRD[i].ptid === parseInt(itor.value)) {
-                            has = true;
-                            break;
-                        }
-                    }
-                }
-
-                if(has) {
-                    clearstatus[itor.value] = this.state.userstat.get(itor.value);
-                }
-            }
-            else {
-                end = true;
-            }
-        }
-
-        const obj = {};
-        obj.username = this.state.username;
-        obj.userlv = this.state.userlv;
-        obj.lv = lv;
-        obj.type = type;
-        obj.lvdata = sharedata;
-        obj.stat = clearstatus;
-
-        const json = JSON.stringify(obj);
-
-        axios.post('/d/save/'+this.state.username+"/"+
-                    this.state.steptype+"/"+this.state.steplv+"/"+
-                    this.unixTimeToText(new Date().getTime(), true),
-                    {
-                        json: json
-                    })
-            .then((res) => {
-                let message1 = "";
-                let message2 = "";
-                console.log(res.data);
-                const json = res.data;
-                if(json.status !== "error") {
-                    message1 = txtPIU.sharedlg.cont[this.lang];
-                    message2 = "https://piu.nira.one/"+json.msg;
-                }
-                else {
-                    message1 = txtPIU.sharedlg.error[this.lang];
-                    message2 = json.msg;
-                }
-
-                this.setState({
-                    shareDlgCont1: message1,
-                    shareDlgCont2: message2,
-                    shareDlgShow: true
-                })
-            });
-    }
-
-    shareDlgClose() {
-        this.setState({
-            shareDlgShow: false
-        });
-    }
-
     render() {
         const self = this;
 
@@ -902,86 +720,13 @@ class PIUTable extends Component {
                         <Card>
                             <CardHeader style={chback}>
                                 <h3>Pump It Up XX</h3>
-                                <p>{txtPIU.subtitle[self.lang]}</p>
+                                <p>{txtPIU.sharepage.subtitle[self.lang]}</p>
                             </CardHeader>
                             <CardBody>
                                 <Col xs="12" id="howto">
-                                    {txtPIU.howto1[self.lang]}<br/>
-                                    1. {txtPIU.howto2[self.lang]}<br/>
-                                    2. {txtPIU.howto3[self.lang]}<br/>
-                                    3. {txtPIU.howto4[self.lang]}<br/>
-                                    4. {txtPIU.howto5[self.lang]}
+                                    {txtPIU.sharepage.about1[self.lang]}<br/>
+                                    {txtPIU.sharepage.about2[self.lang]} <Link className="innerhref" to="https://piu.nira.one">piu.nira.one</Link>
                                 </Col>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-
-                <Row>
-                    <Col xs="12">
-                        <Card>
-                            <CardHeader style={chback}>
-                                <h3>{txtPIU.functitle[self.lang]}</h3>
-                            </CardHeader>
-                            <CardBody className="text-center btn-group">
-                                <Button onClick={() => self.newUser()}>
-                                    {txtPIU.newuser[self.lang]}
-                                </Button>
-
-                                <Button onClick={() => self.loadUser()}>
-                                    {txtPIU.load[self.lang]}
-                                </Button>
-                                <Button onClick={() => self.saveUser()}>
-                                    {txtPIU.save[self.lang]}
-                                </Button>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-                <Row style={{display: self.state.loaded ? "block" : "none"}}>
-                    <Col xs="12">
-                        <Card>
-                            <CardHeader id="seldiffSingletitle" style={chback}>
-                                <h3>{txtPIU.single[self.lang]}</h3>
-                            </CardHeader>
-                            <CardBody className="text-center" id="seldiffSingle">
-                                <Button onClick={() => self.getPatterns('s', '13')}>S13</Button>
-                                <Button onClick={() => self.getPatterns('s', '14')}>S14</Button>
-                                <Button onClick={() => self.getPatterns('s', '15')}>S15</Button>
-                                <Button onClick={() => self.getPatterns('s', '16')}>S16</Button>
-                                <Button onClick={() => self.getPatterns('s', '17')}>S17</Button>
-                                <Button onClick={() => self.getPatterns('s', '18')}>S18</Button>
-                                <Button onClick={() => self.getPatterns('s', '19')}>S19</Button>
-                                <Button onClick={() => self.getPatterns('s', '20')}>S20</Button>
-                                <Button onClick={() => self.getPatterns('s', '21')}>S21</Button>
-                                <Button onClick={() => self.getPatterns('s', '22')}>S22</Button>
-                                <Button onClick={() => self.getPatterns('s', '23')}>S23</Button>
-                                <Button onClick={() => self.getPatterns('s', '24')}>S24 over</Button>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-
-                <Row style={{display: self.state.loaded ? "block" : "none"}}>
-                    <Col xs="12">
-                        <Card>
-                            <CardHeader id="seldiffDoubletitle" style={chback}>
-                                <h3>{txtPIU.double[self.lang]}</h3>
-                            </CardHeader>
-                            <CardBody className="text-center" id="seldiffDouble">
-                                <Button onClick={() => self.getPatterns('d', '13')}>D13</Button>
-                                <Button onClick={() => self.getPatterns('d', '14')}>D14</Button>
-                                <Button onClick={() => self.getPatterns('d', '15')}>D15</Button>
-                                <Button onClick={() => self.getPatterns('d', '16')}>D16</Button>
-                                <Button onClick={() => self.getPatterns('d', '17')}>D17</Button>
-                                <Button onClick={() => self.getPatterns('d', '18')}>D18</Button>
-                                <Button onClick={() => self.getPatterns('d', '19')}>D19</Button>
-                                <Button onClick={() => self.getPatterns('d', '20')}>D20</Button>
-                                <Button onClick={() => self.getPatterns('d', '21')}>D21</Button>
-                                <Button onClick={() => self.getPatterns('d', '22')}>D22</Button>
-                                <Button onClick={() => self.getPatterns('d', '23')}>D23</Button>
-                                <Button onClick={() => self.getPatterns('d', '24')}>D24</Button>
-                                <Button onClick={() => self.getPatterns('d', '25')}>D25 over</Button>
                             </CardBody>
                         </Card>
                     </Col>
@@ -991,33 +736,11 @@ class PIUTable extends Component {
                     <Col xs="12">
                         <Card id="userinfo">
                             <CardHeader style={chback}>
-                                <h3>User Info and Options</h3>
+                                <h3>Options</h3>
                             </CardHeader>
                             <CardBody>
-                                <Row>
-                                    <Col xs="6" className="text-right">
-                                        User Name {self.state.username}
-                                    </Col>
-                                    <Col xs="6" className="text-left" id="username">
-                                    </Col>
-                                </Row>
-                                
-                                <Row>
-                                    <Col xs="6" className="text-right">
-                                        PIU XX Level {self.state.userlv}
-                                    </Col>
-                                    <Col xs="6" className="text-left" id="userlv">
-                                    </Col>
-                                </Row>
-
                                 <Row className="text-center">
-                                    <Col xs="12" className="text-center">
-                                        <Button onClick={() => self.editUser()}>
-                                            {txtPIU.edit[self.lang]}
-                                        </Button>
-                                        <Button onClick={() => self.updatePatternMultiple()}>
-                                            {txtPIU.updatecheckedbtn[self.lang]}
-                                        </Button>
+                                    <Col xs="12" className="btn-group text-center">
                                         <Button onClick={() => self.hideCheckbox()}>
                                             {txtPIU.hidechkbox[self.lang]}
                                         </Button>
@@ -1031,34 +754,7 @@ class PIUTable extends Component {
                     </Col>
                 </Row>
 
-                <Row style={{display: self.state.loaded ? "block" : "none"}}>
-                    <Col xs="12">
-                        <Card>
-                            <CardHeader style={chback}>
-                                <h3>{txtPIU.share[this.lang]}</h3>
-                            </CardHeader>
-                            <CardBody>
-                                <Row>
-                                    <Col xs="12">
-                                        {txtPIU.sharedesc[this.lang]}
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col xs="12" className="text-center btn-group">
-                                        <Button onClick={() => self.scrShot('targetTable', "piu_"+self.state.username+"_"+self.state.steptype+"_"+self.state.steplv+"_"+this.unixTimeToText(new Date().getTime())+".jpg")}>
-                                            {txtPIU.scrbtn[this.lang]}
-                                        </Button>
-                                        <Button onClick={() => self.shareURL()}>
-                                            {txtPIU.urlshare[this.lang]}
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-
-                <Row style={{display: self.state.loaded ? "block" : "none"}}>
+                <Row>
                     <Col xs="12">
                         <Card>
                             <CardHeader style={chback}>
@@ -1086,9 +782,7 @@ class PIUTable extends Component {
                     </Col>
                 </Row>
 
-                <Row
-                    style={{display: self.state.loaded ? "block" : "none"}}
-                    id="targetTable">
+                <Row id="targetTable">
                     <Col xs="12">
                         <Card>
                             <CardHeader className="text-center" style={chback}>
@@ -1260,33 +954,9 @@ class PIUTable extends Component {
                         </Card>
                     </Col>
                 </Row>
-                
-                <input id="fileopen" accept=".csv" type="file"
-                    name="fileopen" style={{display:"none"}} />
-
-                <UserDialog title={self.state.userdlgTitle}
-                    curname={self.state.username}
-                    curlv={self.state.userlv}
-                    button={self.state.userdlgButton}
-                    display={self.state.newuser}
-                    handler={self.newUserHandler}
-                    toggle={self.newUser} />
-                <PatternUpdateDialog title={self.state.updatedlgTitle}
-                    type={self.state.updatedlgType}
-                    button={txtPIU.update[self.lang]}
-                    handler={self.patternHandler}
-                    display={self.state.pattern}
-                    ptid={self.state.currentpt}
-                    updateData={self.updateData}
-                    updateMultipleData={self.updateMultipleData}
-                    updatePatternDialog={self.updatePatternDialog} />
-                <ShareDialog display={self.state.shareDlgShow}
-                    content1={self.state.shareDlgCont1}
-                    content2={self.state.shareDlgCont2}
-                    close={self.shareDlgClose} />
             </Container>
         )
     }
 }
 
-export default PIUTable;
+export default SavedTable;

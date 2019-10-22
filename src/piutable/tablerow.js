@@ -2,7 +2,7 @@ import React, {Component, Fragment} from 'react';
 
 import { Col } from 'reactstrap';
 
-const piuimg = "https://piu.gitadora.info/jacket/";
+const piuimg = "https://piu.nira.one/jacket/";
 
 class PIUTableObj extends Component {
     constructor(props) {
