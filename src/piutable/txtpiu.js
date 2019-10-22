@@ -64,15 +64,10 @@ const txtPIU = {
         "ko":"파일 저장",
         "en":"Save File"
     },
-    single: {
-        "jp":"シングル",
-        "ko":"싱글 패턴",
-        "en":"Single Patterns"
-    },
-    double: {
-        "jp":"ダブル",
-        "ko":"더블 패턴",
-        "en":"Double Patterns"
+    patternsel: {
+        "jp":"譜面選択",
+        "ko":"패턴 선택",
+        "en":"Patterns"
     },
     newuserdiv: {
         "jp":"新規ユーザー追加：ユーザーネームには半角英文字と数字が使えます",
@@ -165,7 +160,7 @@ const txtPIU = {
     songtype: {
         "jp":"表示する曲のタイプを選択",
         "ko":"표시할 음악 타입 선택",
-        "en":"Select type of song"
+        "en":"Select type of music to show on the list"
     },
     diff: {
         random: {

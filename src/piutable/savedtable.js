@@ -131,6 +131,7 @@ class SavedTable extends Component {
             }
         );
 
+        this.categoryUpdater(urlparam.type, urlparam.lv);
         self.setState({
             steptype: urlparam.type,
             steplv: urlparam.lv
@@ -192,7 +193,7 @@ class SavedTable extends Component {
         return time;
     }
 
-    getPatterns(type, level) {
+    setCategory(type, level) {
         const cat = {};
         let steptype = "";
         let steplv = "";
@@ -201,84 +202,61 @@ class SavedTable extends Component {
         // 데이터는 다 저장되어 있음
         this.resetTable();
 
-        if(type == "d" && level == "25") {
-            axios.get(this.piuDataUrl+"/over/"+type)
-            .then((res) => {
-                this.updateTable(res.data, true);
-                steptype = "Double";
-                steplv = level+" Over";
-                cat.catez = "25 E";
-                cat.catne = "25 N";
-                cat.catnr = "25 H";
-                cat.catnh = parseInt(level)+1;
-                cat.cathi = parseInt(level)+2;
-                cat.catov = parseInt(level)+3;
+        if(type == "Double" && level == "25") {
+            cat.catez = "25 E";
+            cat.catne = "25 N";
+            cat.catnr = "25 H";
+            cat.catnh = parseInt(level)+1;
+            cat.cathi = parseInt(level)+2;
+            cat.catov = parseInt(level)+3;
 
-                if(this.cntov === 0) cat.catov = "";
-                if(this.cnthi === 0) cat.cathi = "";
-                if(this.cntnh === 0) cat.catnh = "";
-                if(this.cntnr === 0) cat.catnr = "";
-                if(this.cntne === 0) cat.catne = "";
-                if(this.cntez === 0) cat.catez = "";
-                if(this.cntbe === 0) cat.catbe = "";
-                if(this.cntrd === 0) cat.catrd = "";
-
-                this.categoryUpdater(cat, steptype, steplv);
-            });
+            if(this.cntov === 0) cat.catov = "";
+            if(this.cnthi === 0) cat.cathi = "";
+            if(this.cntnh === 0) cat.catnh = "";
+            if(this.cntnr === 0) cat.catnr = "";
+            if(this.cntne === 0) cat.catne = "";
+            if(this.cntez === 0) cat.catez = "";
+            if(this.cntbe === 0) cat.catbe = "";
+            if(this.cntrd === 0) cat.catrd = "";
         }
-        else if(type == 's' && level == '24') {
-            axios.get(this.piuDataUrl+"/over/"+type)
-            .then((res) => {
-                this.updateTable(res.data, true);
-                steptype = "Single";
-                steplv = level+" Over";
-                cat.catnh = parseInt(level);
-                cat.cathi = parseInt(level)+1;
-                cat.catov = parseInt(level)+2;
+        else if(type == 'Single' && level == '24') {
+            cat.catnh = parseInt(level);
+            cat.cathi = parseInt(level)+1;
+            cat.catov = parseInt(level)+2;
 
-                if(this.cntov === 0) cat.catov = "";
-                if(this.cnthi === 0) cat.cathi = "";
-                if(this.cntnh === 0) cat.catnh = "";
-                if(this.cntnr === 0) cat.catnr = "";
-                if(this.cntne === 0) cat.catne = "";
-                if(this.cntez === 0) cat.catez = "";
-                if(this.cntbe === 0) cat.catbe = "";
-                if(this.cntrd === 0) cat.catrd = "";
-
-                this.categoryUpdater(cat, steptype, steplv);
-            });
+            if(this.cntov === 0) cat.catov = "";
+            if(this.cnthi === 0) cat.cathi = "";
+            if(this.cntnh === 0) cat.catnh = "";
+            if(this.cntnr === 0) cat.catnr = "";
+            if(this.cntne === 0) cat.catne = "";
+            if(this.cntez === 0) cat.catez = "";
+            if(this.cntbe === 0) cat.catbe = "";
+            if(this.cntrd === 0) cat.catrd = "";
         }
         else {
-            axios.get(this.piuDataUrl+"/"+type+"/"+level)
-            .then((res) => {
-                this.updateTable(res.data, false);
-                if(type == "s") steptype = "Single";
-                if(type == "d") steptype = "Double";
-                steplv = level;
-                cat.catrd = txtPIU.diff.random[this.lang];
-                cat.catbe = (parseInt(level)-1)+txtPIU.diff.below[this.lang];
-                cat.catez = txtPIU.diff.easy[this.lang];
-                cat.catne = txtPIU.diff.ne[this.lang];
-                cat.catnr = txtPIU.diff.normal[this.lang];
-                cat.catnh = txtPIU.diff.nh[this.lang];
-                cat.cathi = txtPIU.diff.high[this.lang];
-                cat.catov = (parseInt(level)+1)+txtPIU.diff.over[this.lang];
+            cat.catrd = txtPIU.diff.random[this.lang];
+            cat.catbe = (parseInt(level)-1)+txtPIU.diff.below[this.lang];
+            cat.catez = txtPIU.diff.easy[this.lang];
+            cat.catne = txtPIU.diff.ne[this.lang];
+            cat.catnr = txtPIU.diff.normal[this.lang];
+            cat.catnh = txtPIU.diff.nh[this.lang];
+            cat.cathi = txtPIU.diff.high[this.lang];
+            cat.catov = (parseInt(level)+1)+txtPIU.diff.over[this.lang];
 
-                if(this.cntov === 0) cat.catov = "";
-                if(this.cnthi === 0) cat.cathi = "";
-                if(this.cntnh === 0) cat.catnh = "";
-                if(this.cntnr === 0) cat.catnr = "";
-                if(this.cntne === 0) cat.catne = "";
-                if(this.cntez === 0) cat.catez = "";
-                if(this.cntbe === 0) cat.catbe = "";
-                if(this.cntrd === 0) cat.catrd = "";
-
-                this.categoryUpdater(cat, steptype, steplv);
-            });
+            if(this.cntov === 0) cat.catov = "";
+            if(this.cnthi === 0) cat.cathi = "";
+            if(this.cntnh === 0) cat.catnh = "";
+            if(this.cntnr === 0) cat.catnr = "";
+            if(this.cntne === 0) cat.catne = "";
+            if(this.cntez === 0) cat.catez = "";
+            if(this.cntbe === 0) cat.catbe = "";
+            if(this.cntrd === 0) cat.catrd = "";
         }
+
+        this.categoryUpdater(cat);
     }
 
-    categoryUpdater(cat, steptype, steplv) {
+    categoryUpdater(cat) {
         this.setState({
             catOV: cat.catov,
             catHD: cat.cathi,
@@ -287,9 +265,7 @@ class SavedTable extends Component {
             catNE: cat.catne,
             catEZ: cat.catez,
             catBE: cat.catbe,
-            catRD: cat.catrd,
-            steptype: steptype,
-            steplv: steplv
+            catRD: cat.catrd
         });
     }
 
@@ -810,6 +786,7 @@ class SavedTable extends Component {
                                         <Row id="lvOver">
                                             <PIUTableObj list={self.state.arrOV}
                                                     key="ov"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -829,6 +806,7 @@ class SavedTable extends Component {
                                         <Row id="lvHigh">
                                             <PIUTableObj list={self.state.arrHI}
                                                     key="hi"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -848,6 +826,7 @@ class SavedTable extends Component {
                                         <Row id="lvNH">
                                             <PIUTableObj list={self.state.arrNH}
                                                     key="nh"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -867,6 +846,7 @@ class SavedTable extends Component {
                                         <Row id="lvNormal">
                                             <PIUTableObj list={self.state.arrNR}
                                                     key="nr"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -886,6 +866,7 @@ class SavedTable extends Component {
                                         <Row id="lvNE">
                                             <PIUTableObj list={self.state.arrNE}
                                                     key="ne"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -905,6 +886,7 @@ class SavedTable extends Component {
                                         <Row id="lvEasy">
                                             <PIUTableObj list={self.state.arrEZ}
                                                     key="ez"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -924,6 +906,7 @@ class SavedTable extends Component {
                                         <Row id="lvBelow">
                                             <PIUTableObj list={self.state.arrBE}
                                                     key="be"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -943,6 +926,7 @@ class SavedTable extends Component {
                                         <Row id="lvRandom">
                                             <PIUTableObj list={self.state.arrRD}
                                                     key="rd"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}

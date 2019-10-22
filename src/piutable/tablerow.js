@@ -17,6 +17,8 @@ class PIUTableObj extends Component {
             <Fragment>
                 {
                     this.props.list.map((d, i) => {
+                        const title = (prop.lang === "ko") ? d.titleko : d.titleen;
+
                         return (
                             <Fragment>
                                 <Col key={prop.key+i} xs="3" sm="2" className="div-pattern" style={{padding:"5px"}} key={"song"+i}>
@@ -32,7 +34,7 @@ class PIUTableObj extends Component {
                                         backgroundRepeat: "no-repeat",
                                         backgroundSize: "100%"
                                     }}
-                                    onClick={() => self.props.updatePatternDialog(d.ptid, d.titleko)}>
+                                    onClick={() => self.props.updatePatternDialog(d.ptid, title)}>
                                         {
                                             // if steptype 1 or 2
                                             (function() {
@@ -67,8 +69,8 @@ class PIUTableObj extends Component {
                                             style={{width: "100%", visibility: "hidden"}} />
                                     </div>
                                     <a className="innerhref" href="#no_div"
-                                        onClick={() => self.props.updatePatternDialog(d.ptid, d.titleko)}>
-                                        <b>{d.titleko}</b>
+                                        onClick={() => self.props.updatePatternDialog(d.ptid, title)}>
+                                        <b>{title}</b>
                                     </a>
                                 </Col>
                             </Fragment>

@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Link} from 'react-router-dom';
 import axios from 'axios';
 import txtPIU from './txtpiu';
 import './piu-custom.css';
@@ -880,6 +881,11 @@ class PIUTable extends Component {
             shareDlgShow: false
         });
     }
+    
+    langChange(type) {
+        document.cookie = "lang="+type+"; path=/";
+        window.location.reload();
+    }
 
     render() {
         const self = this;
@@ -901,17 +907,30 @@ class PIUTable extends Component {
                     <Col xs="12">
                         <Card>
                             <CardHeader style={chback}>
-                                <h3>Pump It Up XX</h3>
+                                <h3>Pump It Up</h3>
                                 <p>{txtPIU.subtitle[self.lang]}</p>
                             </CardHeader>
                             <CardBody>
-                                <Col xs="12" id="howto">
-                                    {txtPIU.howto1[self.lang]}<br/>
-                                    1. {txtPIU.howto2[self.lang]}<br/>
-                                    2. {txtPIU.howto3[self.lang]}<br/>
-                                    3. {txtPIU.howto4[self.lang]}<br/>
-                                    4. {txtPIU.howto5[self.lang]}
-                                </Col>
+                                <Row>
+                                    <Col xs="12">
+                                        Language Select:&nbsp;
+                                        <Link className="innerhref" onClick={() => this.langChange('ko')}>한국어</Link>&nbsp;
+                                        <Link className="innerhref" onClick={() => this.langChange('jp')}>日本語</Link>&nbsp;
+                                        <Link className="innerhref" onClick={() => this.langChange('en')}>English</Link>
+                                        <br/>
+                                        Unsaved data will be lost
+                                    </Col>
+                                </Row>
+                                <hr/>
+                                <Row>
+                                    <Col xs="12" id="howto">
+                                        {txtPIU.howto1[self.lang]}<br/>
+                                        1. {txtPIU.howto2[self.lang]}<br/>
+                                        2. {txtPIU.howto3[self.lang]}<br/>
+                                        3. {txtPIU.howto4[self.lang]}<br/>
+                                        4. {txtPIU.howto5[self.lang]}
+                                    </Col>
+                                </Row>
                             </CardBody>
                         </Card>
                     </Col>
@@ -942,46 +961,42 @@ class PIUTable extends Component {
                     <Col xs="12">
                         <Card>
                             <CardHeader id="seldiffSingletitle" style={chback}>
-                                <h3>{txtPIU.single[self.lang]}</h3>
+                                <h3>{txtPIU.patternsel[self.lang]}</h3>
                             </CardHeader>
                             <CardBody className="text-center" id="seldiffSingle">
-                                <Button onClick={() => self.getPatterns('s', '13')}>S13</Button>
-                                <Button onClick={() => self.getPatterns('s', '14')}>S14</Button>
-                                <Button onClick={() => self.getPatterns('s', '15')}>S15</Button>
-                                <Button onClick={() => self.getPatterns('s', '16')}>S16</Button>
-                                <Button onClick={() => self.getPatterns('s', '17')}>S17</Button>
-                                <Button onClick={() => self.getPatterns('s', '18')}>S18</Button>
-                                <Button onClick={() => self.getPatterns('s', '19')}>S19</Button>
-                                <Button onClick={() => self.getPatterns('s', '20')}>S20</Button>
-                                <Button onClick={() => self.getPatterns('s', '21')}>S21</Button>
-                                <Button onClick={() => self.getPatterns('s', '22')}>S22</Button>
-                                <Button onClick={() => self.getPatterns('s', '23')}>S23</Button>
-                                <Button onClick={() => self.getPatterns('s', '24')}>S24 over</Button>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-
-                <Row style={{display: self.state.loaded ? "block" : "none"}}>
-                    <Col xs="12">
-                        <Card>
-                            <CardHeader id="seldiffDoubletitle" style={chback}>
-                                <h3>{txtPIU.double[self.lang]}</h3>
-                            </CardHeader>
-                            <CardBody className="text-center" id="seldiffDouble">
-                                <Button onClick={() => self.getPatterns('d', '13')}>D13</Button>
-                                <Button onClick={() => self.getPatterns('d', '14')}>D14</Button>
-                                <Button onClick={() => self.getPatterns('d', '15')}>D15</Button>
-                                <Button onClick={() => self.getPatterns('d', '16')}>D16</Button>
-                                <Button onClick={() => self.getPatterns('d', '17')}>D17</Button>
-                                <Button onClick={() => self.getPatterns('d', '18')}>D18</Button>
-                                <Button onClick={() => self.getPatterns('d', '19')}>D19</Button>
-                                <Button onClick={() => self.getPatterns('d', '20')}>D20</Button>
-                                <Button onClick={() => self.getPatterns('d', '21')}>D21</Button>
-                                <Button onClick={() => self.getPatterns('d', '22')}>D22</Button>
-                                <Button onClick={() => self.getPatterns('d', '23')}>D23</Button>
-                                <Button onClick={() => self.getPatterns('d', '24')}>D24</Button>
-                                <Button onClick={() => self.getPatterns('d', '25')}>D25 over</Button>
+                                <Row>
+                                    <Col xs="12">
+                                        <Button onClick={() => self.getPatterns('s', '13')}>S13</Button>
+                                        <Button onClick={() => self.getPatterns('s', '14')}>S14</Button>
+                                        <Button onClick={() => self.getPatterns('s', '15')}>S15</Button>
+                                        <Button onClick={() => self.getPatterns('s', '16')}>S16</Button>
+                                        <Button onClick={() => self.getPatterns('s', '17')}>S17</Button>
+                                        <Button onClick={() => self.getPatterns('s', '18')}>S18</Button>
+                                        <Button onClick={() => self.getPatterns('s', '19')}>S19</Button>
+                                        <Button onClick={() => self.getPatterns('s', '20')}>S20</Button>
+                                        <Button onClick={() => self.getPatterns('s', '21')}>S21</Button>
+                                        <Button onClick={() => self.getPatterns('s', '22')}>S22</Button>
+                                        <Button onClick={() => self.getPatterns('s', '23')}>S23</Button>
+                                        <Button onClick={() => self.getPatterns('s', '24')}>S24 over</Button>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col xs="12">
+                                        <Button onClick={() => self.getPatterns('d', '13')}>D13</Button>
+                                        <Button onClick={() => self.getPatterns('d', '14')}>D14</Button>
+                                        <Button onClick={() => self.getPatterns('d', '15')}>D15</Button>
+                                        <Button onClick={() => self.getPatterns('d', '16')}>D16</Button>
+                                        <Button onClick={() => self.getPatterns('d', '17')}>D17</Button>
+                                        <Button onClick={() => self.getPatterns('d', '18')}>D18</Button>
+                                        <Button onClick={() => self.getPatterns('d', '19')}>D19</Button>
+                                        <Button onClick={() => self.getPatterns('d', '20')}>D20</Button>
+                                        <Button onClick={() => self.getPatterns('d', '21')}>D21</Button>
+                                        <Button onClick={() => self.getPatterns('d', '22')}>D22</Button>
+                                        <Button onClick={() => self.getPatterns('d', '23')}>D23</Button>
+                                        <Button onClick={() => self.getPatterns('d', '24')}>D24</Button>
+                                        <Button onClick={() => self.getPatterns('d', '25')}>D25 over</Button>
+                                    </Col>
+                                </Row>
                             </CardBody>
                         </Card>
                     </Col>
@@ -1004,20 +1019,22 @@ class PIUTable extends Component {
                                 
                                 <Row>
                                     <Col xs="6" className="text-right">
-                                        PIU XX Level {self.state.userlv}
+                                        PIU Level {self.state.userlv}
                                     </Col>
                                     <Col xs="6" className="text-left" id="userlv">
                                     </Col>
                                 </Row>
 
                                 <Row className="text-center">
-                                    <Col xs="12" className="text-center">
+                                    <Col xs="12" className="text-center btn-group">
                                         <Button onClick={() => self.editUser()}>
                                             {txtPIU.edit[self.lang]}
                                         </Button>
                                         <Button onClick={() => self.updatePatternMultiple()}>
                                             {txtPIU.updatecheckedbtn[self.lang]}
                                         </Button>
+                                    </Col>
+                                    <Col xs="12" className="text-center btn-group">
                                         <Button onClick={() => self.hideCheckbox()}>
                                             {txtPIU.hidechkbox[self.lang]}
                                         </Button>
@@ -1116,6 +1133,7 @@ class PIUTable extends Component {
                                         <Row id="lvOver">
                                             <PIUTableObj list={self.state.arrOV}
                                                     key="ov"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -1135,6 +1153,7 @@ class PIUTable extends Component {
                                         <Row id="lvHigh">
                                             <PIUTableObj list={self.state.arrHI}
                                                     key="hi"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -1154,6 +1173,7 @@ class PIUTable extends Component {
                                         <Row id="lvNH">
                                             <PIUTableObj list={self.state.arrNH}
                                                     key="nh"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -1173,6 +1193,7 @@ class PIUTable extends Component {
                                         <Row id="lvNormal">
                                             <PIUTableObj list={self.state.arrNR}
                                                     key="nr"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -1192,6 +1213,7 @@ class PIUTable extends Component {
                                         <Row id="lvNE">
                                             <PIUTableObj list={self.state.arrNE}
                                                     key="ne"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -1211,6 +1233,7 @@ class PIUTable extends Component {
                                         <Row id="lvEasy">
                                             <PIUTableObj list={self.state.arrEZ}
                                                     key="ez"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -1230,6 +1253,7 @@ class PIUTable extends Component {
                                         <Row id="lvBelow">
                                             <PIUTableObj list={self.state.arrBE}
                                                     key="be"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
@@ -1249,6 +1273,7 @@ class PIUTable extends Component {
                                         <Row id="lvRandom">
                                             <PIUTableObj list={self.state.arrRD}
                                                     key="rd"
+                                                    lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
                                                     pattern={self.state.pattern}
