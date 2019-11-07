@@ -21,7 +21,7 @@ class PIUTableObj extends Component {
 
                         return (
                             <Fragment>
-                                <Col key={prop.key+i} xs="3" sm="2" className="div-pattern" style={{padding:"5px"}} key={"song"+i}>
+                                <Col key={prop.key+i} xs="3" sm="2" className="div-pattern" key={"song"+i}>
                                     <input style={{transform: "scale(2)", left: "48%",
                                             display: self.props.showcheck ? "block":"none"}}
                                         type="checkbox" id="ptnsel" value={d.ptid} />
@@ -55,7 +55,7 @@ class PIUTableObj extends Component {
                                                             src={process.env.PUBLIC_URL+"/img/"+steptypeImg+".png"} />
                                                     </div>
                                                 )
-                                            })
+                                            })()
                                         }
                                         <div className="rank" id={"cs"+d.ptid} style={{height: "0px"}}>
                                             <img style={{width: "60%",

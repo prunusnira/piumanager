@@ -4,18 +4,14 @@ const db = require('./dbconn');
 const fs = require('fs');
 const commonval = require('./commondata.js');
 const glob = require('glob');
+const cors = require('cors');
 
 const app = express();
 autostart();
 
 app.use(express.static(path.join(__dirname, '../build')));
 app.use(express.json());
-
-app.all('/*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    next();
-});
+app.use(cors());
 
 app.get('/d/over/:type', function(req, res) {
     // 난이도 별 데이터 가져오기
@@ -35,6 +31,13 @@ app.get('/d/:type/:lv', function(req, res) {
             res.send(data);
         }
         else res.send("nodata");
+    });
+});
+
+app.post('/d/log', function(req, res) {
+    db.UserLog(req.body.name, req.body.type)
+    .then(function(data) {
+        res.sendStatus(200);
     });
 });
 

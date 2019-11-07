@@ -124,6 +124,13 @@ class PIUTable extends Component {
         }
     }
 
+    userLog(type) {
+        axios.post(this.piuDataUrl+'/log', {
+            name: this.state.username,
+            type: type
+        });
+    }
+
     newUser() {
         this.setState({
             newuser: !this.state.newuser,
@@ -145,6 +152,8 @@ class PIUTable extends Component {
             username: name,
             userlv: lv,
             loaded: true
+        }, function(e) {
+            this.userLog("new");
         });
     }
 
@@ -192,6 +201,8 @@ class PIUTable extends Component {
             username: userinfo[0],
             userlv: userinfo[1],
             loaded: true
+        }, function(e) {
+            this.userLog("load");
         });
     }
 
@@ -243,7 +254,7 @@ class PIUTable extends Component {
             .then((res) => {
                 this.updateTable(res.data, true);
                 steptype = "Double";
-                steplv = level+" Over";
+                steplv = level+"+";
                 cat.catez = "25 E";
                 cat.catne = "25 N";
                 cat.catnr = "25 H";
@@ -268,7 +279,7 @@ class PIUTable extends Component {
             .then((res) => {
                 this.updateTable(res.data, true);
                 steptype = "Single";
-                steplv = level+" Over";
+                steplv = level+"+";
                 cat.catnh = parseInt(level);
                 cat.cathi = parseInt(level)+1;
                 cat.catov = parseInt(level)+2;
@@ -589,8 +600,8 @@ class PIUTable extends Component {
                     "S: "+st.ranks+" | "+
                     "A: "+st.ranka+" | "+
                     "BCD: "+st.rankbcd,
-            userrank2: "A: "+st.rankao+" (Break Off) | "+
-                    "BCD: "+st.rankbcdo+" (Break Off) | "+
+            userrank2: "A: "+st.rankao+" (Off) | "+
+                    "BCD: "+st.rankbcdo+" (Off) | "+
                     "F: "+st.rankf+" | "+
                     "No Play: "+(st.all-st.ranksss-st.rankss-st.ranks-st.ranka-st.rankao-st.rankbcd-st.rankbcdo-st.rankf)
         });
@@ -658,9 +669,12 @@ class PIUTable extends Component {
             case 8: rank = "bcdon"; break;
         }
 
+        let display = "block";
+        if(!this.props.showrank) display = "none"
+
         div.innerHTML = "\
-            <img style='width: 60%; position: 'absolute';\
-                right: '0px' src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
+            <img style='width: 60%; position: absolute; right: 0px;' \
+                src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
     }
 
     hideRank() {
@@ -907,18 +921,19 @@ class PIUTable extends Component {
                     <Col xs="12">
                         <Card>
                             <CardHeader style={chback}>
-                                <h3>Pump It Up</h3>
-                                <p>{txtPIU.subtitle[self.lang]}</p>
+                                <span style={{fontSize:"150%"}}>Pump It Up</span>
+                                &nbsp;
+                                <span>{txtPIU.subtitle[self.lang]}</span>
                             </CardHeader>
                             <CardBody>
                                 <Row>
-                                    <Col xs="12">
+                                    <Col xs="12" className="text-right">
                                         Language Select:&nbsp;
                                         <Link className="innerhref" onClick={() => this.langChange('ko')}>한국어</Link>&nbsp;
                                         <Link className="innerhref" onClick={() => this.langChange('jp')}>日本語</Link>&nbsp;
                                         <Link className="innerhref" onClick={() => this.langChange('en')}>English</Link>
                                         <br/>
-                                        Unsaved data will be lost
+                                        <b><span style={{fontSize:"80%"}}>(Unsaved data will be lost)</span></b>
                                     </Col>
                                 </Row>
                                 <hr/>
@@ -940,7 +955,7 @@ class PIUTable extends Component {
                     <Col xs="12">
                         <Card>
                             <CardHeader style={chback}>
-                                <h3>{txtPIU.functitle[self.lang]}</h3>
+                                <h4>{txtPIU.functitle[self.lang]}</h4>
                             </CardHeader>
                             <CardBody className="text-center btn-group">
                                 <Button onClick={() => self.newUser()}>
@@ -965,36 +980,44 @@ class PIUTable extends Component {
                             </CardHeader>
                             <CardBody className="text-center" id="seldiffSingle">
                                 <Row>
-                                    <Col xs="12">
-                                        <Button onClick={() => self.getPatterns('s', '13')}>S13</Button>
-                                        <Button onClick={() => self.getPatterns('s', '14')}>S14</Button>
-                                        <Button onClick={() => self.getPatterns('s', '15')}>S15</Button>
-                                        <Button onClick={() => self.getPatterns('s', '16')}>S16</Button>
-                                        <Button onClick={() => self.getPatterns('s', '17')}>S17</Button>
-                                        <Button onClick={() => self.getPatterns('s', '18')}>S18</Button>
-                                        <Button onClick={() => self.getPatterns('s', '19')}>S19</Button>
-                                        <Button onClick={() => self.getPatterns('s', '20')}>S20</Button>
-                                        <Button onClick={() => self.getPatterns('s', '21')}>S21</Button>
-                                        <Button onClick={() => self.getPatterns('s', '22')}>S22</Button>
-                                        <Button onClick={() => self.getPatterns('s', '23')}>S23</Button>
-                                        <Button onClick={() => self.getPatterns('s', '24')}>S24 over</Button>
+                                    <Col xs="6" className="text-center">
+                                        SINGLE<br/>
+                                        <select className="form-control"
+                                            onChange={(e) => self.getPatterns('s', e.target.value)}>
+                                            <option value="12">SELECT</option>
+                                            <option value="13">13</option>
+                                            <option value="14">14</option>
+                                            <option value="15">15</option>
+                                            <option value="16">16</option>
+                                            <option value="17">17</option>
+                                            <option value="18">18</option>
+                                            <option value="19">19</option>
+                                            <option value="20">20</option>
+                                            <option value="21">21</option>
+                                            <option value="22">22</option>
+                                            <option value="23">23</option>
+                                            <option value="24">24+</option>
+                                        </select>
                                     </Col>
-                                </Row>
-                                <Row>
-                                    <Col xs="12">
-                                        <Button onClick={() => self.getPatterns('d', '13')}>D13</Button>
-                                        <Button onClick={() => self.getPatterns('d', '14')}>D14</Button>
-                                        <Button onClick={() => self.getPatterns('d', '15')}>D15</Button>
-                                        <Button onClick={() => self.getPatterns('d', '16')}>D16</Button>
-                                        <Button onClick={() => self.getPatterns('d', '17')}>D17</Button>
-                                        <Button onClick={() => self.getPatterns('d', '18')}>D18</Button>
-                                        <Button onClick={() => self.getPatterns('d', '19')}>D19</Button>
-                                        <Button onClick={() => self.getPatterns('d', '20')}>D20</Button>
-                                        <Button onClick={() => self.getPatterns('d', '21')}>D21</Button>
-                                        <Button onClick={() => self.getPatterns('d', '22')}>D22</Button>
-                                        <Button onClick={() => self.getPatterns('d', '23')}>D23</Button>
-                                        <Button onClick={() => self.getPatterns('d', '24')}>D24</Button>
-                                        <Button onClick={() => self.getPatterns('d', '25')}>D25 over</Button>
+                                    <Col xs="6" className="text-center">
+                                        DOUBLE<br/>
+                                        <select className="form-control"
+                                            onChange={(e) => self.getPatterns('d', e.target.value)}>
+                                            <option value="12">SELECT</option>
+                                            <option value="13">13</option>
+                                            <option value="14">14</option>
+                                            <option value="15">15</option>
+                                            <option value="16">16</option>
+                                            <option value="17">17</option>
+                                            <option value="18">18</option>
+                                            <option value="19">19</option>
+                                            <option value="20">20</option>
+                                            <option value="21">21</option>
+                                            <option value="22">22</option>
+                                            <option value="23">23</option>
+                                            <option value="24">24</option>
+                                            <option value="25">25+</option>
+                                        </select>
                                     </Col>
                                 </Row>
                             </CardBody>
@@ -1006,25 +1029,9 @@ class PIUTable extends Component {
                     <Col xs="12">
                         <Card id="userinfo">
                             <CardHeader style={chback}>
-                                <h3>User Info and Options</h3>
+                                <h4>{txtPIU.menu[this.lang]}</h4>
                             </CardHeader>
                             <CardBody>
-                                <Row>
-                                    <Col xs="6" className="text-right">
-                                        User Name {self.state.username}
-                                    </Col>
-                                    <Col xs="6" className="text-left" id="username">
-                                    </Col>
-                                </Row>
-                                
-                                <Row>
-                                    <Col xs="6" className="text-right">
-                                        PIU Level {self.state.userlv}
-                                    </Col>
-                                    <Col xs="6" className="text-left" id="userlv">
-                                    </Col>
-                                </Row>
-
                                 <Row className="text-center">
                                     <Col xs="12" className="text-center btn-group">
                                         <Button onClick={() => self.editUser()}>
@@ -1042,25 +1049,6 @@ class PIUTable extends Component {
                                             {txtPIU.hiderank[self.lang]}
                                         </Button>
                                     </Col>
-                                </Row>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-
-                <Row style={{display: self.state.loaded ? "block" : "none"}}>
-                    <Col xs="12">
-                        <Card>
-                            <CardHeader style={chback}>
-                                <h3>{txtPIU.share[this.lang]}</h3>
-                            </CardHeader>
-                            <CardBody>
-                                <Row>
-                                    <Col xs="12">
-                                        {txtPIU.sharedesc[this.lang]}
-                                    </Col>
-                                </Row>
-                                <Row>
                                     <Col xs="12" className="text-center btn-group">
                                         <Button onClick={() => self.scrShot('targetTable', "piu_"+self.state.username+"_"+self.state.steptype+"_"+self.state.steplv+"_"+this.unixTimeToText(new Date().getTime())+".jpg")}>
                                             {txtPIU.scrbtn[this.lang]}
@@ -1070,34 +1058,31 @@ class PIUTable extends Component {
                                         </Button>
                                     </Col>
                                 </Row>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-
-                <Row style={{display: self.state.loaded ? "block" : "none"}}>
-                    <Col xs="12">
-                        <Card>
-                            <CardHeader style={chback}>
-                                <h3>{txtPIU.songtype[self.lang]}</h3>
-                            </CardHeader>
-                            <CardBody className="text-center">
-                                <input id="musarcade" type="checkbox" value="musarcade"
-                                    onChange={() => self.handleMusicType(0)}
-                                    checked={self.state.musarcade} />
-                                <label htmlFor="musarcade">Arcade</label>
-                                <input id="musshort" type="checkbox" value="musshort"
-                                    onChange={() => self.handleMusicType(1)}
-                                    checked={self.state.musshort} />
-                                <label htmlFor="musshort">Shortcut</label>
-                                <input id="musfull" type="checkbox" value="musfull"
-                                    onChange={() => self.handleMusicType(2)}
-                                    checked={self.state.musfull} />
-                                <label htmlFor="musfull">Fullsong</label>
-                                <input id="musremix" type="checkbox" value="musremix"
-                                    onChange={() => self.handleMusicType(3)}
-                                    checked={self.state.musremix} />
-                                <label htmlFor="musremix">Remix</label>
+                                <Row>
+                                    <Col xs="12" className="text-center">
+                                        <h5>{txtPIU.songtype[self.lang]}</h5>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col xs="12" className="text-center">
+                                        <input id="musarcade" type="checkbox" value="musarcade"
+                                            onChange={() => self.handleMusicType(0)}
+                                            checked={self.state.musarcade} />
+                                        <label htmlFor="musarcade">Arcade</label>
+                                        <input id="musshort" type="checkbox" value="musshort"
+                                            onChange={() => self.handleMusicType(1)}
+                                            checked={self.state.musshort} />
+                                        <label htmlFor="musshort">Shortcut</label>
+                                        <input id="musfull" type="checkbox" value="musfull"
+                                            onChange={() => self.handleMusicType(2)}
+                                            checked={self.state.musfull} />
+                                        <label htmlFor="musfull">Fullsong</label>
+                                        <input id="musremix" type="checkbox" value="musremix"
+                                            onChange={() => self.handleMusicType(3)}
+                                            checked={self.state.musremix} />
+                                        <label htmlFor="musremix">Remix</label>
+                                    </Col>
+                                </Row>
                             </CardBody>
                         </Card>
                     </Col>
@@ -1108,20 +1093,24 @@ class PIUTable extends Component {
                     id="targetTable">
                     <Col xs="12">
                         <Card>
-                            <CardHeader className="text-center" style={chback}>
+                            <CardHeader style={chback}>
                                 <Col xs="12">
-                                    <h3>Pump It Up XX</h3>
-                                    <h4>{self.state.steptype} Lv.{self.state.steplv} Clear Table</h4>
-                                </Col>
-                                <Col xs="12" id="username2">
-                                    Player: {self.state.username} / Lv. {self.state.userlv}
-                                </Col>
-                                <Col xs="12" id="ranks">
-                                    {self.state.userrank1}<br/>
-                                    {self.state.userrank2}
+                                    <h4>Pump It Up XX</h4>
+                                    <h5>{self.state.steptype} Lv.{self.state.steplv} Clear Table</h5>
                                 </Col>
                             </CardHeader>
                             <CardBody>
+                                <Row>
+                                    <Col xs="4"
+                                        style={{backgroundColor:""}}>
+                                        <b><span style={{fontSize: "80%"}}>PLAYER NAME</span></b> {self.state.username}<br/>
+                                        <b><span style={{fontSize: "80%"}}>PLAYER LEVEL</span></b> {self.state.userlv}
+                                    </Col>
+                                    <Col xs="8" style={{fontSize: "80%"}} className="text-center">
+                                        {self.state.userrank1}<br/>
+                                        {self.state.userrank2}
+                                    </Col>
+                                </Row>
                                 <Row className="div-lineadd" id="divOver"
                                     style={{backgroundColor: "#ffadc5"}}>
                                     <Col xs="12">
@@ -1136,7 +1125,6 @@ class PIUTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -1156,7 +1144,6 @@ class PIUTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -1176,7 +1163,6 @@ class PIUTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -1196,7 +1182,6 @@ class PIUTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -1216,7 +1201,6 @@ class PIUTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -1236,7 +1220,6 @@ class PIUTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -1256,7 +1239,6 @@ class PIUTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -1276,7 +1258,6 @@ class PIUTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>

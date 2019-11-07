@@ -20,9 +20,9 @@ const txtPIU = {
         "en":"How to use:"
     },
     howto2: {
-        "jp":"Android, iOS 13+, PCで使えます (ファイル保存問題)",
-        "ko":"Android, iOS 13 이상, PC에서만 사용 가능 (파일 다운로드 문제)",
-        "en":"Only usable for Android, iOS 13+ and PC (File download problem)"
+        "jp":"iOSの場合はiOS 13以上のバージョンが必要",
+        "ko":"iOS에서 사용하기 위해서는 iOS 13 이상이어야 함",
+        "en":"If you are using iOS, you need iOS 13 or newer"
     },
     howto3: {
         "jp":"「新規作成」や「ファイル読み」でユーザー情報を読み出す",
@@ -204,20 +204,15 @@ const txtPIU = {
             "en":"+"
         }
     },
-    share: {
-        "jp":"共有",
-        "ko":"공유",
-        "en":"Share"
-    },
-    sharedesc: {
-        "jp":"現在のクリア表を共有できます",
-        "ko":"현재 클리어 표를 공유할 수 있습니다.",
-        "en":"Share current clear table"
+    menu: {
+        "jp":"メニュー",
+        "ko":"메뉴",
+        "en":"Menu"
     },
     scrbtn: {
-        "jp":"スクショを撮る (ダウンロード)",
-        "ko":"스크린샷 찍기 (다운로드)",
-        "en":"Take Screenshot (Download)"
+        "jp":"スクショで共有",
+        "ko":"스크린샷으로 공유",
+        "en":"Take Screenshot"
     },
     urlshare: {
         "jp":"URLで共有",

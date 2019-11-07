@@ -32,7 +32,27 @@ function CreateQueryGetPatterns(type, level) {
                 a.musicid = b.id";
 }
 
+function CreateQueryUserLog(name, type) {
+    return "INSERT INTO piu_userlog\
+                SET name='"+name+"', type='"+type+"', time=NOW()"
+}
+
 // DB 쿼리별 메소드
+async function UserLog(name, type) {
+    try {
+        const query = CreateQueryUserLog(name, type);
+        con = await dbpool.getConnection();
+        con.query("USE piumanager");
+        con.query(query);
+    }
+    catch(err) {
+        throw err;
+    }
+    finally {
+        if(con) con.end();
+    }
+}
+
 async function GetPatterns(type, level) {
     let con, row;
     try {
@@ -104,5 +124,6 @@ async function GetPatternsOver(type) {
 
 module.exports = {
     GetPatterns: GetPatterns,
-    GetPatternsOver: GetPatternsOver
+    GetPatternsOver: GetPatternsOver,
+    UserLog: UserLog
 }

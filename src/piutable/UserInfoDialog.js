@@ -5,7 +5,9 @@ import {
     ModalHeader,
     ModalBody,
     ModalFooter,
-    Button
+    Button,
+    Row,
+    Col
 } from 'reactstrap';
 
 class UserDialog extends Component {
@@ -57,14 +59,29 @@ class UserDialog extends Component {
             <Modal isOpen={prop.display}>
                 <ModalHeader>{prop.title}</ModalHeader>
                 <ModalBody>
-                    <input ref={this.nameinput} className='form-control'
-                        type='text' id='newname' placeholder='NAME'
-                        defaultValue={self.curname}
-                        onKeyUp={() => self.nameValidCheck()} />
-                    <input ref={this.lvinput} className='form-control'
-                        type='number' min='1' step='1' id='newlv'
-                        defaultValue={self.curlv}
-                        onKeyPress={(event) => (event.charCode >= 48 && event.charCode <= 57)} placeholder='LEVEL'/>
+                    <Row>
+                        <Col xs="4">
+                            User Name
+                        </Col>
+                        <Col xs="8">
+                            <input ref={this.nameinput} className='form-control'
+                                type='text' id='newname' placeholder='NAME'
+                                defaultValue={self.curname}
+                                onKeyUp={() => self.nameValidCheck()} />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col xs="4">
+                            User Level
+                        </Col>
+                        <Col xs="8">
+                            <input ref={this.lvinput} className='form-control'
+                                type='number' min='1' step='1' id='newlv'
+                                defaultValue={self.curlv}
+                                onKeyPress={(event) => (event.charCode >= 48 && event.charCode <= 57)}
+                                placeholder='LEVEL'/>
+                        </Col>
+                    </Row>
                 </ModalBody>
                 <ModalFooter>
                     <Button onClick={() => self.closeDialog()}>
