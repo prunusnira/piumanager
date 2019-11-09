@@ -1,12 +1,13 @@
-const express = require('express');
-const path = require('path');
-const db = require('./dbconn');
-const fs = require('fs');
-const commonval = require('./commondata.js');
-const glob = require('glob');
-const cors = require('cors');
+import express from 'express';
+import path from 'path';
+import fs from 'fs';
+import glob from 'glob';
+import cors from 'cors';
+import DBConn from './dbconn';
+import commonval from './commondata';
 
 const app = express();
+const db = new DBConn();
 autostart();
 
 app.use(express.static(path.join(__dirname, '../build')));

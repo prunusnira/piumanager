@@ -23,5 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # user added
-/server/commondata.js
+/server/commondata.ts
 /design
+/serverBuild

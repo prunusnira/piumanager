@@ -6,8 +6,9 @@ import './piu-custom.css';
 import UserDialog from './UserInfoDialog';
 import PatternUpdateDialog from './PatternUpdateDialog';
 import ShareDialog from './ShareDialog';
-import Lang from './language';
 import html2canvas from 'html2canvas';
+import MusicInfo from './MusicInfo'
+import UserInfo from './UserInfo'
 
 import {
     Container,
@@ -20,22 +21,104 @@ import {
     Alert
 } from 'reactstrap';
 import PIUTableObj from './tablerow';
+import Language from './language';
+import CategoryList from './CategoryList';
+import { string } from 'prop-types';
 
-class PIUTable extends Component {
-    lang = Lang.getLang();
-    piuDataUrl = "https://piu.nira.one/d";
-    //piuDataUrl = "http://localhost:8081/d";
+interface Props {
 
-    cntov = 0;
-    cnthi = 0;
-    cntnh = 0;
-    cntnr = 0;
-    cntne = 0;
-    cntez = 0;
-    cntbe = 0;
-    cntrd = 0;
+}
 
-    constructor(props) {
+interface State {
+    // userinfo
+    username: string,
+    userlv: string,
+    userrank1: string,
+    userrank2: string,
+    userstat: Map<string, string>,
+    userdlgTitle: string,
+    userdlgButton: string,
+
+    // rank
+    ranksss: number,
+    rankss: number,
+    ranks: number,
+    ranka: number,
+    rankao: number,
+    rankbcd: number,
+    rankbcdo: number,
+    rankf: number,
+    ranknp: number,
+    all: number,
+
+    // musictype
+    musarcade: boolean,
+    musshort: boolean,
+    musfull: boolean,
+    musremix: boolean,
+
+    ptidlist: Array<string>,
+
+    // screen and dialog
+    loaded: boolean,
+    newuser: boolean,
+    changerank: boolean,
+    pattern: boolean,
+    showrank: boolean,
+    showcheck: boolean,
+
+    // category text
+    catOV: string,
+    catHI: string,
+    catNH: string,
+    catNR: string,
+    catNE: string,
+    catEZ: string,
+    catBE: string,
+    catRD: string,
+
+    arrOV: Array<MusicInfo>,
+    arrHI: Array<MusicInfo>,
+    arrNH: Array<MusicInfo>,
+    arrNR: Array<MusicInfo>,
+    arrNE: Array<MusicInfo>,
+    arrEZ: Array<MusicInfo>,
+    arrBE: Array<MusicInfo>,
+    arrRD: Array<MusicInfo>,
+
+    // current page
+    steptype: string,
+    steplv: number,
+
+    // update pt info
+    updaterank: string,
+    currentpt: number,
+    isOver: boolean,
+    updatedlgTitle: string,
+    updatedlgType: number,
+
+    // sharedlg
+    shareDlgShow: boolean,
+    shareDlgCont1: string,
+    shareDlgCont2: string
+}
+
+class PIUTable extends Component<Props, State> {
+    private langObj = new Language();
+    private lang = this.langObj.getLang();
+    private piuDataUrl = "https://piu.nira.one/d";
+    //private piuDataUrl = "http://localhost:8081/d";
+
+    private cntov = 0;
+    private cnthi = 0;
+    private cntnh = 0;
+    private cntnr = 0;
+    private cntne = 0;
+    private cntez = 0;
+    private cntbe = 0;
+    private cntrd = 0;
+
+    constructor(props: Props) {
         super(props);
 
         this.newUserHandler = this.newUserHandler.bind(this);
@@ -50,7 +133,7 @@ class PIUTable extends Component {
         this.state = {
             // userinfo
             username: "",
-            userlv: 0,
+            userlv: "",
             userrank1: "",
             userrank2: "",
             userstat: new Map(),
@@ -73,7 +156,7 @@ class PIUTable extends Component {
             musarcade: true,
             musshort: true,
             musfull: true,
-            muxremix: true,
+            musremix: true,
 
             ptidlist: [],
 
@@ -86,16 +169,14 @@ class PIUTable extends Component {
             showcheck: true,
 
             // category text
-            category: {
-                catOV: "",
-                catHD: "",
-                catNH: "",
-                catNR: "",
-                catNE: "",
-                catEZ: "",
-                catBE: "",
-                catRD: ""
-            },
+            catOV: "",
+            catHI: "",
+            catNH: "",
+            catNR: "",
+            catNE: "",
+            catEZ: "",
+            catBE: "",
+            catRD: "",
 
             arrOV: [],
             arrHI: [],
@@ -124,7 +205,7 @@ class PIUTable extends Component {
         }
     }
 
-    userLog(type) {
+    userLog(type: string) {
         axios.post(this.piuDataUrl+'/log', {
             name: this.state.username,
             type: type
@@ -134,59 +215,61 @@ class PIUTable extends Component {
     newUser() {
         this.setState({
             newuser: !this.state.newuser,
-            userdlgTitle: txtPIU.newuserdiv[this.lang],
-            userdlgButton: txtPIU.newuserbtn[this.lang]
+            userdlgTitle: (txtPIU.newuserdiv as any)[this.lang],
+            userdlgButton: (txtPIU.newuserbtn as any)[this.lang]
         });
     }
 
     editUser() {
         this.setState({
             newuser: !this.state.newuser,
-            userdlgTitle: txtPIU.edituserdiv[this.lang],
-            userdlgButton: txtPIU.edituserbtn[this.lang]
+            userdlgTitle: (txtPIU.edituserdiv as any)[this.lang],
+            userdlgButton: (txtPIU.edituserbtn as any)[this.lang]
         });
     }
 
-    newUserHandler(name, lv) {
+    newUserHandler(name: string, lv: string) {
+        const self = this;
         this.setState({
             username: name,
             userlv: lv,
             loaded: true
-        }, function(e) {
-            this.userLog("new");
+        }, () => {
+            self.userLog("new");
         });
     }
 
     loadUser() {
         // 파일 열기 대화상자를 열고 데이터를 가져옴
         if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-            alert(txtPIU.loadwarn[this.lang]);
+            alert((txtPIU.loadwarn as any)[this.lang]);
         }
 
         const self = this;
         const fileopen = document.getElementById("fileopen");
-        //$("#fileopen").trigger("click");
-        fileopen.click();
-        fileopen.onchange = function(e) {
-            self.handleFileSelect(e.srcElement.files[0]);
-            // 데이터 열기
-            self.setState({
-                loaded: true
-            });
+        if(fileopen) {
+            fileopen.click();
+            fileopen.onchange = (e: any) => {
+                self.handleFileSelect(e.target.files[0]);
+                // 데이터 열기
+                self.setState({
+                    loaded: true
+                });
+            }
         }
     }
 
-    handleFileSelect(file) {
+    handleFileSelect(file: File) {
         const self = this;
         const fr = new FileReader();
-        fr.onload = function(e) {
+        fr.onload = function(e: any) {
             const result = e.target.result;
             self.callbackOpen(result);
         };
         fr.readAsText(file);
     }
     
-    callbackOpen(result) {
+    callbackOpen(result: string) {
         const str = result.split("\n");
         
         const userinfo = str[0].split(",");
@@ -201,7 +284,7 @@ class PIUTable extends Component {
             username: userinfo[0],
             userlv: userinfo[1],
             loaded: true
-        }, function(e) {
+        }, () => {
             this.userLog("load");
         });
     }
@@ -227,7 +310,7 @@ class PIUTable extends Component {
         document.body.removeChild(elem);
     }
 
-    unixTimeToText(uxtime, onlyday = false) {
+    unixTimeToText(uxtime: number, onlyday = false) {
         const now = new Date(uxtime);
         let time = now.getFullYear()
             + ((now.getMonth()+1)<10?'0':'') + (now.getMonth()+1)
@@ -240,8 +323,8 @@ class PIUTable extends Component {
         return time;
     }
 
-    getPatterns(type, level) {
-        const cat = {};
+    getPatterns(type: string, level: string) {
+        const cat = new CategoryList();
         let steptype = "";
         let steplv = "";
 
@@ -258,9 +341,9 @@ class PIUTable extends Component {
                 cat.catez = "25 E";
                 cat.catne = "25 N";
                 cat.catnr = "25 H";
-                cat.catnh = parseInt(level)+1;
-                cat.cathi = parseInt(level)+2;
-                cat.catov = parseInt(level)+3;
+                cat.catnh = (parseInt(level)+1).toString();
+                cat.cathi = (parseInt(level)+2).toString();
+                cat.catov = (parseInt(level)+3).toString();
 
                 if(this.cntov === 0) cat.catov = "";
                 if(this.cnthi === 0) cat.cathi = "";
@@ -280,9 +363,9 @@ class PIUTable extends Component {
                 this.updateTable(res.data, true);
                 steptype = "Single";
                 steplv = level+"+";
-                cat.catnh = parseInt(level);
-                cat.cathi = parseInt(level)+1;
-                cat.catov = parseInt(level)+2;
+                cat.catnh = (parseInt(level)).toString();
+                cat.cathi = (parseInt(level)+1).toString();
+                cat.catov = (parseInt(level)+2).toString();
 
                 if(this.cntov === 0) cat.catov = "";
                 if(this.cnthi === 0) cat.cathi = "";
@@ -303,14 +386,14 @@ class PIUTable extends Component {
                 if(type == "s") steptype = "Single";
                 if(type == "d") steptype = "Double";
                 steplv = level;
-                cat.catrd = txtPIU.diff.random[this.lang];
-                cat.catbe = (parseInt(level)-1)+txtPIU.diff.below[this.lang];
-                cat.catez = txtPIU.diff.easy[this.lang];
-                cat.catne = txtPIU.diff.ne[this.lang];
-                cat.catnr = txtPIU.diff.normal[this.lang];
-                cat.catnh = txtPIU.diff.nh[this.lang];
-                cat.cathi = txtPIU.diff.high[this.lang];
-                cat.catov = (parseInt(level)+1)+txtPIU.diff.over[this.lang];
+                cat.catrd = (txtPIU.diff.random as any)[this.lang];
+                cat.catbe = (parseInt(level)-1)+(txtPIU.diff.below as any)[this.lang];
+                cat.catez = (txtPIU.diff.easy as any)[this.lang];
+                cat.catne = (txtPIU.diff.ne as any)[this.lang];
+                cat.catnr = (txtPIU.diff.normal as any)[this.lang];
+                cat.catnh = (txtPIU.diff.nh as any)[this.lang];
+                cat.cathi = (txtPIU.diff.high as any)[this.lang];
+                cat.catov = (parseInt(level)+1)+(txtPIU.diff.over as any)[this.lang];
 
                 if(this.cntov === 0) cat.catov = "";
                 if(this.cnthi === 0) cat.cathi = "";
@@ -326,10 +409,10 @@ class PIUTable extends Component {
         }
     }
 
-    categoryUpdater(cat, steptype, steplv) {
+    categoryUpdater(cat: CategoryList, steptype: string, steplv: string) {
         this.setState({
             catOV: cat.catov,
-            catHD: cat.cathi,
+            catHI: cat.cathi,
             catNH: cat.catnh,
             catNR: cat.catnr,
             catNE: cat.catne,
@@ -337,7 +420,7 @@ class PIUTable extends Component {
             catBE: cat.catbe,
             catRD: cat.catrd,
             steptype: steptype,
-            steplv: steplv
+            steplv: parseInt(steplv)
         });
     }
 
@@ -367,7 +450,7 @@ class PIUTable extends Component {
         this.cntrd = 0;
     }
 
-    updateTable(data, isOver) {
+    updateTable(data: any, isOver: boolean) {
         const ptidlist = [];
         let all = 0;
         
@@ -376,7 +459,7 @@ class PIUTable extends Component {
             ptidlist.push(current.ptid);
             all++;
 
-            const obj = {};
+            const obj = new MusicInfo();
     
             if(current.removed == 0) {
                 obj.songtype = current.songtype;
@@ -517,7 +600,7 @@ class PIUTable extends Component {
 
                 if(statmap.has(ptid.toString())) {
                     const rank = statmap.get(ptid.toString());
-                    this.updateData(ptid, rank);
+                    this.updateData(ptid, rank!);
                 }
             }
         });
@@ -607,7 +690,7 @@ class PIUTable extends Component {
         });
     }
 
-    updateData(ptid, rank) {
+    updateData(ptid: number, rank: string) {
         this.state.userstat.set(ptid.toString(), rank);
         this.updateRecord(ptid);
         this.rankreset();
@@ -619,12 +702,12 @@ class PIUTable extends Component {
         }
     }
 
-    updateMultipleData(rank) {
+    updateMultipleData(rank: string) {
         const checked = document.querySelectorAll("input[id=ptnsel]:checked");
         for(let i = 0; i < checked.length; i++) {
-            const ptid = checked[i].value;
-            this.state.userstat.set(ptid.toString(), rank);
-            this.updateRecord(ptid);
+            const ptid = (checked[i] as HTMLInputElement).value;
+            this.state.userstat.set(ptid, rank);
+            this.updateRecord(parseInt(ptid));
         }
         this.rankreset();
         this.updateRankData();
@@ -635,12 +718,12 @@ class PIUTable extends Component {
         }
     }
 
-    updatePatternDialog(ptid) {
+    updatePatternDialog(ptid: number) {
         this.setState({
             pattern: !this.state.pattern,
             currentpt: ptid,
             updatedlgType: 0,
-            updatedlgTitle: txtPIU.updatedivtitle[this.lang]
+            updatedlgTitle: (txtPIU.updatedivtitle as any)[this.lang]
         });
     }
 
@@ -648,33 +731,36 @@ class PIUTable extends Component {
         this.setState({
             pattern: !this.state.pattern,
             updatedlgType: 1,
-            updatedlgTitle: txtPIU.updatealldiv[this.lang]
+            updatedlgTitle: (txtPIU.updatealldiv as any)[this.lang]
         });
     }
 
-    updateRecord(ptid) {
+    updateRecord(ptid: number) {
         const div = document.getElementById("cs"+ptid);
         const rankval = this.state.userstat.get(ptid.toString());
 
-        let rank = "";
-        switch(parseInt(rankval)) {
-            case 0: rank = "ss"; break;
-            case 1: rank = "gs"; break;
-            case 2: rank = "s"; break;
-            case 3: rank = "aon"; break;
-            case 4: rank = "aoff"; break;
-            case 5: rank = "bcdoff"; break;
-            case 6: rank = "f"; break;
-            case 7: rank = "np"; break;
-            case 8: rank = "bcdon"; break;
+        if(rankval) {
+            let rank = "";
+            switch(parseInt(rankval)) {
+                case 0: rank = "ss"; break;
+                case 1: rank = "gs"; break;
+                case 2: rank = "s"; break;
+                case 3: rank = "aon"; break;
+                case 4: rank = "aoff"; break;
+                case 5: rank = "bcdoff"; break;
+                case 6: rank = "f"; break;
+                case 7: rank = "np"; break;
+                case 8: rank = "bcdon"; break;
+            }
+
+            let display = "block";
+            if(!this.state.showrank) display = "none"
+
+            if(div)
+                div.innerHTML = "\
+                    <img style='width: 60%; position: absolute; right: 0px;' \
+                        src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
         }
-
-        let display = "block";
-        if(!this.props.showrank) display = "none"
-
-        div.innerHTML = "\
-            <img style='width: 60%; position: absolute; right: 0px;' \
-                src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
     }
 
     hideRank() {
@@ -689,7 +775,7 @@ class PIUTable extends Component {
         });
     }
 
-    handleMusicType(type) {
+    handleMusicType(type: number) {
         switch(type) {
         case 0:
             this.setState({
@@ -714,55 +800,58 @@ class PIUTable extends Component {
         }
     }
 
-    musicTypeOnOff(type, bid) {
-        const box = document.getElementById(bid);
+    musicTypeOnOff(type: number, bid: string) {
+        const box = document.getElementById(bid) as HTMLInputElement;
         const divs = document.querySelectorAll("[data-songtype='"+type+"']");
-        if(box.checked) {
+        if(box && box.checked) {
             for(let i = 0; i < divs.length; i++) {
-                divs[i].parentNode.style.display = "block";
+                (divs[i].parentNode! as HTMLElement).style.display = "block";
             }
         }
         else {
             for(let i = 0; i < divs.length; i++) {
-                divs[i].parentNode.style.display = "none";
+                (divs[i].parentNode! as HTMLElement).style.display = "none";
             }
         }
     }
 
-    scrShot(divname, filename) {
+    scrShot(divname: string, filename: string) {
         window.scrollTo(0, 0);
         const div = document.getElementById(divname);
-        html2canvas(div, {
-            useCORS: true,
-            allowTaint: false,
-            backgroundColor: "#000000",
-            scale: 1
-        })
-        .then(function(canvas) {
-            const el = document.createElement("a");
-            el.href = canvas.toDataURL("image/jpeg");
-            el.download = filename;
-            el.click();
-        })
-        .catch(function (error) {
-            console.error('oops, something went wrong!', error);
-        });
+
+        if(div) {
+            html2canvas(div, {
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: "#000000",
+                scale: 1
+            })
+            .then(function(canvas) {
+                const el = document.createElement("a");
+                el.href = canvas.toDataURL("image/jpeg");
+                el.download = filename;
+                el.click();
+            })
+            .catch(function (error) {
+                console.error('oops, something went wrong!', error);
+            });
+        }
     }
 
     shareURL() {
         const lv = this.state.steplv;
         const type = this.state.steptype;
-        const sharedata = {};
-        sharedata.ov = this.state.arrOV;
-        sharedata.hi = this.state.arrHI;
-        sharedata.nh = this.state.arrNH;
-        sharedata.nr = this.state.arrNR;
-        sharedata.ne = this.state.arrNE;
-        sharedata.ez = this.state.arrEZ;
-        sharedata.be = this.state.arrBE;
-        sharedata.rd = this.state.arrRD;
+        const sharedata = new Map<string, Array<MusicInfo>>();
+        sharedata.set("ov", this.state.arrOV);
+        sharedata.set("hi", this.state.arrHI);
+        sharedata.set("nh", this.state.arrNH);
+        sharedata.set("nr", this.state.arrNR);
+        sharedata.set("ne", this.state.arrNE);
+        sharedata.set("ez", this.state.arrEZ);
+        sharedata.set("be", this.state.arrBE);
+        sharedata.set("rd", this.state.arrRD);
         
-        const clearstatus = {};
+        const clearstatus = new Map<string, string>();
         const keys = this.state.userstat.keys();
         
         let end = false;
@@ -844,7 +933,7 @@ class PIUTable extends Component {
                 }
 
                 if(has) {
-                    clearstatus[itor.value] = this.state.userstat.get(itor.value);
+                    clearstatus.set(itor.value, this.state.userstat.get(itor.value)!);
                 }
             }
             else {
@@ -852,7 +941,7 @@ class PIUTable extends Component {
             }
         }
 
-        const obj = {};
+        const obj = new UserInfo();
         obj.username = this.state.username;
         obj.userlv = this.state.userlv;
         obj.lv = lv;
@@ -874,11 +963,11 @@ class PIUTable extends Component {
                 console.log(res.data);
                 const json = res.data;
                 if(json.status !== "error") {
-                    message1 = txtPIU.sharedlg.cont[this.lang];
+                    message1 = (txtPIU.sharedlg.cont as any)[this.lang];
                     message2 = "https://piu.nira.one/"+json.msg;
                 }
                 else {
-                    message1 = txtPIU.sharedlg.error[this.lang];
+                    message1 = (txtPIU.sharedlg.error as any)[this.lang];
                     message2 = json.msg;
                 }
 
@@ -896,7 +985,7 @@ class PIUTable extends Component {
         });
     }
     
-    langChange(type) {
+    langChange(type: string): void {
         document.cookie = "lang="+type+"; path=/";
         window.location.reload();
     }
@@ -913,7 +1002,7 @@ class PIUTable extends Component {
                 <Alert onClose={() => console.log("")}>
                     <Row>
                         <Col xs="12" className="text-center">
-                            <b><font color="black">{txtPIU.test[self.lang]}</font></b>
+                            <b><span style={{color:"black"}}>{(txtPIU.test as any)[self.lang]}</span></b>
                         </Col>
                     </Row>
                 </Alert>
@@ -923,15 +1012,15 @@ class PIUTable extends Component {
                             <CardHeader style={chback}>
                                 <span style={{fontSize:"150%"}}>Pump It Up</span>
                                 &nbsp;
-                                <span>{txtPIU.subtitle[self.lang]}</span>
+                                <span>{(txtPIU.subtitle as any)[self.lang]}</span>
                             </CardHeader>
                             <CardBody>
                                 <Row>
                                     <Col xs="12" className="text-right">
                                         Language Select:&nbsp;
-                                        <Link className="innerhref" onClick={() => this.langChange('ko')}>한국어</Link>&nbsp;
-                                        <Link className="innerhref" onClick={() => this.langChange('jp')}>日本語</Link>&nbsp;
-                                        <Link className="innerhref" onClick={() => this.langChange('en')}>English</Link>
+                                        <Link to="#no_div" className="innerhref" onClick={() => this.langChange('ko')}>한국어</Link>&nbsp;
+                                        <Link to="#no_div" className="innerhref" onClick={() => this.langChange('jp')}>日本語</Link>&nbsp;
+                                        <Link to="#no_div" className="innerhref" onClick={() => this.langChange('en')}>English</Link>
                                         <br/>
                                         <b><span style={{fontSize:"80%"}}>(Unsaved data will be lost)</span></b>
                                     </Col>
@@ -939,11 +1028,11 @@ class PIUTable extends Component {
                                 <hr/>
                                 <Row>
                                     <Col xs="12" id="howto">
-                                        {txtPIU.howto1[self.lang]}<br/>
-                                        1. {txtPIU.howto2[self.lang]}<br/>
-                                        2. {txtPIU.howto3[self.lang]}<br/>
-                                        3. {txtPIU.howto4[self.lang]}<br/>
-                                        4. {txtPIU.howto5[self.lang]}
+                                        {(txtPIU.howto1 as any)[self.lang]}<br/>
+                                        1. {(txtPIU.howto2 as any)[self.lang]}<br/>
+                                        2. {(txtPIU.howto3 as any)[self.lang]}<br/>
+                                        3. {(txtPIU.howto4 as any)[self.lang]}<br/>
+                                        4. {(txtPIU.howto5 as any)[self.lang]}
                                     </Col>
                                 </Row>
                             </CardBody>
@@ -955,18 +1044,18 @@ class PIUTable extends Component {
                     <Col xs="12">
                         <Card>
                             <CardHeader style={chback}>
-                                <h4>{txtPIU.functitle[self.lang]}</h4>
+                                <h4>{(txtPIU.functitle as any)[self.lang]}</h4>
                             </CardHeader>
                             <CardBody className="text-center btn-group">
                                 <Button onClick={() => self.newUser()}>
-                                    {txtPIU.newuser[self.lang]}
+                                    {(txtPIU.newuser as any)[self.lang]}
                                 </Button>
 
                                 <Button onClick={() => self.loadUser()}>
-                                    {txtPIU.load[self.lang]}
+                                    {(txtPIU.load as any)[self.lang]}
                                 </Button>
                                 <Button onClick={() => self.saveUser()}>
-                                    {txtPIU.save[self.lang]}
+                                    {(txtPIU.save as any)[self.lang]}
                                 </Button>
                             </CardBody>
                         </Card>
@@ -976,7 +1065,7 @@ class PIUTable extends Component {
                     <Col xs="12">
                         <Card>
                             <CardHeader id="seldiffSingletitle" style={chback}>
-                                <h3>{txtPIU.patternsel[self.lang]}</h3>
+                                <h3>{(txtPIU.patternsel as any)[self.lang]}</h3>
                             </CardHeader>
                             <CardBody className="text-center" id="seldiffSingle">
                                 <Row>
@@ -1029,38 +1118,38 @@ class PIUTable extends Component {
                     <Col xs="12">
                         <Card id="userinfo">
                             <CardHeader style={chback}>
-                                <h4>{txtPIU.menu[this.lang]}</h4>
+                                <h4>{(txtPIU.menu as any)[this.lang]}</h4>
                             </CardHeader>
                             <CardBody>
                                 <Row className="text-center">
                                     <Col xs="12" className="text-center btn-group">
                                         <Button onClick={() => self.editUser()}>
-                                            {txtPIU.edit[self.lang]}
+                                            {(txtPIU.edit as any)[self.lang]}
                                         </Button>
                                         <Button onClick={() => self.updatePatternMultiple()}>
-                                            {txtPIU.updatecheckedbtn[self.lang]}
+                                            {(txtPIU.updatecheckedbtn as any)[self.lang]}
                                         </Button>
                                     </Col>
                                     <Col xs="12" className="text-center btn-group">
                                         <Button onClick={() => self.hideCheckbox()}>
-                                            {txtPIU.hidechkbox[self.lang]}
+                                            {(txtPIU.hidechkbox as any)[self.lang]}
                                         </Button>
                                         <Button onClick={() => self.hideRank()}>
-                                            {txtPIU.hiderank[self.lang]}
+                                            {(txtPIU.hiderank as any)[self.lang]}
                                         </Button>
                                     </Col>
                                     <Col xs="12" className="text-center btn-group">
                                         <Button onClick={() => self.scrShot('targetTable', "piu_"+self.state.username+"_"+self.state.steptype+"_"+self.state.steplv+"_"+this.unixTimeToText(new Date().getTime())+".jpg")}>
-                                            {txtPIU.scrbtn[this.lang]}
+                                            {(txtPIU.scrbtn as any)[this.lang]}
                                         </Button>
                                         <Button onClick={() => self.shareURL()}>
-                                            {txtPIU.urlshare[this.lang]}
+                                            {(txtPIU.urlshare as any)[this.lang]}
                                         </Button>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col xs="12" className="text-center">
-                                        <h5>{txtPIU.songtype[self.lang]}</h5>
+                                        <h5>{(txtPIU.songtype as any)[self.lang]}</h5>
                                     </Col>
                                 </Row>
                                 <Row>
@@ -1135,7 +1224,7 @@ class PIUTable extends Component {
                                     <Col xs="12">
                                         <Row>
                                             <Col xs="12" className="piu-left" id="catHigh">
-                                                {self.state.catHD}
+                                                {self.state.catHI}
                                             </Col>
                                         </Row>
                                         <Row id="lvHigh">
@@ -1279,8 +1368,7 @@ class PIUTable extends Component {
                     toggle={self.newUser} />
                 <PatternUpdateDialog title={self.state.updatedlgTitle}
                     type={self.state.updatedlgType}
-                    button={txtPIU.update[self.lang]}
-                    handler={self.patternHandler}
+                    button={(txtPIU.update as any)[self.lang]}
                     display={self.state.pattern}
                     ptid={self.state.currentpt}
                     updateData={self.updateData}

@@ -1,10 +1,10 @@
-import {Component} from 'react';
-
-class Language extends Component {
-    getLang() {
-        let lang = navigator.language || navigator.systemLanguage;
-        if(this.readCookie("lang") === 'ko' || this.readCookie("lang") === 'jp' || this.readCookie("lang") === 'en') {
-            lang = this.readCookie("lang");
+class Language {
+    getLang(): string {
+        let lang = navigator.language;// || navigator.systemLanguage;
+        if(this.readCookie("lang") !== null &&
+            (this.readCookie("lang") === 'ko' || this.readCookie("lang") === 'jp' || this.readCookie("lang") === 'en')
+        ) {
+            lang = this.readCookie("lang")!;
         }
         else {
             if(lang==='ko' || lang==='ko-kr' || lang==='ko-KR') {
@@ -18,23 +18,23 @@ class Language extends Component {
             }
         
             this.eraseCookie("lang");
-            this.createCookie("lang", lang, false);
+            this.createCookie("lang", lang, 1);
         }
         return lang;
     }
 
-    createCookie(name,value,days) {
+    createCookie(name: string, value: string, days: number) {
         let expires = "";
         if (days) {
             const date = new Date();
             date.setTime(date.getTime()+(days*24*60*60*1000));
-            expires = "; expires="+date.toGMTString();
+            expires = "; expires="+date.toUTCString();
         }
         else expires = "";
         document.cookie = name+"="+value+expires+"; path=/";
     }
 
-    readCookie(name) {
+    readCookie(name: string) {
         const nameEQ = name + "=";
         const ca = document.cookie.split(';');
         for(let i=0;i < ca.length;i++) {
@@ -45,10 +45,9 @@ class Language extends Component {
         return null;
     }
 
-    eraseCookie(name) {
+    eraseCookie(name: string) {
         this.createCookie(name,"",-1);
     }
 }
 
-const Lang = new Language();
-export default Lang;
+export default Language;

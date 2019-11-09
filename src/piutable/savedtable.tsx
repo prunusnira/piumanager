@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, RouteComponentProps} from 'react-router-dom';
 import axios from 'axios';
 import txtPIU from './txtpiu';
 import './piu-custom.css';
-import Lang from './language';
-import html2canvas from 'html2canvas';
+import MusicInfo from './MusicInfo';
 
 import {
     Container,
@@ -13,31 +12,106 @@ import {
     Card,
     CardHeader,
     CardBody,
-    Button,
     Alert
 } from 'reactstrap';
 import PIUTableObj from './tablerow';
+import Language from './language';
+import CategoryList from './CategoryList';
 
-class SavedTable extends Component {
-    lang = Lang.getLang();
-    piuDataUrl = "https://piu.nira.one/d";
-    //piuDataUrl = "http://localhost:8081/d";
+interface IRouterMatchProps {
+    name: string,
+    type: string,
+    lv: string,
+    date: string
+}
 
-    cntov = 0;
-    cnthi = 0;
-    cntnh = 0;
-    cntnr = 0;
-    cntne = 0;
-    cntez = 0;
-    cntbe = 0;
-    cntrd = 0;
+interface Props {
+}
 
-    constructor(props) {
+interface State {
+    // userinfo
+    username: string,
+    userlv: number,
+    userrank1: string,
+    userrank2: string,
+    userstat: Map<string, string>,
+    userdlgTitle: string,
+    userdlgButton: string,
+
+    // rank
+    ranksss: number,
+    rankss: number,
+    ranks: number,
+    ranka: number,
+    rankao: number,
+    rankbcd: number,
+    rankbcdo: number,
+    rankf: number,
+    ranknp: number,
+    all: number,
+
+    // musictype
+    musarcade: boolean,
+    musshort: boolean,
+    musfull: boolean,
+    musremix: boolean,
+
+    ptidlist: Array<string>,
+
+    // screen and dialog
+    showrank: boolean,
+    showcheck: boolean,
+
+    // category text
+    catOV: string,
+    catHI: string,
+    catNH: string,
+    catNR: string,
+    catNE: string,
+    catEZ: string,
+    catBE: string,
+    catRD: string,
+
+    arrOV: Array<MusicInfo>,
+    arrHI: Array<MusicInfo>,
+    arrNH: Array<MusicInfo>,
+    arrNR: Array<MusicInfo>,
+    arrNE: Array<MusicInfo>,
+    arrEZ: Array<MusicInfo>,
+    arrBE: Array<MusicInfo>,
+    arrRD: Array<MusicInfo>,
+
+    // current page
+    steptype: string,
+    steplv: number,
+    songtype: number,
+
+    // update pt info
+    updaterank: string,
+    currentpt: number,
+    isOver: boolean
+}
+
+class SavedTable extends Component<
+        RouteComponentProps<IRouterMatchProps> & Props, State> {
+    private langObj: Language = new Language();
+    private lang = this.langObj.getLang();
+    private piuDataUrl = "https://piu.nira.one/d";
+    //private piuDataUrl = "http://localhost:8081/d";
+
+    private cntov = 0;
+    private cnthi = 0;
+    private cntnh = 0;
+    private cntnr = 0;
+    private cntne = 0;
+    private cntez = 0;
+    private cntbe = 0;
+    private cntrd = 0;
+
+    constructor(props: RouteComponentProps<IRouterMatchProps> & Props) {
         super(props);
 
-        this.updatePatternDialog = this.updatePatternDialog.bind(this);
         this.updateData = this.updateData.bind(this);
-        this.updateMultipleData = this.updateMultipleData.bind(this);
         this.rankreset = this.rankreset.bind(this);
         this.updateRankData = this.updateRankData.bind(this);
 
@@ -76,16 +150,14 @@ class SavedTable extends Component {
             showcheck: false,
 
             // category text
-            category: {
-                catOV: "",
-                catHD: "",
-                catNH: "",
-                catNR: "",
-                catNE: "",
-                catEZ: "",
-                catBE: "",
-                catRD: ""
-            },
+            catOV: "",
+            catHI: "",
+            catNH: "",
+            catNR: "",
+            catNE: "",
+            catEZ: "",
+            catBE: "",
+            catRD: "",
 
             arrOV: [],
             arrHI: [],
@@ -112,7 +184,7 @@ class SavedTable extends Component {
         this.loadFile(this.props.match.params);
     }
 
-    loadFile(urlparam) {
+    loadFile(urlparam: IRouterMatchProps) {
         const self = this;
         axios.get(this.piuDataUrl+"/saved/"+urlparam.name+"/"+
                 urlparam.type+"/"+urlparam.lv+"/"+urlparam.date)
@@ -131,21 +203,21 @@ class SavedTable extends Component {
             }
         );
 
-        this.categoryUpdater(urlparam.type, urlparam.lv);
+        //this.categoryUpdater(urlparam.type, urlparam.lv);
         self.setState({
             steptype: urlparam.type,
-            steplv: urlparam.lv
+            steplv: parseInt(urlparam.lv)
         });
     }
 
-    loadUserData(name, lv) {
+    loadUserData(name: string, lv: string) {
         this.setState({
             username: name,
-            userlv: lv
+            userlv: parseInt(lv)
         });
     }
 
-    loadTable(lvdata) {
+    loadTable(lvdata: any) {
         this.setState({
             arrOV: lvdata.ov,
             arrHI: lvdata.hi,
@@ -166,21 +238,21 @@ class SavedTable extends Component {
         });
     }
 
-    loadData(stat) {
+    loadData(stat: any) {
         const self = this;
-        const ptidlist = [];
+        const ptidlist = new Array<string>();
         const keys = Object.keys(stat);
 
         keys.forEach(function(e) {
             ptidlist.push(e);
             self.state.userstat.set(e, stat[e]);
-            self.updateRecord(e);
+            self.updateRecord(parseInt(e));
         });
         
         this.updateRankData();
     }
 
-    unixTimeToText(uxtime, onlyday = false) {
+    unixTimeToText(uxtime: number, onlyday = false) {
         const now = new Date(uxtime);
         let time = now.getFullYear()
             + ((now.getMonth()+1)<10?'0':'') + (now.getMonth()+1)
@@ -193,8 +265,8 @@ class SavedTable extends Component {
         return time;
     }
 
-    setCategory(type, level) {
-        const cat = {};
+    setCategory(type: string, level: string) {
+        const cat = new CategoryList();
         let steptype = "";
         let steplv = "";
 
@@ -206,9 +278,9 @@ class SavedTable extends Component {
             cat.catez = "25 E";
             cat.catne = "25 N";
             cat.catnr = "25 H";
-            cat.catnh = parseInt(level)+1;
-            cat.cathi = parseInt(level)+2;
-            cat.catov = parseInt(level)+3;
+            cat.catnh = (parseInt(level)+1).toString();
+            cat.cathi = (parseInt(level)+2).toString();
+            cat.catov = (parseInt(level)+3).toString();
 
             if(this.cntov === 0) cat.catov = "";
             if(this.cnthi === 0) cat.cathi = "";
@@ -220,9 +292,9 @@ class SavedTable extends Component {
             if(this.cntrd === 0) cat.catrd = "";
         }
         else if(type == 'Single' && level == '24') {
-            cat.catnh = parseInt(level);
-            cat.cathi = parseInt(level)+1;
-            cat.catov = parseInt(level)+2;
+            cat.catnh = (parseInt(level)).toString();
+            cat.cathi = (parseInt(level)+1).toString();
+            cat.catov = (parseInt(level)+2).toString();
 
             if(this.cntov === 0) cat.catov = "";
             if(this.cnthi === 0) cat.cathi = "";
@@ -234,14 +306,14 @@ class SavedTable extends Component {
             if(this.cntrd === 0) cat.catrd = "";
         }
         else {
-            cat.catrd = txtPIU.diff.random[this.lang];
-            cat.catbe = (parseInt(level)-1)+txtPIU.diff.below[this.lang];
-            cat.catez = txtPIU.diff.easy[this.lang];
-            cat.catne = txtPIU.diff.ne[this.lang];
-            cat.catnr = txtPIU.diff.normal[this.lang];
-            cat.catnh = txtPIU.diff.nh[this.lang];
-            cat.cathi = txtPIU.diff.high[this.lang];
-            cat.catov = (parseInt(level)+1)+txtPIU.diff.over[this.lang];
+            cat.catrd = (txtPIU.diff.random as any)[this.lang];
+            cat.catbe = (parseInt(level)-1)+(txtPIU.diff.below as any)[this.lang];
+            cat.catez = (txtPIU.diff.easy as any)[this.lang];
+            cat.catne = (txtPIU.diff.ne as any)[this.lang];
+            cat.catnr = (txtPIU.diff.normal as any)[this.lang];
+            cat.catnh = (txtPIU.diff.nh as any)[this.lang];
+            cat.cathi = (txtPIU.diff.high as any)[this.lang];
+            cat.catov = (parseInt(level)+1)+(txtPIU.diff.over as any)[this.lang];
 
             if(this.cntov === 0) cat.catov = "";
             if(this.cnthi === 0) cat.cathi = "";
@@ -256,10 +328,10 @@ class SavedTable extends Component {
         this.categoryUpdater(cat);
     }
 
-    categoryUpdater(cat) {
+    categoryUpdater(cat: CategoryList) {
         this.setState({
             catOV: cat.catov,
-            catHD: cat.cathi,
+            catHI: cat.cathi,
             catNH: cat.catnh,
             catNR: cat.catnr,
             catNE: cat.catne,
@@ -293,162 +365,6 @@ class SavedTable extends Component {
         this.cntez = 0;
         this.cntbe = 0;
         this.cntrd = 0;
-    }
-
-    updateTable(data, isOver) {
-        const ptidlist = [];
-        let all = 0;
-        
-        for(let i = 0; i < data.length; i++) {
-            const current = data[i];
-            ptidlist.push(current.ptid);
-            all++;
-
-            const obj = {};
-    
-            if(current.removed == 0) {
-                obj.songtype = current.songtype;
-                obj.ptid = current.ptid;
-                obj.titleko = current.title_ko;
-                obj.titleen = current.title_en;
-                obj.musicid = current.musicid;
-                obj.steptype = current.steptype;
-                obj.rank = "np";
-
-                if(isOver) {
-                    if(current.type == 0) {
-                        switch(current.lv) {
-                        case 24:
-                            this.cntnh++;
-                            this.state.arrNH.push(obj);
-                            break;
-                        case 25:
-                            this.cnthi++;
-                            this.state.arrHI.push(obj);
-                            break;
-                        case 26:
-                            this.cntov++;
-                            this.state.arrOV.push(obj);
-                            break;
-                        }
-                    }
-                    if(current.type == 1) {
-                        switch(current.lv) {
-                        case 25:
-                            if(current.difftype == 1) {
-                                this.cntez++;
-                                this.state.arrEZ.push(obj);
-                            }
-                            if(current.difftype == 2) {
-                                this.cntne++;
-                                this.state.arrNE.push(obj);
-                            }
-                            if(current.difftype == 3) {
-                                this.cntnr++;
-                                this.state.arrNR.push(obj);
-                            }
-                            break;
-                        case 26:
-                            this.cntnh++;
-                            this.state.arrNH.push(obj);
-                            break;
-                        case 27:
-                            this.cnthi++;
-                            this.state.arrHI.push(obj);
-                            break;
-                        case 28:
-                            this.cntov++;
-                            this.state.arrOV.push(obj);
-                            break;
-                        }
-                    }
-                }
-                else {
-                    if(this.state.userstat.has(current.ptid)) {
-                        switch(this.state.userstat.get(current.ptid.toString())) {
-                        case "0":
-                            obj.rank = "ss";
-                            break;
-                        case "1":
-                            obj.rank = "gs";
-                            break;
-                        case "2":
-                            obj.rank = "s";
-                            break;
-                        case "3":
-                            obj.rank = "aon";
-                            break;
-                        case "4":
-                            obj.rank = "aoff";
-                            break;
-                        case "5":
-                            obj.rank = "bcdoff";
-                            break;
-                        case "6":
-                            obj.rank = "f";
-                            break;
-                        case "7":
-                            obj.rank = "np";
-                            break;
-                        case "8":
-                            obj.rank = "bcdon";
-                            break;
-                        }
-                    }
-                    
-                    switch(current.difftype) {
-                    case 0:
-                        this.cntbe++;
-                        this.state.arrBE.push(obj);
-                        break;
-                    case 1:
-                        this.cntez++;
-                        this.state.arrEZ.push(obj);
-                        break;
-                    case 2:
-                        this.cntne++;
-                        this.state.arrNE.push(obj);
-                        break;
-                    case 3: // 2->3
-                        this.cntnr++;
-                        this.state.arrNR.push(obj);
-                        break;
-                    case 4:
-                        this.cntnh++;
-                        this.state.arrNH.push(obj);
-                        break;
-                    case 5: // 3->5
-                        this.cnthi++;
-                        this.state.arrHI.push(obj);
-                        break;
-                    case 6: // 4->6
-                        this.cntov++;
-                        this.state.arrOV.push(obj);
-                        break;
-                    case 7: // 5->7
-                        this.cntrd++;
-                        this.state.arrRD.push(obj);
-                        break;
-                    }
-                }
-            }
-        }
-
-        this.setState({
-            ptidlist: ptidlist,
-            all: all,
-            isOver: isOver
-        }, () => {
-            const statmap = this.state.userstat;
-            for(let i = 0; i < data.length; i++) {
-                const ptid = data[i].ptid;
-
-                if(statmap.has(ptid.toString())) {
-                    const rank = statmap.get(ptid.toString());
-                    this.updateData(ptid, rank);
-                }
-            }
-        });
     }
 
     rankreset() {
@@ -535,72 +451,37 @@ class SavedTable extends Component {
         });
     }
 
-    updateData(ptid, rank) {
+    updateData(ptid: number, rank: string) {
         this.state.userstat.set(ptid.toString(), rank);
         this.updateRecord(ptid);
         this.rankreset();
         this.updateRankData();
-
-        // 창 닫기
-        if(this.state.pattern) {
-            this.updatePatternDialog(ptid);
-        }
     }
 
-    updateMultipleData(rank) {
-        const checked = document.querySelectorAll("input[id=ptnsel]:checked");
-        for(let i = 0; i < checked.length; i++) {
-            const ptid = checked[i].value;
-            this.state.userstat.set(ptid.toString(), rank);
-            this.updateRecord(ptid);
-        }
-        this.rankreset();
-        this.updateRankData();
-
-        // 창 닫기
-        if(this.state.pattern) {
-            this.updatePatternDialog(0);
-        }
-    }
-
-    updatePatternDialog(ptid) {
-        this.setState({
-            pattern: !this.state.pattern,
-            currentpt: ptid,
-            updatedlgType: 0,
-            updatedlgTitle: txtPIU.updatedivtitle[this.lang]
-        });
-    }
-
-    updatePatternMultiple() {
-        this.setState({
-            pattern: !this.state.pattern,
-            updatedlgType: 1,
-            updatedlgTitle: txtPIU.updatealldiv[this.lang]
-        });
-    }
-
-    updateRecord(ptid) {
+    updateRecord(ptid: number) {
         //console.log(ptid);
         const div = document.getElementById("cs"+ptid);
         const rankval = this.state.userstat.get(ptid.toString());
 
-        let rank = "";
-        switch(parseInt(rankval)) {
-            case 0: rank = "ss"; break;
-            case 1: rank = "gs"; break;
-            case 2: rank = "s"; break;
-            case 3: rank = "aon"; break;
-            case 4: rank = "aoff"; break;
-            case 5: rank = "bcdoff"; break;
-            case 6: rank = "f"; break;
-            case 7: rank = "np"; break;
-            case 8: rank = "bcdon"; break;
-        }
+        if(rankval) {
+            let rank = "";
+            switch(parseInt(rankval)) {
+                case 0: rank = "ss"; break;
+                case 1: rank = "gs"; break;
+                case 2: rank = "s"; break;
+                case 3: rank = "aon"; break;
+                case 4: rank = "aoff"; break;
+                case 5: rank = "bcdoff"; break;
+                case 6: rank = "f"; break;
+                case 7: rank = "np"; break;
+                case 8: rank = "bcdon"; break;
+            }
 
-        div.innerHTML = "\
-            <img style='width: 60%; position: 'absolute';\
-                right: '0px' src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
+            if(div)
+                div.innerHTML = "\
+                    <img style='width: 60%; position: 'absolute';\
+                        right: '0px' src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
+        }
     }
 
     hideRank() {
@@ -615,7 +496,7 @@ class SavedTable extends Component {
         });
     }
 
-    handleMusicType(type) {
+    handleMusicType(type: number) {
         switch(type) {
         case 0:
             this.setState({
@@ -640,39 +521,23 @@ class SavedTable extends Component {
         }
     }
 
-    musicTypeOnOff(type, bid) {
-        const box = document.getElementById(bid);
+    musicTypeOnOff(type: number, bid: string) {
+        const box = document.getElementById(bid) as HTMLInputElement;
         const divs = document.querySelectorAll("[data-songtype='"+type+"']");
-        if(box.checked) {
+        if(box && box.checked) {
             for(let i = 0; i < divs.length; i++) {
-                divs[i].parentNode.style.display = "block";
+                (divs[i].parentNode! as HTMLElement).style.display = "block";
             }
         }
         else {
             for(let i = 0; i < divs.length; i++) {
-                divs[i].parentNode.style.display = "none";
+                (divs[i].parentNode! as HTMLElement).style.display = "none";
             }
         }
     }
 
-    scrShot(divname, filename) {
-        window.scrollTo(0, 0);
-        const div = document.getElementById(divname);
-        html2canvas(div, {
-            useCORS: true,
-            allowTaint: false,
-            backgroundColor: "#000000",
-            scale: 1
-        })
-        .then(function(canvas) {
-            const el = document.createElement("a");
-            el.href = canvas.toDataURL("image/jpeg");
-            el.download = filename;
-            el.click();
-        })
-        .catch(function (error) {
-            console.error('oops, something went wrong!', error);
-        });
+    updatePatternDialog(ptid: number, title: string) {
+        // do nothing
     }
 
     render() {
@@ -687,7 +552,7 @@ class SavedTable extends Component {
                 <Alert onClose={() => console.log("")}>
                     <Row>
                         <Col xs="12" className="text-center">
-                            <b><font color="black">{txtPIU.test[self.lang]}</font></b>
+                            <b><span style={{color:"black"}}>{(txtPIU.test as any)[self.lang]}</span></b>
                         </Col>
                     </Row>
                 </Alert>
@@ -696,35 +561,13 @@ class SavedTable extends Component {
                         <Card>
                             <CardHeader style={chback}>
                                 <h3>Pump It Up XX</h3>
-                                <p>{txtPIU.sharepage.subtitle[self.lang]}</p>
+                                <p>{(txtPIU.sharepage.subtitle as any)[self.lang]}</p>
                             </CardHeader>
                             <CardBody>
                                 <Col xs="12" id="howto">
-                                    {txtPIU.sharepage.about1[self.lang]}<br/>
-                                    {txtPIU.sharepage.about2[self.lang]} <Link className="innerhref" to="https://piu.nira.one">piu.nira.one</Link>
+                                    {(txtPIU.sharepage.about1 as any)[self.lang]}<br/>
+                                    {(txtPIU.sharepage.about2 as any)[self.lang]} <Link className="innerhref" to="https://piu.nira.one">piu.nira.one</Link>
                                 </Col>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-
-                <Row style={{display: self.state.loaded ? "block" : "none"}}>
-                    <Col xs="12">
-                        <Card id="userinfo">
-                            <CardHeader style={chback}>
-                                <h3>Options</h3>
-                            </CardHeader>
-                            <CardBody>
-                                <Row className="text-center">
-                                    <Col xs="12" className="btn-group text-center">
-                                        <Button onClick={() => self.hideCheckbox()}>
-                                            {txtPIU.hidechkbox[self.lang]}
-                                        </Button>
-                                        <Button onClick={() => self.hideRank()}>
-                                            {txtPIU.hiderank[self.lang]}
-                                        </Button>
-                                    </Col>
-                                </Row>
                             </CardBody>
                         </Card>
                     </Col>
@@ -734,7 +577,7 @@ class SavedTable extends Component {
                     <Col xs="12">
                         <Card>
                             <CardHeader style={chback}>
-                                <h3>{txtPIU.songtype[self.lang]}</h3>
+                                <h3>{(txtPIU.songtype as any)[self.lang]}</h3>
                             </CardHeader>
                             <CardBody className="text-center">
                                 <input id="musarcade" type="checkbox" value="musarcade"
@@ -789,7 +632,6 @@ class SavedTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -800,7 +642,7 @@ class SavedTable extends Component {
                                     <Col xs="12">
                                         <Row>
                                             <Col xs="12" className="piu-left" id="catHigh">
-                                                {self.state.catHD}
+                                                {self.state.catHI}
                                             </Col>
                                         </Row>
                                         <Row id="lvHigh">
@@ -809,7 +651,6 @@ class SavedTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -829,7 +670,6 @@ class SavedTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -849,7 +689,6 @@ class SavedTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -869,7 +708,6 @@ class SavedTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -889,7 +727,6 @@ class SavedTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -909,7 +746,6 @@ class SavedTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
@@ -929,7 +765,6 @@ class SavedTable extends Component {
                                                     lang={self.lang}
                                                     showrank={self.state.showrank}
                                                     showcheck={self.state.showcheck}
-                                                    pattern={self.state.pattern}
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>

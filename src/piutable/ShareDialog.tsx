@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import txtPIU from './txtpiu';
-import Lang from './language';
+import Language from './language';
 
 import {
     Modal,
@@ -10,14 +10,22 @@ import {
     Button
 } from 'reactstrap';
 
-class ShareDialog extends Component {
-    lang = Lang.getLang();
+interface Props {
+    display: boolean,
+    content1: string,
+    content2: string,
+    close: () => void
+}
+
+class ShareDialog extends Component<Props> {
+    private langObj: Language = new Language();
+    private lang: string = this.langObj.getLang();
 
     render() {
         return (
             <Modal isOpen={this.props.display}>
                 <ModalHeader>
-                    {txtPIU.sharedlg.title[this.lang]}
+                    {(txtPIU.sharedlg.title as any)[this.lang]}
                 </ModalHeader>
                 <ModalBody>
                     {this.props.content1}<br/><br/>

@@ -8,23 +8,35 @@ import {
     Button
 } from 'reactstrap';
 
-let dlg = null;
+interface Props {
+    display: boolean,
+    title: string,
+    type: number,
+    ptid: number,
+    updatePatternDialog: (ptid: number) => void,
+    updateData: (ptid: number, rank: string) => void,
+    updateMultipleData: (rank: string) => void,
+    button: string
+}
 
-class PatternUpdateDialog extends Component {
-    constructor(props) {
+interface State {
+    rank: string
+}
+
+class PatternUpdateDialog extends Component<Props, State> {
+    constructor(props: Props) {
         super(props);
-        this.nameinput = React.createRef();
-        this.lvinput = React.createRef();
-        dlg = this;
 
-        this.state = {
-            rank: "0"
-        }
+        this.changeRank = this.changeRank.bind(this);
     }
 
-    changeRank(e) {
-        dlg.setState({
-            rank: e.target.value
+    state:State = {
+        rank: "0"
+    }
+
+    changeRank(e: React.FormEvent<HTMLSelectElement>) {
+        this.setState({
+            rank: e.currentTarget.value
         })
     }
 
@@ -60,7 +72,7 @@ class PatternUpdateDialog extends Component {
                         </div>
                     </ModalBody>
                     <ModalFooter>
-                        <Button onClick={() => prop.updatePatternDialog(0, "")}>
+                        <Button onClick={() => prop.updatePatternDialog(0)}>
                             Close
                         </Button>
                         <Button onClick={() => {

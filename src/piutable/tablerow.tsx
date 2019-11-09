@@ -1,14 +1,20 @@
 import React, {Component, Fragment} from 'react';
+import MusicInfo from './MusicInfo';
 
 import { Col } from 'reactstrap';
 
 const piuimg = "https://piu.nira.one/jacket/";
 
-class PIUTableObj extends Component {
-    constructor(props) {
-        super(props);
-    }
+interface Props {
+    list: Array<MusicInfo>,
+    lang: string,
+    key: string,
+    showcheck: boolean,
+    showrank: boolean,
+    updatePatternDialog: (ptid: number, title: string) => void
+}
 
+class PIUTableObj extends Component<Props> {
     render() {
         const self = this;
         const prop = this.props;
@@ -21,7 +27,7 @@ class PIUTableObj extends Component {
 
                         return (
                             <Fragment>
-                                <Col key={prop.key+i} xs="3" sm="2" className="div-pattern" key={"song"+i}>
+                                <Col key={prop.key+i} xs="3" sm="2" className="div-pattern">
                                     <input style={{transform: "scale(2)", left: "48%",
                                             display: self.props.showcheck ? "block":"none"}}
                                         type="checkbox" id="ptnsel" value={d.ptid} />
@@ -65,7 +71,7 @@ class PIUTableObj extends Component {
                                                 src={process.env.PUBLIC_URL+"/img/grade_"+d.rank+".png"} />
                                         </div>
                                         <img src={piuimg+d.musicid+".png"}
-                                            onError={(e) => {e.target.src = d.piuimg+"empty.jpg"}}
+                                            onError={(e) => {e.currentTarget.src = d.piuimg+"empty.jpg"}}
                                             style={{width: "100%", visibility: "hidden"}} />
                                     </div>
                                     <a className="innerhref" href="#no_div"
