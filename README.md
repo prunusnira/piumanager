@@ -14,5 +14,6 @@ Clear and rank management tool for rhythm game called 'Pump it up'
 
 1. Backend: node.js (express.js)
 2. Frontend: react.js
-3. Database: MariaDB  
+3. Database: MariaDB
+4. All codes are written with TypeScript  
 *Caution: This repo does not contain DB connection info*
