@@ -23,7 +23,6 @@ import {
 import PIUTableObj from './tablerow';
 import Language from './language';
 import CategoryList from './CategoryList';
-import { string } from 'prop-types';
 
 interface Props {
 
@@ -468,6 +467,8 @@ class PIUTable extends Component<Props, State> {
                 obj.titleen = current.title_en;
                 obj.musicid = current.musicid;
                 obj.steptype = current.steptype;
+                obj.version = current.version;
+                obj.new = current.new;
                 obj.rank = "np";
 
                 if(isOver) {
@@ -758,7 +759,7 @@ class PIUTable extends Component<Props, State> {
 
             if(div)
                 div.innerHTML = "\
-                    <img style='width: 60%; position: absolute; right: 0px;' \
+                    <img style='width: 60%; position: absolute; right: 0px; top: 30px;' \
                         src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
         }
     }
@@ -998,7 +999,7 @@ class PIUTable extends Component<Props, State> {
         }
 
         return (
-            <Container>
+            <Container fluid>
                 <Alert onClose={() => console.log("")}>
                     <Row>
                         <Col xs="12" className="text-center">
@@ -1047,14 +1048,14 @@ class PIUTable extends Component<Props, State> {
                                 <h4>{(txtPIU.functitle as any)[self.lang]}</h4>
                             </CardHeader>
                             <CardBody className="text-center btn-group">
-                                <Button onClick={() => self.newUser()}>
+                                <Button color="secondary" outline onClick={() => self.newUser()}>
                                     {(txtPIU.newuser as any)[self.lang]}
                                 </Button>
 
-                                <Button onClick={() => self.loadUser()}>
+                                <Button color="secondary" outline onClick={() => self.loadUser()}>
                                     {(txtPIU.load as any)[self.lang]}
                                 </Button>
-                                <Button onClick={() => self.saveUser()}>
+                                <Button color="secondary" outline onClick={() => self.saveUser()}>
                                     {(txtPIU.save as any)[self.lang]}
                                 </Button>
                             </CardBody>
@@ -1123,26 +1124,26 @@ class PIUTable extends Component<Props, State> {
                             <CardBody>
                                 <Row className="text-center">
                                     <Col xs="12" className="text-center btn-group">
-                                        <Button onClick={() => self.editUser()}>
+                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.editUser()}>
                                             {(txtPIU.edit as any)[self.lang]}
                                         </Button>
-                                        <Button onClick={() => self.updatePatternMultiple()}>
+                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.updatePatternMultiple()}>
                                             {(txtPIU.updatecheckedbtn as any)[self.lang]}
                                         </Button>
                                     </Col>
                                     <Col xs="12" className="text-center btn-group">
-                                        <Button onClick={() => self.hideCheckbox()}>
+                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.hideCheckbox()}>
                                             {(txtPIU.hidechkbox as any)[self.lang]}
                                         </Button>
-                                        <Button onClick={() => self.hideRank()}>
+                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.hideRank()}>
                                             {(txtPIU.hiderank as any)[self.lang]}
                                         </Button>
                                     </Col>
                                     <Col xs="12" className="text-center btn-group">
-                                        <Button onClick={() => self.scrShot('targetTable', "piu_"+self.state.username+"_"+self.state.steptype+"_"+self.state.steplv+"_"+this.unixTimeToText(new Date().getTime())+".jpg")}>
+                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.scrShot('targetTable', "piu_"+self.state.username+"_"+self.state.steptype+"_"+self.state.steplv+"_"+this.unixTimeToText(new Date().getTime())+".jpg")}>
                                             {(txtPIU.scrbtn as any)[this.lang]}
                                         </Button>
-                                        <Button onClick={() => self.shareURL()}>
+                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.shareURL()}>
                                             {(txtPIU.urlshare as any)[this.lang]}
                                         </Button>
                                     </Col>

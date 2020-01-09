@@ -24,7 +24,9 @@ class DBConn {
                     a.difftype as difftype,\
                     a.steptype as steptype,\
                     b.songtype as songtype,\
-                    a.removed as removed\
+                    a.removed as removed,\
+                    b.version as version,\
+                    b.new as new\
                 FROM piu_lvtable AS a\
                 JOIN (SELECT * FROM piu_songlist where removed=0) AS b\
                 WHERE\

@@ -70,3 +70,13 @@ p {
     overflow: "-moz-hidden-unscrollable";
 	overflow: "hidden";
 }
+
+.btn {
+	background-color: #dbdbdb;
+	color: #000000;
+}
+
+.btn:hover {
+	background-color: #eeef3e;
+	color: #000000;
+}

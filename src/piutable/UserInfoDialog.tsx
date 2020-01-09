@@ -94,10 +94,10 @@ class UserDialog extends Component<Props> {
                     </Row>
                 </ModalBody>
                 <ModalFooter>
-                    <Button onClick={() => self.closeDialog()}>
+                    <Button color="secondary" outlined="true" onClick={() => self.closeDialog()}>
                         Close
                     </Button>
-                    <Button onClick={() => self.addNewUser()}>
+                    <Button color="secondary" outlined="true" onClick={() => self.addNewUser()}>
                         {prop.button}
                     </Button>
                 </ModalFooter>

@@ -72,10 +72,10 @@ class PatternUpdateDialog extends Component<Props, State> {
                         </div>
                     </ModalBody>
                     <ModalFooter>
-                        <Button onClick={() => prop.updatePatternDialog(0)}>
+                        <Button color="secondary" outlined="true" onClick={() => prop.updatePatternDialog(0)}>
                             Close
                         </Button>
-                        <Button onClick={() => {
+                        <Button color="secondary" outlined="true" onClick={() => {
                             if(prop.type === 0) {
                                 prop.updateData(prop.ptid, self.state.rank);
                             }

@@ -32,7 +32,7 @@ class ShareDialog extends Component<Props> {
                     <b>{this.props.content2}</b>
                 </ModalBody>
                 <ModalFooter>
-                    <Button onClick={this.props.close}>OK</Button>
+                    <Button color="secondary" outlined="true" onClick={this.props.close}>OK</Button>
                 </ModalFooter>
             </Modal>
         )
