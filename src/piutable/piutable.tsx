@@ -1000,13 +1000,13 @@ class PIUTable extends Component<Props, State> {
 
         return (
             <Container fluid>
-                <Alert onClose={() => console.log("")}>
+                {/*<Alert onClose={() => console.log("")}>
                     <Row>
                         <Col xs="12" className="text-center">
                             <b><span style={{color:"black"}}>{(txtPIU.test as any)[self.lang]}</span></b>
                         </Col>
                     </Row>
-                </Alert>
+                </Alert>*/}
                 <Row>
                     <Col xs="12">
                         <Card>

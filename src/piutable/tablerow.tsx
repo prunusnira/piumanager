@@ -27,7 +27,7 @@ class PIUTableObj extends Component<Props> {
 
                         return (
                             <Fragment>
-                                <Col key={prop.key+i} xs="3" sm="2" className="div-pattern">
+                                <Col key={prop.key+i} xs="3" sm="2" xl="1" className="div-pattern">
                                     <input style={{transform: "scale(2)", left: "48%",
                                             display: self.props.showcheck ? "block":"none"}}
                                         type="checkbox" id="ptnsel" value={d.ptid} />
