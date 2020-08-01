@@ -3,7 +3,7 @@ class Language {
         let lang = navigator.language;// || navigator.systemLanguage;
         if(this.readCookie("lang") !== null &&
             (this.readCookie("lang") === 'ko' || this.readCookie("lang") === 'jp'
-                || this.readCookie("lang") === 'en' || this.readCookie("lang") === 'zh')
+                || this.readCookie("lang") === 'en' || this.readCookie("lang") === 'cn')
         ) {
             lang = this.readCookie("lang")!;
         }
@@ -15,7 +15,7 @@ class Language {
                 lang = 'jp';
             }
             else if(lang==='zh' || lang==='zh-cn' || lang==='zh-CN') {
-                lang = 'zh';
+                lang = 'cn';
             }
             else {
                 lang = 'en';

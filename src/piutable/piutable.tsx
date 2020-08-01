@@ -1021,10 +1021,11 @@ class PIUTable extends Component<Props, State> {
                                         Language Select:&nbsp;
                                         <Link to="#no_div" className="innerhref" onClick={() => this.langChange('ko')}>한국어</Link>&nbsp;
                                         <Link to="#no_div" className="innerhref" onClick={() => this.langChange('jp')}>日本語</Link>&nbsp;
-                                        <Link to="#no_div" className="innerhref" onClick={() => this.langChange('zh')}>中文</Link>&nbsp;
+                                        <Link to="#no_div" className="innerhref" onClick={() => this.langChange('cn')}>中文简体</Link>&nbsp;
                                         <Link to="#no_div" className="innerhref" onClick={() => this.langChange('en')}>English</Link>
                                         <br/>
-                                        <b><span style={{fontSize:"80%"}}>(Unsaved data will be lost)</span></b>
+                                        <b><span style={{fontSize:"80%"}}>(Unsaved data will be lost)</span></b><br/>
+                                        <span style={{fontSize:"80%"}}>Simplified chinese translation by ZM-J</span>
                                     </Col>
                                 </Row>
                                 <hr/>
