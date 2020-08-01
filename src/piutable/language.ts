@@ -2,7 +2,8 @@ class Language {
     getLang(): string {
         let lang = navigator.language;// || navigator.systemLanguage;
         if(this.readCookie("lang") !== null &&
-            (this.readCookie("lang") === 'ko' || this.readCookie("lang") === 'jp' || this.readCookie("lang") === 'en')
+            (this.readCookie("lang") === 'ko' || this.readCookie("lang") === 'jp'
+                || this.readCookie("lang") === 'en' || this.readCookie("lang") === 'zh')
         ) {
             lang = this.readCookie("lang")!;
         }
@@ -12,6 +13,9 @@ class Language {
             }
             else if(lang==='ja' || lang==='ja-jp' || lang==='ja-JP') {
                 lang = 'jp';
+            }
+            else if(lang==='zh' || lang==='zh-cn' || lang==='zh-CN') {
+                lang = 'zh';
             }
             else {
                 lang = 'en';
