@@ -9,12 +9,6 @@
  *    this server are on USED-LIBRARIES file on root
  *****************************************************/
 const txtPIU = {
-    test: {
-        "jp":"サイトのアドレスをpiu.nira.oneに変更しました。piu.gitadora.infoは2020年4月13日まで使えます。",
-        "ko":"사이트의 주소를 piu.nira.one으로 변경하였습니다. piu.gitadora.info는 2020년 4월 13일까지 사용 가능합니다.",
-        "en":"Address is changed to piu.nira.one . piu.gitadora.info can be used until Apr. 13, 2020",
-        "cn":"网址已经改成piu.nira.one。piu.gitadora.info在2020年4月13日之后不可用。"
-    },
     howto1: {
         "jp":"How to use:",
         "ko":"How to use:",
@@ -40,10 +34,10 @@ const txtPIU = {
         "cn":"选择难度与谱面来获得分级列表，然后点选每个谱面来设定评价状态"
     },
     howto5: {
-        "jp":"「ファイル保存」でCSVファイルをダウンロード",
-        "ko":"「파일저장」버튼을 누르고 CSV 파일을 보관",
-        "en":"「Save File」 to save your progress via CSV file",
-        "cn":"「保存文件」来将你的进度保存为CSV文件"
+        "jp":"「ファイル保存」でDATファイルをダウンロード",
+        "ko":"「파일저장」버튼을 누르고 DAT 파일을 보관",
+        "en":"「Save File」 to save your progress via DAT file",
+        "cn":"「保存文件」来将你的进度保存为DAT文件"
     },
     subtitle: {
         "jp":"記録管理ツール",

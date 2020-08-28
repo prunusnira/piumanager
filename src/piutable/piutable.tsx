@@ -17,8 +17,7 @@ import {
     Card,
     CardHeader,
     CardBody,
-    Button,
-    Alert
+    Button
 } from 'reactstrap';
 import PIUTableObj from './tablerow';
 import Language from './language';
@@ -265,12 +264,22 @@ class PIUTable extends Component<Props, State> {
         const fr = new FileReader();
         fr.onload = function(e: any) {
             const result = e.target.result;
-            self.callbackOpen(result);
+            if(file.name.endsWith(".dat")) {
+                self.callbackOpen(result);
+            }
+            else if(file.name.endsWith(".csv")) {
+                self.callbackOpenCSV(result);
+            }
         };
         fr.readAsText(file);
     }
-    
+
     callbackOpen(result: string) {
+        const str = atob(result);
+        this.callbackOpenCSV(str);
+    }
+    
+    callbackOpenCSV(result: string) {
         const str = result.split("\n");
         
         const userinfo = str[0].split(",");
@@ -303,8 +312,8 @@ class PIUTable extends Component<Props, State> {
         
         // 데이터를 새 파일(임시)에 쓰고 다운로드
         const elem = document.createElement("a");
-        elem.setAttribute("href", "data:text/plain;charset=utf-8,"+encodeURIComponent(text));
-        elem.setAttribute("download", "piudata_"+this.state.username+"_"+this.unixTimeToText(new Date().getTime())+".csv");
+        elem.setAttribute("href", "data:text/plain;charset=utf-8,"+btoa(text));
+        elem.setAttribute("download", "piudata_"+this.state.username+"_"+this.unixTimeToText(new Date().getTime())+".dat");
         elem.style.display = 'none';
         document.body.appendChild(elem);
         elem.click();
@@ -1361,7 +1370,7 @@ class PIUTable extends Component<Props, State> {
                     </Col>
                 </Row>
                 
-                <input id="fileopen" accept=".csv" type="file"
+                <input id="fileopen" accept=".csv, .dat" type="file"
                     name="fileopen" style={{display:"none"}} />
 
                 <UserDialog title={self.state.userdlgTitle}

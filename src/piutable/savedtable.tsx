@@ -549,13 +549,6 @@ class SavedTable extends Component<
 
         return (
             <Container>
-                <Alert onClose={() => console.log("")}>
-                    <Row>
-                        <Col xs="12" className="text-center">
-                            <b><span style={{color:"black"}}>{(txtPIU.test as any)[self.lang]}</span></b>
-                        </Col>
-                    </Row>
-                </Alert>
                 <Row>
                     <Col xs="12">
                         <Card>
