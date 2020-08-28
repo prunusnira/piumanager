@@ -128,6 +128,7 @@ class PIUTable extends Component<Props, State> {
         this.rankreset = this.rankreset.bind(this);
         this.updateRankData = this.updateRankData.bind(this);
         this.shareDlgClose = this.shareDlgClose.bind(this);
+        this.callbackOpen = this.callbackOpen.bind(this);
         (window as any).callbackOpen = this.callbackOpen;
 
         this.state = {
