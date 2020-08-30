@@ -259,16 +259,37 @@ class PIUTable extends Component<Props, State> {
         }
     }
 
+    loadUserDAT() {
+        // 파일 열기 대화상자를 열고 데이터를 가져옴
+        if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+            alert((txtPIU.loadwarn as any)[this.lang]);
+        }
+
+        const self = this;
+        const fileopen = document.getElementById("fileopentmp");
+        if(fileopen) {
+            fileopen.click();
+            fileopen.onchange = (e: any) => {
+                self.handleFileSelect(e.target.files[0]);
+                // 데이터 열기
+                self.setState({
+                    loaded: true
+                });
+            }
+        }
+    }
+
     handleFileSelect(file: File) {
         const self = this;
         const fr = new FileReader();
         fr.onload = function(e: any) {
-            const result = e.target.result;
-            if(file.name.endsWith(".dat")) {
+            const result: string = e.target.result;
+            
+            if(!result.includes(",")) {
                 self.callbackOpen(result);
             }
-            else if(file.name.endsWith(".csv")) {
-                self.callbackOpenCSV(result);
+            else {
+                self.callbackOpenOrigin(result);
             }
         };
         fr.readAsText(file);
@@ -276,10 +297,10 @@ class PIUTable extends Component<Props, State> {
 
     callbackOpen(result: string) {
         const str = atob(result);
-        this.callbackOpenCSV(str);
+        this.callbackOpenOrigin(str);
     }
     
-    callbackOpenCSV(result: string) {
+    callbackOpenOrigin(result: string) {
         const str = result.split("\n");
         
         const userinfo = str[0].split(",");
@@ -313,7 +334,7 @@ class PIUTable extends Component<Props, State> {
         // 데이터를 새 파일(임시)에 쓰고 다운로드
         const elem = document.createElement("a");
         elem.setAttribute("href", "data:text/plain;charset=utf-8,"+btoa(text));
-        elem.setAttribute("download", "piudata_"+this.state.username+"_"+this.unixTimeToText(new Date().getTime())+".dat");
+        elem.setAttribute("download", "piudata_"+this.state.username+"_"+this.unixTimeToText(new Date().getTime())+".csv");
         elem.style.display = 'none';
         document.body.appendChild(elem);
         elem.click();
@@ -1011,13 +1032,13 @@ class PIUTable extends Component<Props, State> {
 
         return (
             <Container fluid>
-                {/*<Alert onClose={() => console.log("")}>
-                    <Row>
-                        <Col xs="12" className="text-center">
-                            <b><span style={{color:"black"}}>{(txtPIU.test as any)[self.lang]}</span></b>
-                        </Col>
-                    </Row>
-                </Alert>*/}
+                <Row style={{padding: "20px"}}>
+                    <Col xs="12" className="text-center">
+                        <b>※ IMPORTANT NOTICE ※</b><br/>
+                        <b><span style={{color:"pink"}}>{(txtPIU.notice as any)[self.lang]}</span></b><br/>
+                        <a style={{color:"lightblue"}} href="https://twitter.com/_nira_one">Twitter Link</a>
+                    </Col>
+                </Row>
                 <Row>
                     <Col xs="12">
                         <Card>
@@ -1060,17 +1081,27 @@ class PIUTable extends Component<Props, State> {
                             <CardHeader style={chback}>
                                 <h4>{(txtPIU.functitle as any)[self.lang]}</h4>
                             </CardHeader>
-                            <CardBody className="text-center btn-group">
-                                <Button color="secondary" outline onClick={() => self.newUser()}>
-                                    {(txtPIU.newuser as any)[self.lang]}
-                                </Button>
-
-                                <Button color="secondary" outline onClick={() => self.loadUser()}>
-                                    {(txtPIU.load as any)[self.lang]}
-                                </Button>
-                                <Button color="secondary" outline onClick={() => self.saveUser()}>
-                                    {(txtPIU.save as any)[self.lang]}
-                                </Button>
+                            <CardBody className="text-center">
+                                <Row>
+                                    <Col xs="12" className="btn-group">
+                                        <Button color="secondary" outline onClick={() => self.newUser()}>
+                                            {(txtPIU.newuser as any)[self.lang]}
+                                        </Button>
+                                        <Button color="secondary" outline onClick={() => self.loadUser()}>
+                                            {(txtPIU.load as any)[self.lang]} (CSV)
+                                        </Button>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col xs="12" className="btn-group">
+                                        <Button color="secondary" outline onClick={() => self.loadUserDAT()}>
+                                            {(txtPIU.load as any)[self.lang]} (DAT)
+                                        </Button>
+                                        <Button color="secondary" outline onClick={() => self.saveUser()}>
+                                            {(txtPIU.save as any)[self.lang]}
+                                        </Button>
+                                    </Col>
+                                </Row>
                             </CardBody>
                         </Card>
                     </Col>
@@ -1370,8 +1401,11 @@ class PIUTable extends Component<Props, State> {
                     </Col>
                 </Row>
                 
-                <input id="fileopen" accept=".csv, .dat" type="file"
+                <input id="fileopen" accept=".csv" type="file"
                     name="fileopen" style={{display:"none"}} />
+
+                <input id="fileopentmp" accept=".dat" type="file"
+                    name="fileopentmp" style={{display:"none"}} />
 
                 <UserDialog title={self.state.userdlgTitle}
                     curname={self.state.username}

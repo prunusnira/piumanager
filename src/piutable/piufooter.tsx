@@ -21,7 +21,7 @@ class PIUFooter extends Component {
                         Source Code:&nbsp;
                         <a style={astyle} href="https://github.com/prunusnira/piumanager"
                             target="_blank">GitHub</a><br/>
-                        Recent System Update: Jan. 29, 2020
+                        Recent System Update: Aug. 30, 2020
                     </Col>
                 </Row>
             </footer>

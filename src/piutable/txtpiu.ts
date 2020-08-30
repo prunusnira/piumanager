@@ -9,6 +9,12 @@
  *    this server are on USED-LIBRARIES file on root
  *****************************************************/
 const txtPIU = {
+    notice: {
+        "jp":"最近のシステム更新後ファイルを保存できない方はprunusnira@gmail.comもしやTwitter @_nira_oneにてご連絡ください(CSVファイルを送ってください)",
+        "ko":"최근 업데이트 후 파일 저장이 안되시는 분들은 prunusnira@gmail.com 혹은 트위터 @_nira_one으로 반드시 연락주세요 (CSV 파일을 보내주세요)",
+        "en":"If you have trouble saving file after recent update, please contact me in prunusnira@gmail.com or Twitter @_nira_one (Please send me csv file)",
+        "cn":"If you have trouble saving file after recent update, please contact me in prunusnira@gmail.com or Twitter @_nira_one (Please send me csv file)"
+    },
     howto1: {
         "jp":"How to use:",
         "ko":"How to use:",
@@ -34,10 +40,10 @@ const txtPIU = {
         "cn":"选择难度与谱面来获得分级列表，然后点选每个谱面来设定评价状态"
     },
     howto5: {
-        "jp":"「ファイル保存」でDATファイルをダウンロード",
-        "ko":"「파일저장」버튼을 누르고 DAT 파일을 보관",
-        "en":"「Save File」 to save your progress via DAT file",
-        "cn":"「保存文件」来将你的进度保存为DAT文件"
+        "jp":"「ファイル保存」でCSVファイルをダウンロード",
+        "ko":"「파일저장」버튼을 누르고 CSV 파일을 보관",
+        "en":"「Save File」 to save your progress via CSV file",
+        "cn":"「保存文件」来将你的进度保存为CSV文件"
     },
     subtitle: {
         "jp":"記録管理ツール",
