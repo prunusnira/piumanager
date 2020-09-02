@@ -11,8 +11,7 @@ import {
     Col,
     Card,
     CardHeader,
-    CardBody,
-    Alert
+    CardBody
 } from 'reactstrap';
 import PIUTableObj from './tablerow';
 import Language from './language';

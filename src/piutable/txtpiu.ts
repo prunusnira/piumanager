@@ -22,24 +22,18 @@ const txtPIU = {
         "cn":"如何使用"
     },
     howto2: {
-        "jp":"iOSの場合はiOS 13以上のバージョンが必要",
-        "ko":"iOS에서 사용하기 위해서는 iOS 13 이상이어야 함",
-        "en":"If you are using iOS, you need iOS 13 or newer",
-        "cn":"iOS用户需要iOS 13以上版本",
-    },
-    howto3: {
         "jp":"「新規作成」や「ファイル読み」でユーザー情報を読み出す",
         "ko":"「신규유저」나「파일열기」버튼을 눌러 정보를 불러옴",
         "en":"Load user information with 「New user」 or 「Load File」",
         "cn":"用「新用户」或者「加载文件」来加载用户信息"
     },
-    howto4: {
+    howto3: {
         "jp":"難易度を選択して譜面を選び、ランク情報を設定",
         "ko":"난이도/패턴을 선택하여 랭크 정보를 설정",
         "en":"Select levels and patterns to load list, and then click each pattern to set rank status",
         "cn":"选择难度与谱面来获得分级列表，然后点选每个谱面来设定评价状态"
     },
-    howto5: {
+    howto4: {
         "jp":"「ファイル保存」でCSVファイルをダウンロード",
         "ko":"「파일저장」버튼을 누르고 CSV 파일을 보관",
         "en":"「Save File」 to save your progress via CSV file",
@@ -158,10 +152,10 @@ const txtPIU = {
         "cn":"更新所有已选择的谱面"
     },
     updatecheckedbtn: {
-        "jp":"チェックした譜面を更新",
-        "ko":"체크한 패턴 일괄 갱신",
-        "en":"Update Checked Patterns",
-        "cn":"更新选择的谱面"
+        "jp":"譜面を更新",
+        "ko":"일괄 갱신",
+        "en":"Update all",
+        "cn":"选择的更新"
     },
     updatedivtitle: {
         "jp":"譜面ランク更新",
@@ -175,17 +169,17 @@ const txtPIU = {
         "en":"Select rank",
         "cn":"选择评价"
     },
-    hidechkbox: {
-        "jp":"チェックボックスを隠す/見せる",
-        "ko":"체크박스 숨기기/보이기",
-        "en":"Hide/Show Checkboxes",
-        "cn":"隐藏/显示复选框"
+    display: {
+        "jp":"表示",
+        "ko":"표시",
+        "en":"On/Off",
+        "cn":"显示"
     },
-    hiderank: {
-        "jp":"ランクを隠す/見せる",
-        "ko":"랭크 숨기기/보이기",
-        "en":"Hide/Show Rank",
-        "cn":"隐藏/显示评价"
+    rank: {
+        "jp":"ランク",
+        "ko":"랭크",
+        "en":"Rank",
+        "cn":"评价"
     },
     songtype: {
         "jp":"表示する曲のタイプを選択",
@@ -250,15 +244,15 @@ const txtPIU = {
         "cn":"菜单"
     },
     scrbtn: {
-        "jp":"スクショで共有",
-        "ko":"스크린샷으로 공유",
-        "en":"Take Screenshot",
+        "jp":"スクショ",
+        "ko":"스크린샷",
+        "en":"Screenshot",
         "cn":"生成截图"
     },
     urlshare: {
-        "jp":"URLで共有",
-        "ko":"URL로 공유",
-        "en":"Share with URL",
+        "jp":"URL共有",
+        "ko":"URL공유",
+        "en":"Share URL",
         "cn":"分享URL"
     },
     sharedlg: {
@@ -300,6 +294,12 @@ const txtPIU = {
             "en":"You can have you own here→",
             "cn":"你可以在此管理你自己的→"
         }
+    },
+    iosalert: {
+        "jp":"iOSの場合はiOS13以上のバージョンが必要です",
+        "ko":"iOS에서 사용하기 위해서는 iOS13 이상이어야 합니다",
+        "en":"If you are using iOS, you need iOS13 or newer",
+        "cn":"iOS用户需要iOS13以上版本",
     }
 }
 

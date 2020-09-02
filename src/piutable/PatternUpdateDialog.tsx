@@ -5,7 +5,9 @@ import {
     ModalHeader,
     ModalBody,
     ModalFooter,
-    Button
+    Button,
+    Row,
+    Col
 } from 'reactstrap';
 
 interface Props {
@@ -13,10 +15,13 @@ interface Props {
     title: string,
     type: number,
     ptid: number,
-    updatePatternDialog: (ptid: number) => void,
+    updatePatternDialog: (ptid: number, title: string) => void,
     updateData: (ptid: number, rank: string) => void,
     updateMultipleData: (rank: string) => void,
-    button: string
+    button: string,
+    currentUpdateTitle: string,
+    steptype: string,
+    steplv: number
 }
 
 interface State {
@@ -53,26 +58,36 @@ class PatternUpdateDialog extends Component<Props, State> {
                         {prop.title}
                     </ModalHeader>
                     <ModalBody>
-                        <div className='form-group'>
-                            <label htmlFor='grade'>Select rank:</label>
-                            <select className='form-control'
-                                    id='grade'
-                                    onChange={self.changeRank}
-                                    value={self.state.rank}>
-                                <option value='0'>SSS</option>
-                                <option value='1'>SS</option>
-                                <option value='2'>S</option>
-                                <option value='3'>A (Break On)</option>
-                                <option value='4'>A (Break Off)</option>
-                                <option value='8'>BCD (Break On)</option>
-                                <option value='5'>BCD (Break Off)</option>
-                                <option value='6'>F or GameOver</option>
-                                <option value='7'>No Play</option>
-                            </select>
-                        </div>
+                        <Row>
+                            <Col xs="12">
+                                {prop.currentUpdateTitle}
+                                <br/>
+                                {prop.steptype}&nbsp;{prop.steplv}
+                            </Col>
+                        </Row>
+                        <hr/>
+                        <Row>
+                            <Col xs="12" className="form-group">
+                                <label htmlFor='grade'>Select rank:</label>
+                                <select className='form-control'
+                                        id='grade'
+                                        onChange={self.changeRank}
+                                        value={self.state.rank}>
+                                    <option value='0'>SSS</option>
+                                    <option value='1'>SS</option>
+                                    <option value='2'>S</option>
+                                    <option value='3'>A (Break On)</option>
+                                    <option value='4'>A (Break Off)</option>
+                                    <option value='8'>BCD (Break On)</option>
+                                    <option value='5'>BCD (Break Off)</option>
+                                    <option value='6'>F or GameOver</option>
+                                    <option value='7'>No Play</option>
+                                </select>
+                            </Col>
+                        </Row>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="secondary" outlined="true" onClick={() => prop.updatePatternDialog(0)}>
+                        <Button color="secondary" outlined="true" onClick={() => prop.updatePatternDialog(0, "")}>
                             Close
                         </Button>
                         <Button color="secondary" outlined="true" onClick={() => {

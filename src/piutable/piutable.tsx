@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faImages, faShareAltSquare, faCheckSquare} from '@fortawesome/free-solid-svg-icons';
 import txtPIU from './txtpiu';
 import './piu-custom.css';
 import UserDialog from './UserInfoDialog';
@@ -22,6 +23,7 @@ import {
 import PIUTableObj from './tablerow';
 import Language from './language';
 import CategoryList from './CategoryList';
+import { env } from 'process';
 
 interface Props {
 
@@ -94,6 +96,7 @@ interface State {
     isOver: boolean,
     updatedlgTitle: string,
     updatedlgType: number,
+    currentUpdateTitle: string,
 
     // sharedlg
     shareDlgShow: boolean,
@@ -166,7 +169,7 @@ class PIUTable extends Component<Props, State> {
             changerank: false,
             pattern: false,
             showrank: true,
-            showcheck: true,
+            showcheck: false,
 
             // category text
             catOV: "",
@@ -196,7 +199,8 @@ class PIUTable extends Component<Props, State> {
             currentpt: 0,
             isOver: false,
             updatedlgTitle: "",
-            updatedlgType: 0,
+            updatedlgType: 0,   // 0: 1 song, 1: multiple
+            currentUpdateTitle: "",
 
             // sharedlg
             shareDlgShow: false,
@@ -731,7 +735,7 @@ class PIUTable extends Component<Props, State> {
 
         // 창 닫기
         if(this.state.pattern) {
-            this.updatePatternDialog(ptid);
+            this.updatePatternDialog(ptid, "");
         }
     }
 
@@ -747,13 +751,14 @@ class PIUTable extends Component<Props, State> {
 
         // 창 닫기
         if(this.state.pattern) {
-            this.updatePatternDialog(0);
+            this.updatePatternDialog(0, "");
         }
     }
 
-    updatePatternDialog(ptid: number) {
+    updatePatternDialog(ptid: number, title: string) {
         this.setState({
             pattern: !this.state.pattern,
+            currentUpdateTitle: title,
             currentpt: ptid,
             updatedlgType: 0,
             updatedlgTitle: (txtPIU.updatedivtitle as any)[this.lang]
@@ -791,7 +796,7 @@ class PIUTable extends Component<Props, State> {
 
             if(div)
                 div.innerHTML = "\
-                    <img style='width: 60%; position: absolute; right: 0px; top: 30px;' \
+                    <img style='width: 50%; position: absolute; right: 0px; top: 0px;' \
                         src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
         }
     }
@@ -1017,11 +1022,6 @@ class PIUTable extends Component<Props, State> {
             shareDlgShow: false
         });
     }
-    
-    langChange(type: string): void {
-        document.cookie = "lang="+type+"; path=/";
-        window.location.reload();
-    }
 
     render() {
         const self = this;
@@ -1032,42 +1032,53 @@ class PIUTable extends Component<Props, State> {
 
         return (
             <Container fluid>
-                <Row style={{padding: "20px"}}>
-                    <Col xs="12" className="text-center">
-                        <b>※ IMPORTANT NOTICE ※</b><br/>
-                        <b><span style={{color:"pink"}}>{(txtPIU.notice as any)[self.lang]}</span></b><br/>
-                        <a style={{color:"lightblue"}} href="https://twitter.com/_nira_one">Twitter Link</a>
-                    </Col>
-                </Row>
                 <Row>
                     <Col xs="12">
                         <Card>
                             <CardHeader style={chback}>
+                                <img src={process.env.PUBLIC_URL+"/logo192.png"}
+                                    style={{width: "40px", height: "40px"}} />
+                                &nbsp;
                                 <span style={{fontSize:"150%"}}>Pump It Up</span>
                                 &nbsp;
                                 <span>{(txtPIU.subtitle as any)[self.lang]}</span>
                             </CardHeader>
                             <CardBody>
-                                <Row>
-                                    <Col xs="12" className="text-right">
-                                        Language Select:&nbsp;
-                                        <Link to="#no_div" className="innerhref" onClick={() => this.langChange('ko')}>한국어</Link>&nbsp;
-                                        <Link to="#no_div" className="innerhref" onClick={() => this.langChange('jp')}>日本語</Link>&nbsp;
-                                        <Link to="#no_div" className="innerhref" onClick={() => this.langChange('cn')}>中文简体</Link>&nbsp;
-                                        <Link to="#no_div" className="innerhref" onClick={() => this.langChange('en')}>English</Link>
-                                        <br/>
-                                        <b><span style={{fontSize:"80%"}}>(Unsaved data will be lost)</span></b><br/>
-                                        <span style={{fontSize:"80%"}}>Simplified chinese translation by ZM-J</span>
+                                <Row style={{padding: "20px"}}>
+                                    <Col xs="12" className="text-center">
+                                        <b>※ IMPORTANT NOTICE ※</b><br/>
+                                        <b><span style={{color:"pink"}}>{(txtPIU.notice as any)[self.lang]}</span></b><br/>
+                                        <a style={{color:"lightblue"}} href="https://twitter.com/_nira_one">Twitter Link</a>
+                                        &nbsp;<span style={{fontSize:"75%"}}>(Link not working for Android App)</span>
                                     </Col>
                                 </Row>
-                                <hr/>
                                 <Row>
-                                    <Col xs="12" id="howto">
+                                    <Col xs="12" md="8">
                                         {(txtPIU.howto1 as any)[self.lang]}<br/>
-                                        1. {(txtPIU.howto2 as any)[self.lang]}<br/>
-                                        2. {(txtPIU.howto3 as any)[self.lang]}<br/>
-                                        3. {(txtPIU.howto4 as any)[self.lang]}<br/>
-                                        4. {(txtPIU.howto5 as any)[self.lang]}
+                                        <ol>
+                                            <li>{(txtPIU.howto2 as any)[self.lang]}</li>
+                                            <li>{(txtPIU.howto3 as any)[self.lang]}</li>
+                                            <li>{(txtPIU.howto4 as any)[self.lang]}</li>
+                                        </ol>
+                                    </Col>
+
+                                    <Col xs="12" md="4">
+                                        <Row>
+                                            <Col xs="12" className="btn-group-vertical">
+                                                <Button color="secondary" outline onClick={() => self.newUser()}>
+                                                    {(txtPIU.newuser as any)[self.lang]}
+                                                </Button>
+                                                <Button color="secondary" outline onClick={() => self.loadUser()}>
+                                                    {(txtPIU.load as any)[self.lang]} (CSV)
+                                                </Button>
+                                                <Button color="secondary" outline onClick={() => self.loadUserDAT()}>
+                                                    {(txtPIU.load as any)[self.lang]} (DAT)
+                                                </Button>
+                                                <Button color="secondary" outline onClick={() => self.saveUser()}>
+                                                    {(txtPIU.save as any)[self.lang]}
+                                                </Button>
+                                            </Col>
+                                        </Row>
                                     </Col>
                                 </Row>
                             </CardBody>
@@ -1077,144 +1088,125 @@ class PIUTable extends Component<Props, State> {
 
                 <Row>
                     <Col xs="12">
-                        <Card>
-                            <CardHeader style={chback}>
-                                <h4>{(txtPIU.functitle as any)[self.lang]}</h4>
-                            </CardHeader>
-                            <CardBody className="text-center">
-                                <Row>
-                                    <Col xs="12" className="btn-group">
-                                        <Button color="secondary" outline onClick={() => self.newUser()}>
-                                            {(txtPIU.newuser as any)[self.lang]}
-                                        </Button>
-                                        <Button color="secondary" outline onClick={() => self.loadUser()}>
-                                            {(txtPIU.load as any)[self.lang]} (CSV)
-                                        </Button>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col xs="12" className="btn-group">
-                                        <Button color="secondary" outline onClick={() => self.loadUserDAT()}>
-                                            {(txtPIU.load as any)[self.lang]} (DAT)
-                                        </Button>
-                                        <Button color="secondary" outline onClick={() => self.saveUser()}>
-                                            {(txtPIU.save as any)[self.lang]}
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-                <Row style={{display: self.state.loaded ? "block" : "none"}}>
-                    <Col xs="12">
-                        <Card>
+                        <Card style={{display: self.state.loaded ? "block" : "none"}}>
                             <CardHeader id="seldiffSingletitle" style={chback}>
-                                <h3>{(txtPIU.patternsel as any)[self.lang]}</h3>
-                            </CardHeader>
-                            <CardBody className="text-center" id="seldiffSingle">
-                                <Row>
-                                    <Col xs="6" className="text-center">
-                                        SINGLE<br/>
-                                        <select className="form-control"
-                                            onChange={(e) => self.getPatterns('s', e.target.value)}>
-                                            <option value="12">SELECT</option>
-                                            <option value="13">13</option>
-                                            <option value="14">14</option>
-                                            <option value="15">15</option>
-                                            <option value="16">16</option>
-                                            <option value="17">17</option>
-                                            <option value="18">18</option>
-                                            <option value="19">19</option>
-                                            <option value="20">20</option>
-                                            <option value="21">21</option>
-                                            <option value="22">22</option>
-                                            <option value="23">23</option>
-                                            <option value="24">24+</option>
-                                        </select>
-                                    </Col>
-                                    <Col xs="6" className="text-center">
-                                        DOUBLE<br/>
-                                        <select className="form-control"
-                                            onChange={(e) => self.getPatterns('d', e.target.value)}>
-                                            <option value="12">SELECT</option>
-                                            <option value="13">13</option>
-                                            <option value="14">14</option>
-                                            <option value="15">15</option>
-                                            <option value="16">16</option>
-                                            <option value="17">17</option>
-                                            <option value="18">18</option>
-                                            <option value="19">19</option>
-                                            <option value="20">20</option>
-                                            <option value="21">21</option>
-                                            <option value="22">22</option>
-                                            <option value="23">23</option>
-                                            <option value="24">24</option>
-                                            <option value="25">25+</option>
-                                        </select>
-                                    </Col>
-                                </Row>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-
-                <Row style={{display: self.state.loaded ? "block" : "none"}}>
-                    <Col xs="12">
-                        <Card id="userinfo">
-                            <CardHeader style={chback}>
                                 <h4>{(txtPIU.menu as any)[this.lang]}</h4>
                             </CardHeader>
-                            <CardBody>
-                                <Row className="text-center">
-                                    <Col xs="12" className="text-center btn-group">
-                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.editUser()}>
-                                            {(txtPIU.edit as any)[self.lang]}
-                                        </Button>
-                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.updatePatternMultiple()}>
-                                            {(txtPIU.updatecheckedbtn as any)[self.lang]}
-                                        </Button>
+                            <CardBody id="seldiffSingle">
+                                <Row>
+                                    <Col xs="12" md="6">
+                                        <Row>
+                                            <Col xs="12" className="text-center">
+                                                {(txtPIU.patternsel as any)[self.lang]}
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col xs="6" className="text-center">
+                                                SINGLE<br/>
+                                                <select className="form-control"
+                                                    onChange={(e) => self.getPatterns('s', e.target.value)}>
+                                                    <option value="12">SELECT</option>
+                                                    <option value="13">13</option>
+                                                    <option value="14">14</option>
+                                                    <option value="15">15</option>
+                                                    <option value="16">16</option>
+                                                    <option value="17">17</option>
+                                                    <option value="18">18</option>
+                                                    <option value="19">19</option>
+                                                    <option value="20">20</option>
+                                                    <option value="21">21</option>
+                                                    <option value="22">22</option>
+                                                    <option value="23">23</option>
+                                                    <option value="24">24+</option>
+                                                </select>
+                                            </Col>
+                                            <Col xs="6" className="text-center">
+                                                DOUBLE<br/>
+                                                <select className="form-control"
+                                                    onChange={(e) => self.getPatterns('d', e.target.value)}>
+                                                    <option value="12">SELECT</option>
+                                                    <option value="13">13</option>
+                                                    <option value="14">14</option>
+                                                    <option value="15">15</option>
+                                                    <option value="16">16</option>
+                                                    <option value="17">17</option>
+                                                    <option value="18">18</option>
+                                                    <option value="19">19</option>
+                                                    <option value="20">20</option>
+                                                    <option value="21">21</option>
+                                                    <option value="22">22</option>
+                                                    <option value="23">23</option>
+                                                    <option value="24">24</option>
+                                                    <option value="25">25+</option>
+                                                </select>
+                                            </Col>
+                                        </Row>
                                     </Col>
-                                    <Col xs="12" className="text-center btn-group">
-                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.hideCheckbox()}>
-                                            {(txtPIU.hidechkbox as any)[self.lang]}
-                                        </Button>
-                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.hideRank()}>
-                                            {(txtPIU.hiderank as any)[self.lang]}
-                                        </Button>
-                                    </Col>
-                                    <Col xs="12" className="text-center btn-group">
-                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.scrShot('targetTable', "piu_"+self.state.username+"_"+self.state.steptype+"_"+self.state.steplv+"_"+this.unixTimeToText(new Date().getTime())+".jpg")}>
-                                            {(txtPIU.scrbtn as any)[this.lang]}
-                                        </Button>
-                                        <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.shareURL()}>
-                                            {(txtPIU.urlshare as any)[this.lang]}
-                                        </Button>
+
+                                    <Col xs="12" md="6">
+                                        <Row>
+                                            <Col xs="12" className="text-center">
+                                                {(txtPIU.menu as any)[self.lang]}
+                                            </Col>
+                                        </Row>
+                                        <Row className="text-center">
+                                            <Col xs="12" className="text-center btn-group">
+                                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.editUser()}>
+                                                    {(txtPIU.edit as any)[self.lang]}
+                                                </Button>
+                                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.updatePatternMultiple()}>
+                                                    <FontAwesomeIcon icon={faCheckSquare} />
+                                                    {(txtPIU.updatecheckedbtn as any)[self.lang]}
+                                                </Button>
+                                            </Col>
+                                            <Col xs="12" className="text-center btn-group">
+                                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.hideCheckbox()}>
+                                                    <FontAwesomeIcon icon={faCheckSquare} />
+                                                    {(txtPIU.display as any)[self.lang]}
+                                                </Button>
+                                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.hideRank()}>
+                                                    {(txtPIU.rank as any)[self.lang]}
+                                                    &nbsp;
+                                                    {(txtPIU.display as any)[self.lang]}
+                                                </Button>
+                                            </Col>
+                                        </Row>
                                     </Col>
                                 </Row>
+                                <hr/>
                                 <Row>
-                                    <Col xs="12" className="text-center">
-                                        <h5>{(txtPIU.songtype as any)[self.lang]}</h5>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col xs="12" className="text-center">
-                                        <input id="musarcade" type="checkbox" value="musarcade"
-                                            onChange={() => self.handleMusicType(0)}
-                                            checked={self.state.musarcade} />
-                                        <label htmlFor="musarcade">Arcade</label>
-                                        <input id="musshort" type="checkbox" value="musshort"
-                                            onChange={() => self.handleMusicType(1)}
-                                            checked={self.state.musshort} />
-                                        <label htmlFor="musshort">Shortcut</label>
-                                        <input id="musfull" type="checkbox" value="musfull"
-                                            onChange={() => self.handleMusicType(2)}
-                                            checked={self.state.musfull} />
-                                        <label htmlFor="musfull">Fullsong</label>
-                                        <input id="musremix" type="checkbox" value="musremix"
-                                            onChange={() => self.handleMusicType(3)}
-                                            checked={self.state.musremix} />
-                                        <label htmlFor="musremix">Remix</label>
+                                    <Col xs="9" md="8" lg="6">
+                                        <Row>
+                                            <Col xs="12" className="text-center">
+                                                {(txtPIU.songtype as any)[self.lang]}
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col xs="3" className="text-center">
+                                                <input id="musarcade" type="checkbox" value="musarcade"
+                                                    onChange={() => self.handleMusicType(0)}
+                                                    checked={self.state.musarcade} />
+                                                <label htmlFor="musarcade">Arcade</label>
+                                            </Col>
+                                            <Col xs="3" className="text-center">
+                                                <input id="musshort" type="checkbox" value="musshort"
+                                                    onChange={() => self.handleMusicType(1)}
+                                                    checked={self.state.musshort} />
+                                                <label htmlFor="musshort">Shortcut</label>
+                                            </Col>
+                                            <Col xs="3" className="text-center">
+                                                <input id="musfull" type="checkbox" value="musfull"
+                                                    onChange={() => self.handleMusicType(2)}
+                                                    checked={self.state.musfull} />
+                                                <label htmlFor="musfull">Fullsong</label>
+                                            </Col>
+                                            <Col xs="3" className="text-center">
+                                                <input id="musremix" type="checkbox" value="musremix"
+                                                    onChange={() => self.handleMusicType(3)}
+                                                    checked={self.state.musremix} />
+                                                <label htmlFor="musremix">Remix</label>
+                                            </Col>
+                                        </Row>
                                     </Col>
                                 </Row>
                             </CardBody>
@@ -1228,10 +1220,24 @@ class PIUTable extends Component<Props, State> {
                     <Col xs="12">
                         <Card>
                             <CardHeader style={chback}>
-                                <Col xs="12">
-                                    <h4>Pump It Up XX</h4>
-                                    <h5>{self.state.steptype} Lv.{self.state.steplv} Clear Table</h5>
-                                </Col>
+                                <Row>
+                                    <Col xs="8">
+                                        <h4>Pump It Up XX</h4>
+                                    </Col>
+                                    <Col xs="4" className="text-right nowrap">
+                                        <Button color="secondary" outline onClick={() => self.scrShot('targetTable', "piu_"+self.state.username+"_"+self.state.steptype+"_"+self.state.steplv+"_"+this.unixTimeToText(new Date().getTime())+".jpg")}>
+                                            <FontAwesomeIcon icon={faImages}/>
+                                        </Button>
+                                        <Button color="secondary" outline onClick={() => self.shareURL()}>
+                                            <FontAwesomeIcon icon={faShareAltSquare}/>
+                                        </Button>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col xs="12">
+                                        <h5>{self.state.steptype} Lv.{self.state.steplv} Clear Table</h5>
+                                    </Col>
+                                </Row>
                             </CardHeader>
                             <CardBody>
                                 <Row>
@@ -1420,8 +1426,11 @@ class PIUTable extends Component<Props, State> {
                     display={self.state.pattern}
                     ptid={self.state.currentpt}
                     updateData={self.updateData}
+                    currentUpdateTitle={self.state.currentUpdateTitle}
                     updateMultipleData={self.updateMultipleData}
-                    updatePatternDialog={self.updatePatternDialog} />
+                    updatePatternDialog={self.updatePatternDialog}
+                    steptype={self.state.steptype}
+                    steplv={self.state.steplv} />
                 <ShareDialog display={self.state.shareDlgShow}
                     content1={self.state.shareDlgCont1}
                     content2={self.state.shareDlgCont2}
