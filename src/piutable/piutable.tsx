@@ -263,26 +263,6 @@ class PIUTable extends Component<Props, State> {
         }
     }
 
-    loadUserDAT() {
-        // 파일 열기 대화상자를 열고 데이터를 가져옴
-        if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-            alert((txtPIU.loadwarn as any)[this.lang]);
-        }
-
-        const self = this;
-        const fileopen = document.getElementById("fileopentmp");
-        if(fileopen) {
-            fileopen.click();
-            fileopen.onchange = (e: any) => {
-                self.handleFileSelect(e.target.files[0]);
-                // 데이터 열기
-                self.setState({
-                    loaded: true
-                });
-            }
-        }
-    }
-
     handleFileSelect(file: File) {
         const self = this;
         const fr = new FileReader();
@@ -1044,14 +1024,6 @@ class PIUTable extends Component<Props, State> {
                                 <span>{(txtPIU.subtitle as any)[self.lang]}</span>
                             </CardHeader>
                             <CardBody>
-                                <Row style={{padding: "20px"}}>
-                                    <Col xs="12" className="text-center">
-                                        <b>※ IMPORTANT NOTICE ※</b><br/>
-                                        <b><span style={{color:"pink"}}>{(txtPIU.notice as any)[self.lang]}</span></b><br/>
-                                        <a style={{color:"lightblue"}} href="https://twitter.com/_nira_one">Twitter Link</a>
-                                        &nbsp;<span style={{fontSize:"75%"}}>(Link not working for Android App)</span>
-                                    </Col>
-                                </Row>
                                 <Row>
                                     <Col xs="12" md="8">
                                         {(txtPIU.howto1 as any)[self.lang]}<br/>
@@ -1069,10 +1041,7 @@ class PIUTable extends Component<Props, State> {
                                                     {(txtPIU.newuser as any)[self.lang]}
                                                 </Button>
                                                 <Button color="secondary" outline onClick={() => self.loadUser()}>
-                                                    {(txtPIU.load as any)[self.lang]} (CSV)
-                                                </Button>
-                                                <Button color="secondary" outline onClick={() => self.loadUserDAT()}>
-                                                    {(txtPIU.load as any)[self.lang]} (DAT)
+                                                    {(txtPIU.load as any)[self.lang]}
                                                 </Button>
                                                 <Button color="secondary" outline onClick={() => self.saveUser()}>
                                                     {(txtPIU.save as any)[self.lang]}
@@ -1409,9 +1378,6 @@ class PIUTable extends Component<Props, State> {
                 
                 <input id="fileopen" accept=".csv" type="file"
                     name="fileopen" style={{display:"none"}} />
-
-                <input id="fileopentmp" accept=".dat" type="file"
-                    name="fileopentmp" style={{display:"none"}} />
 
                 <UserDialog title={self.state.userdlgTitle}
                     curname={self.state.username}

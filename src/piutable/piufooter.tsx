@@ -51,7 +51,8 @@ class PIUFooter extends Component {
                         Source Code:&nbsp;
                         <a style={astyle} href="https://github.com/prunusnira/piumanager"
                             target="_blank">GitHub</a><br/>
-                        Recent System Update: Sep. 2, 2020
+                        Recent System Update: Jan. 13, 2021<br/>
+                        {(txtPIU as any).fanpage[this.lang]}
                     </Col>
                 </Row>
             </footer>
