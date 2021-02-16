@@ -4,12 +4,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faImages, faShareAltSquare, faCheckSquare} from '@fortawesome/free-solid-svg-icons';
 import txtPIU from './txtpiu';
 import './piu-custom.css';
-import UserDialog from './UserInfoDialog';
-import PatternUpdateDialog from './PatternUpdateDialog';
-import ShareDialog from './ShareDialog';
+import UserDialog from './userInfoDialog';
+import PatternUpdateDialog from './patternUpdateDialog';
+import ShareDialog from './shareDialog';
 import html2canvas from 'html2canvas';
-import MusicInfo from './MusicInfo'
-import UserInfo from './UserInfo'
+import MusicInfo from './musicInfo'
+import UserInfo from './userInfo'
 
 import {
     Container,
@@ -22,8 +22,8 @@ import {
 } from 'reactstrap';
 import PIUTableObj from './tablerow';
 import Language from './language';
-import CategoryList from './CategoryList';
-import { env } from 'process';
+import CategoryList from './categoryList';
+import CommonData from './commonData';
 
 interface Props {
 
@@ -107,9 +107,7 @@ interface State {
 class PIUTable extends Component<Props, State> {
     private langObj = new Language();
     private lang = this.langObj.getLang();
-    private piuDataUrl = "https://piu.nira.one/d";
-    //private piuDataUrl = "http://localhost:8081/d";
-
+    
     private cntov = 0;
     private cnthi = 0;
     private cntnh = 0;
@@ -210,10 +208,11 @@ class PIUTable extends Component<Props, State> {
     }
 
     userLog(type: string) {
-        axios.post(this.piuDataUrl+'/log', {
+        /*axios.post(this.piuDataUrl+'/log', {
             name: this.state.username,
             type: type
-        });
+        });*/
+        // 로그 남기는 부분은 없애거나 추후 수정 필요
     }
 
     newUser() {
@@ -291,7 +290,7 @@ class PIUTable extends Component<Props, State> {
         
         for(let i = 1; i < str.length; i++) {
             const cur = str[i].split(",");
-            if(cur[0] != "")
+            if(cur[0] !== "")
                 this.state.userstat.set(cur[0], cur[1]);
         }
 
@@ -311,7 +310,7 @@ class PIUTable extends Component<Props, State> {
         const keys = this.state.userstat.keys();
         for(let i = 0; i < this.state.userstat.size; i++) {
             const ckey = keys.next();
-            if(ckey.value != "")
+            if(ckey.value !== "")
                 text += ckey.value + ","+this.state.userstat.get(ckey.value) + "\n";
         }
         
@@ -347,8 +346,8 @@ class PIUTable extends Component<Props, State> {
         // 데이터는 다 저장되어 있음
         this.resetTable();
 
-        if(type == "d" && level == "25") {
-            axios.get(this.piuDataUrl+"/over/"+type)
+        if(type === "d" && level === "25") {
+            axios.get(CommonData.dataUrl+type+"/"+level)
             .then((res) => {
                 this.updateTable(res.data, true);
                 steptype = "Double";
@@ -372,8 +371,8 @@ class PIUTable extends Component<Props, State> {
                 this.categoryUpdater(cat, steptype, steplv);
             });
         }
-        else if(type == 's' && level == '24') {
-            axios.get(this.piuDataUrl+"/over/"+type)
+        else if(type === 's' && level === '24') {
+            axios.get(CommonData.dataUrl+type+"/"+level)
             .then((res) => {
                 this.updateTable(res.data, true);
                 steptype = "Single";
@@ -395,11 +394,13 @@ class PIUTable extends Component<Props, State> {
             });
         }
         else {
-            axios.get(this.piuDataUrl+"/"+type+"/"+level)
+            axios.get(CommonData.dataUrl+type+"/"+level, {
+                headers: {"Content-Type": "application/x-www.form-urlencoded"}
+            })
             .then((res) => {
                 this.updateTable(res.data, false);
-                if(type == "s") steptype = "Single";
-                if(type == "d") steptype = "Double";
+                if(type === "s") steptype = "Single";
+                if(type === "d") steptype = "Double";
                 steplv = level;
                 cat.catrd = (txtPIU.diff.random as any)[this.lang];
                 cat.catbe = (parseInt(level)-1)+(txtPIU.diff.below as any)[this.lang];
@@ -468,17 +469,20 @@ class PIUTable extends Component<Props, State> {
     updateTable(data: any, isOver: boolean) {
         const ptidlist = [];
         let all = 0;
+
+        const size = data.Count;
+        const item = data.Items;
         
-        for(let i = 0; i < data.length; i++) {
-            const current = data[i];
-            ptidlist.push(current.ptid);
+        for(let i = 0; i < size; i++) {
+            const current = item[i];
+            ptidlist.push(current.id);
             all++;
 
             const obj = new MusicInfo();
     
-            if(current.removed == 0) {
+            if(current.removed === 0) {
                 obj.songtype = current.songtype;
-                obj.ptid = current.ptid;
+                obj.ptid = current.id;
                 obj.titleko = current.title_ko;
                 obj.titleen = current.title_en;
                 obj.musicid = current.musicid;
@@ -488,7 +492,7 @@ class PIUTable extends Component<Props, State> {
                 obj.rank = "np";
 
                 if(isOver) {
-                    if(current.type == 0) {
+                    if(current.playtype === 0) {
                         switch(current.lv) {
                         case 24:
                             this.cntnh++;
@@ -504,18 +508,18 @@ class PIUTable extends Component<Props, State> {
                             break;
                         }
                     }
-                    if(current.type == 1) {
+                    if(current.playtype === 1) {
                         switch(current.lv) {
                         case 25:
-                            if(current.difftype == 1) {
+                            if(current.difftype === 1) {
                                 this.cntez++;
                                 this.state.arrEZ.push(obj);
                             }
-                            if(current.difftype == 2) {
+                            if(current.difftype === 2) {
                                 this.cntne++;
                                 this.state.arrNE.push(obj);
                             }
-                            if(current.difftype == 3) {
+                            if(current.difftype === 3) {
                                 this.cntnr++;
                                 this.state.arrNR.push(obj);
                             }
@@ -536,8 +540,8 @@ class PIUTable extends Component<Props, State> {
                     }
                 }
                 else {
-                    if(this.state.userstat.has(current.ptid)) {
-                        switch(this.state.userstat.get(current.ptid.toString())) {
+                    if(this.state.userstat.has(current.id)) {
+                        switch(this.state.userstat.get(current.id.toString())) {
                         case "0":
                             obj.rank = "ss";
                             break;
@@ -612,8 +616,8 @@ class PIUTable extends Component<Props, State> {
             isOver: isOver
         }, () => {
             const statmap = this.state.userstat;
-            for(let i = 0; i < data.length; i++) {
-                const ptid = data[i].ptid;
+            for(let i = 0; i < size; i++) {
+                const ptid = item[i].id;
 
                 if(statmap.has(ptid.toString())) {
                     const rank = statmap.get(ptid.toString());
@@ -771,13 +775,10 @@ class PIUTable extends Component<Props, State> {
                 case 8: rank = "bcdon"; break;
             }
 
-            let display = "block";
-            if(!this.state.showrank) display = "none"
-
             if(div)
-                div.innerHTML = "\
-                    <img style='width: 50%; position: absolute; right: 0px; top: 0px;' \
-                        src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
+                div.innerHTML =
+                    "<img style='width: 50%; position: absolute; right: 0px; top: 0px;'"+
+                        "src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
         }
     }
 
@@ -1016,7 +1017,7 @@ class PIUTable extends Component<Props, State> {
                     <Col xs="12">
                         <Card>
                             <CardHeader style={chback}>
-                                <img src={process.env.PUBLIC_URL+"/logo192.png"}
+                                <img alt="logo" src={process.env.PUBLIC_URL+"/logo192.png"}
                                     style={{width: "40px", height: "40px"}} />
                                 &nbsp;
                                 <span style={{fontSize:"150%"}}>Pump It Up</span>
@@ -1197,7 +1198,7 @@ class PIUTable extends Component<Props, State> {
                                         <Button color="secondary" outline onClick={() => self.scrShot('targetTable', "piu_"+self.state.username+"_"+self.state.steptype+"_"+self.state.steplv+"_"+this.unixTimeToText(new Date().getTime())+".jpg")}>
                                             <FontAwesomeIcon icon={faImages}/>
                                         </Button>
-                                        <Button color="secondary" outline onClick={() => self.shareURL()}>
+                                        <Button color="secondary" outline onClick={() => self.shareURL()} disabled>
                                             <FontAwesomeIcon icon={faShareAltSquare}/>
                                         </Button>
                                     </Col>

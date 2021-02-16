@@ -56,14 +56,12 @@ class UserDialog extends Component<Props> {
         this.props.toggle();
     }
 
-    componentWillReceiveProps(props:Props) {
-        this.curname = props.curname;
-        this.curlv = props.curlv;
-    }
-
     render() {
         const prop = this.props;
         const self = this;
+
+        this.curname = prop.curname;
+        this.curlv = prop.curlv;
 
         return (
             <Modal isOpen={prop.display}>

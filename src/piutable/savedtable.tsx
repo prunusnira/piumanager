@@ -3,7 +3,7 @@ import {Link, RouteComponentProps} from 'react-router-dom';
 import axios from 'axios';
 import txtPIU from './txtpiu';
 import './piu-custom.css';
-import MusicInfo from './MusicInfo';
+import MusicInfo from './musicInfo';
 
 import {
     Container,
@@ -15,7 +15,7 @@ import {
 } from 'reactstrap';
 import PIUTableObj from './tablerow';
 import Language from './language';
-import CategoryList from './CategoryList';
+import CategoryList from './categoryList';
 
 interface IRouterMatchProps {
     name: string,
@@ -266,14 +266,12 @@ class SavedTable extends Component<
 
     setCategory(type: string, level: string) {
         const cat = new CategoryList();
-        let steptype = "";
-        let steplv = "";
 
         // 테이블을 모두 리셋헤야함
         // 데이터는 다 저장되어 있음
         this.resetTable();
 
-        if(type == "Double" && level == "25") {
+        if(type === "Double" && level === "25") {
             cat.catez = "25 E";
             cat.catne = "25 N";
             cat.catnr = "25 H";
@@ -290,7 +288,7 @@ class SavedTable extends Component<
             if(this.cntbe === 0) cat.catbe = "";
             if(this.cntrd === 0) cat.catrd = "";
         }
-        else if(type == 'Single' && level == '24') {
+        else if(type === "Single" && level === "24") {
             cat.catnh = (parseInt(level)).toString();
             cat.cathi = (parseInt(level)+1).toString();
             cat.catov = (parseInt(level)+2).toString();
@@ -477,9 +475,9 @@ class SavedTable extends Component<
             }
 
             if(div)
-                div.innerHTML = "\
-                    <img style='width: 60%; position: 'absolute';\
-                        right: '0px' src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
+                div.innerHTML =
+                    "<img style='width: 60%; position: 'absolute';"+
+                        "right: '0px' src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
         }
     }
 

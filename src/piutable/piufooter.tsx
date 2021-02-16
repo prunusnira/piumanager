@@ -47,12 +47,17 @@ class PIUFooter extends Component {
                 <hr/>
                 <Row>
                     <Col xs="12">
-                        PIUManager (c) 2018 PrunusNira / Twitter: <a style={astyle} href="https://twitter.com/prunusnira" target="_blink">@prunusNira</a><br/>
+                        PIUManager (c) 2018 PrunusNira (
+                        <a style={astyle} href="https://twitter.com/prunusnira"
+                            target="_blink" rel="noopener noreferrer">
+                            @prunusNira
+                        </a>) /
                         Source Code:&nbsp;
                         <a style={astyle} href="https://github.com/prunusnira/piumanager"
-                            target="_blank">GitHub</a><br/>
-                        Recent System Update: Jan. 13, 2021<br/>
-                        {(txtPIU as any).fanpage[this.lang]}
+                            target="_blank" rel="noopener noreferrer">GitHub</a><br/>
+                        Recent System Update: Feb. 17, 2021<br/>
+                        {(txtPIU as any).fanpage[this.lang]}<br/><br/>
+                        Developed with React & DynamoDB, Hosted on AWS S3
                     </Col>
                 </Row>
             </footer>

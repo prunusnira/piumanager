@@ -1,4 +1,4 @@
-import MusicInfo from './MusicInfo';
+import MusicInfo from './musicInfo';
 
 class UserInfo {
     username: string = "";

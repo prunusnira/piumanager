@@ -1,9 +1,8 @@
 import React, {Component, Fragment} from 'react';
-import MusicInfo from './MusicInfo';
+import MusicInfo from './musicInfo';
 
 import { Col, Row } from 'reactstrap';
-
-const piuimg = "https://piu.nira.one/jacket/";
+import CommonData from './commonData';
 
 interface Props {
     list: Array<MusicInfo>,
@@ -43,8 +42,8 @@ class PIUTableObj extends Component<Props> {
                                         <Col xs="12" className="nowrap"
                                             style={{
                                                 backgroundOrigin: "content-box",
-                                                backgroundImage: "url('"+piuimg+d.musicid+".png'),"+
-                                                                    "url('"+piuimg+"empty.jpg')",
+                                                backgroundImage: "url('"+CommonData.imgUrl+d.musicid+".png'),"+
+                                                                    "url('"+CommonData.imgUrl+"empty.jpg')",
                                                 backgroundRepeat: "no-repeat",
                                                 backgroundSize: "100%"
                                             }}
@@ -64,7 +63,7 @@ class PIUTableObj extends Component<Props> {
                                                         }
                                                         
                                                         return (
-                                                            <img style={{width:"20%", top:"0px", position: "absolute", left: "0px"}}
+                                                            <img alt="steptype" style={{width:"20%", top:"0px", position: "absolute", left: "0px"}}
                                                                 src={process.env.PUBLIC_URL+"/img/"+steptypeImg+".png"} />
                                                         )
                                                     })()
@@ -99,7 +98,7 @@ class PIUTableObj extends Component<Props> {
 
                                                         if(ver !== "") {
                                                             return (
-                                                                <img style={{width: "40%", position: "absolute",
+                                                                <img alt="version" style={{width: "40%", position: "absolute",
                                                                     right: "0px", bottom: "0px"}}
                                                                     src={process.env.PUBLIC_URL+"/img/ver/"+ver+".png"} />
                                                             )
@@ -112,7 +111,7 @@ class PIUTableObj extends Component<Props> {
                                                     (function() {
                                                         if(d.new === 1) {
                                                             return (
-                                                                <img style={{width: "40%", position: "absolute",
+                                                                <img alt="new" style={{width: "40%", position: "absolute",
                                                                     left: "0px", bottom: "0px"}}
                                                                     src={process.env.PUBLIC_URL+"/img/new.png"} />
                                                             )
@@ -122,13 +121,14 @@ class PIUTableObj extends Component<Props> {
                                                 }
                                                 <div className="rank" id={"cs"+d.ptid} style={{height: "0px",
                                                             display: self.props.showrank ? "block":"none"}}>
-                                                    <img style={{width: "50%",
+                                                    <img alt="rank"
+                                                        style={{width: "50%",
                                                             position: "absolute",
                                                             right: "0px",
                                                             top: "0px"}}
                                                         src={process.env.PUBLIC_URL+"/img/grade_"+d.rank+".png"} />
                                                 </div>
-                                                <img src={piuimg+d.musicid+".png"}
+                                                <img alt="jacket" src={CommonData.imgUrl+d.musicid+".png"}
                                                     onError={(e) => {e.currentTarget.src = d.piuimg+"empty.jpg"}}
                                                     style={{width: "100%"}} />
                                         </Col>
