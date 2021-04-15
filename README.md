@@ -15,7 +15,7 @@ Clear and rank management tool for rhythm game called 'Pump it up'
 ### New Version
 1. Backend: AWS Lambda
 2. Frontend: ReactJS
-3. Databse: AWS DynamoDB
+3. Database: AWS DynamoDB
 
 ### Old Version (Repo before Feb. 17)
 1. Backend: node.js (express.js)

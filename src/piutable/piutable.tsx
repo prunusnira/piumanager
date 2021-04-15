@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import axios from 'axios';
+import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faImages, faShareAltSquare, faCheckSquare} from '@fortawesome/free-solid-svg-icons';
 import txtPIU from './txtpiu';
@@ -18,7 +19,8 @@ import {
     Card,
     CardHeader,
     CardBody,
-    Button
+    Button,
+    Table
 } from 'reactstrap';
 import PIUTableObj from './tablerow';
 import Language from './language';
@@ -208,10 +210,7 @@ class PIUTable extends Component<Props, State> {
     }
 
     userLog(type: string) {
-        /*axios.post(this.piuDataUrl+'/log', {
-            name: this.state.username,
-            type: type
-        });*/
+        axios.post(CommonData.dataUrl+'userlog/'+this.state.username+'/'+type);
         // 로그 남기는 부분은 없애거나 추후 수정 필요
     }
 
@@ -347,7 +346,7 @@ class PIUTable extends Component<Props, State> {
         this.resetTable();
 
         if(type === "d" && level === "25") {
-            axios.get(CommonData.dataUrl+type+"/"+level)
+            axios.get(CommonData.dataUrl+'ptlist/'+type+"/"+level)
             .then((res) => {
                 this.updateTable(res.data, true);
                 steptype = "Double";
@@ -372,7 +371,7 @@ class PIUTable extends Component<Props, State> {
             });
         }
         else if(type === 's' && level === '24') {
-            axios.get(CommonData.dataUrl+type+"/"+level)
+            axios.get(CommonData.dataUrl+'ptlist/'+type+"/"+level)
             .then((res) => {
                 this.updateTable(res.data, true);
                 steptype = "Single";
@@ -394,7 +393,7 @@ class PIUTable extends Component<Props, State> {
             });
         }
         else {
-            axios.get(CommonData.dataUrl+type+"/"+level, {
+            axios.get(CommonData.dataUrl+'ptlist/'+type+"/"+level, {
                 headers: {"Content-Type": "application/x-www.form-urlencoded"}
             })
             .then((res) => {
@@ -470,29 +469,28 @@ class PIUTable extends Component<Props, State> {
         const ptidlist = [];
         let all = 0;
 
-        const size = data.Count;
-        const item = data.Items;
+        const size = data.length;
         
         for(let i = 0; i < size; i++) {
-            const current = item[i];
-            ptidlist.push(current.id);
+            const current = data[i];
+            ptidlist.push(current.ptid);
             all++;
 
             const obj = new MusicInfo();
     
             if(current.removed === 0) {
                 obj.songtype = current.songtype;
-                obj.ptid = current.id;
+                obj.ptid = current.ptid;
                 obj.titleko = current.title_ko;
                 obj.titleen = current.title_en;
                 obj.musicid = current.musicid;
                 obj.steptype = current.steptype;
                 obj.version = current.version;
-                obj.new = current.new;
+                obj.new = current.newpattern;
                 obj.rank = "np";
 
                 if(isOver) {
-                    if(current.playtype === 0) {
+                    if(current.sdtype === 0) {
                         switch(current.lv) {
                         case 24:
                             this.cntnh++;
@@ -508,18 +506,18 @@ class PIUTable extends Component<Props, State> {
                             break;
                         }
                     }
-                    if(current.playtype === 1) {
+                    if(current.sdtype === 1) {
                         switch(current.lv) {
                         case 25:
-                            if(current.difftype === 1) {
+                            if(current.difficulty === 1) {
                                 this.cntez++;
                                 this.state.arrEZ.push(obj);
                             }
-                            if(current.difftype === 2) {
+                            if(current.difficulty === 2) {
                                 this.cntne++;
                                 this.state.arrNE.push(obj);
                             }
-                            if(current.difftype === 3) {
+                            if(current.difficulty === 3) {
                                 this.cntnr++;
                                 this.state.arrNR.push(obj);
                             }
@@ -540,8 +538,8 @@ class PIUTable extends Component<Props, State> {
                     }
                 }
                 else {
-                    if(this.state.userstat.has(current.id)) {
-                        switch(this.state.userstat.get(current.id.toString())) {
+                    if(this.state.userstat.has(current.ptid)) {
+                        switch(this.state.userstat.get(current.ptid.toString())) {
                         case "0":
                             obj.rank = "ss";
                             break;
@@ -572,7 +570,7 @@ class PIUTable extends Component<Props, State> {
                         }
                     }
                     
-                    switch(current.difftype) {
+                    switch(current.difficulty) {
                     case 0:
                         this.cntbe++;
                         this.state.arrBE.push(obj);
@@ -617,7 +615,7 @@ class PIUTable extends Component<Props, State> {
         }, () => {
             const statmap = this.state.userstat;
             for(let i = 0; i < size; i++) {
-                const ptid = item[i].id;
+                const ptid = data[i].ptid;
 
                 if(statmap.has(ptid.toString())) {
                     const rank = statmap.get(ptid.toString());
@@ -1008,374 +1006,367 @@ class PIUTable extends Component<Props, State> {
         const self = this;
 
         const chback = {
-            backgroundColor: 'rgb(37, 37, 37)'
+            backgroundColor: 'rgb(37, 37, 37)',
+            height: '50px'
         }
 
+        const TableTitle = styled.tr`
+            color: white;
+            background-color: rgb(37, 37, 37);
+            height: 50px;
+        `;
+
         return (
-            <Container fluid>
-                <Row>
-                    <Col xs="12">
-                        <Card>
-                            <CardHeader style={chback}>
-                                <img alt="logo" src={process.env.PUBLIC_URL+"/logo192.png"}
-                                    style={{width: "40px", height: "40px"}} />
-                                &nbsp;
-                                <span style={{fontSize:"150%"}}>Pump It Up</span>
-                                &nbsp;
-                                <span>{(txtPIU.subtitle as any)[self.lang]}</span>
-                            </CardHeader>
-                            <CardBody>
-                                <Row>
-                                    <Col xs="12" md="8">
-                                        {(txtPIU.howto1 as any)[self.lang]}<br/>
-                                        <ol>
-                                            <li>{(txtPIU.howto2 as any)[self.lang]}</li>
-                                            <li>{(txtPIU.howto3 as any)[self.lang]}</li>
-                                            <li>{(txtPIU.howto4 as any)[self.lang]}</li>
-                                        </ol>
-                                    </Col>
+            <Fragment>
+                <CardBody>
+                    <Row>
+                        <Col xs="12" md="8">
+                            {(txtPIU.howto1 as any)[self.lang]}<br/>
+                            <ol>
+                                <li>{(txtPIU.howto2 as any)[self.lang]}</li>
+                                <li>{(txtPIU.howto3 as any)[self.lang]}</li>
+                                <li>{(txtPIU.howto4 as any)[self.lang]}</li>
+                            </ol>
+                        </Col>
 
-                                    <Col xs="12" md="4">
-                                        <Row>
-                                            <Col xs="12" className="btn-group-vertical">
-                                                <Button color="secondary" outline onClick={() => self.newUser()}>
-                                                    {(txtPIU.newuser as any)[self.lang]}
-                                                </Button>
-                                                <Button color="secondary" outline onClick={() => self.loadUser()}>
-                                                    {(txtPIU.load as any)[self.lang]}
-                                                </Button>
-                                                <Button color="secondary" outline onClick={() => self.saveUser()}>
-                                                    {(txtPIU.save as any)[self.lang]}
-                                                </Button>
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                </Row>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
+                        <Col xs="12" md="4">
+                            <Row>
+                                <Col xs="12" className="btn-group-vertical">
+                                    <Button color="secondary" outline onClick={() => self.newUser()}>
+                                        {(txtPIU.newuser as any)[self.lang]}
+                                    </Button>
+                                    <Button color="secondary" outline onClick={() => self.loadUser()}>
+                                        {(txtPIU.load as any)[self.lang]}
+                                    </Button>
+                                    <Button color="secondary" outline onClick={() => self.saveUser()}>
+                                        {(txtPIU.save as any)[self.lang]}
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
 
-                <Row>
-                    <Col xs="12">
-                        <Card style={{display: self.state.loaded ? "block" : "none"}}>
-                            <CardHeader id="seldiffSingletitle" style={chback}>
-                                <h4>{(txtPIU.menu as any)[this.lang]}</h4>
-                            </CardHeader>
-                            <CardBody id="seldiffSingle">
-                                <Row>
-                                    <Col xs="12" md="6">
-                                        <Row>
-                                            <Col xs="12" className="text-center">
-                                                {(txtPIU.patternsel as any)[self.lang]}
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col xs="6" className="text-center">
-                                                SINGLE<br/>
-                                                <select className="form-control"
-                                                    onChange={(e) => self.getPatterns('s', e.target.value)}>
-                                                    <option value="12">SELECT</option>
-                                                    <option value="13">13</option>
-                                                    <option value="14">14</option>
-                                                    <option value="15">15</option>
-                                                    <option value="16">16</option>
-                                                    <option value="17">17</option>
-                                                    <option value="18">18</option>
-                                                    <option value="19">19</option>
-                                                    <option value="20">20</option>
-                                                    <option value="21">21</option>
-                                                    <option value="22">22</option>
-                                                    <option value="23">23</option>
-                                                    <option value="24">24+</option>
-                                                </select>
-                                            </Col>
-                                            <Col xs="6" className="text-center">
-                                                DOUBLE<br/>
-                                                <select className="form-control"
-                                                    onChange={(e) => self.getPatterns('d', e.target.value)}>
-                                                    <option value="12">SELECT</option>
-                                                    <option value="13">13</option>
-                                                    <option value="14">14</option>
-                                                    <option value="15">15</option>
-                                                    <option value="16">16</option>
-                                                    <option value="17">17</option>
-                                                    <option value="18">18</option>
-                                                    <option value="19">19</option>
-                                                    <option value="20">20</option>
-                                                    <option value="21">21</option>
-                                                    <option value="22">22</option>
-                                                    <option value="23">23</option>
-                                                    <option value="24">24</option>
-                                                    <option value="25">25+</option>
-                                                </select>
-                                            </Col>
-                                        </Row>
-                                    </Col>
+                    <Row style={{display: self.state.loaded ? "block" : "none"}}>
+                        <Col xs="12">
+                            <Table>
+                                <TableTitle id="seldiffSingletitle">
+                                    <td><h4>{(txtPIU.menu as any)[this.lang]}</h4></td>
+                                </TableTitle>
+                            </Table>
 
-                                    <Col xs="12" md="6">
-                                        <Row>
-                                            <Col xs="12" className="text-center">
-                                                {(txtPIU.menu as any)[self.lang]}
-                                            </Col>
-                                        </Row>
-                                        <Row className="text-center">
-                                            <Col xs="12" className="text-center btn-group">
-                                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.editUser()}>
-                                                    {(txtPIU.edit as any)[self.lang]}
-                                                </Button>
-                                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.updatePatternMultiple()}>
-                                                    <FontAwesomeIcon icon={faCheckSquare} />
-                                                    {(txtPIU.updatecheckedbtn as any)[self.lang]}
-                                                </Button>
-                                            </Col>
-                                            <Col xs="12" className="text-center btn-group">
-                                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.hideCheckbox()}>
-                                                    <FontAwesomeIcon icon={faCheckSquare} />
-                                                    {(txtPIU.display as any)[self.lang]}
-                                                </Button>
-                                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.hideRank()}>
-                                                    {(txtPIU.rank as any)[self.lang]}
-                                                    &nbsp;
-                                                    {(txtPIU.display as any)[self.lang]}
-                                                </Button>
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                </Row>
-                                <hr/>
-                                <Row>
-                                    <Col xs="9" md="8" lg="6">
-                                        <Row>
-                                            <Col xs="12" className="text-center">
-                                                {(txtPIU.songtype as any)[self.lang]}
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col xs="3" className="text-center">
-                                                <input id="musarcade" type="checkbox" value="musarcade"
-                                                    onChange={() => self.handleMusicType(0)}
-                                                    checked={self.state.musarcade} />
-                                                <label htmlFor="musarcade">Arcade</label>
-                                            </Col>
-                                            <Col xs="3" className="text-center">
-                                                <input id="musshort" type="checkbox" value="musshort"
-                                                    onChange={() => self.handleMusicType(1)}
-                                                    checked={self.state.musshort} />
-                                                <label htmlFor="musshort">Shortcut</label>
-                                            </Col>
-                                            <Col xs="3" className="text-center">
-                                                <input id="musfull" type="checkbox" value="musfull"
-                                                    onChange={() => self.handleMusicType(2)}
-                                                    checked={self.state.musfull} />
-                                                <label htmlFor="musfull">Fullsong</label>
-                                            </Col>
-                                            <Col xs="3" className="text-center">
-                                                <input id="musremix" type="checkbox" value="musremix"
-                                                    onChange={() => self.handleMusicType(3)}
-                                                    checked={self.state.musremix} />
-                                                <label htmlFor="musremix">Remix</label>
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                </Row>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
+                            <Row id="seldiffSingle">
+                                <Col xs="12" md="6">
+                                    <Row>
+                                        <Col xs="12" className="text-center">
+                                            {(txtPIU.patternsel as any)[self.lang]}
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs="6" className="text-center">
+                                            SINGLE<br/>
+                                            <select className="form-control"
+                                                onChange={(e) => self.getPatterns('s', e.target.value)}>
+                                                <option value="12">SELECT</option>
+                                                <option value="13">13</option>
+                                                <option value="14">14</option>
+                                                <option value="15">15</option>
+                                                <option value="16">16</option>
+                                                <option value="17">17</option>
+                                                <option value="18">18</option>
+                                                <option value="19">19</option>
+                                                <option value="20">20</option>
+                                                <option value="21">21</option>
+                                                <option value="22">22</option>
+                                                <option value="23">23</option>
+                                                <option value="24">24+</option>
+                                            </select>
+                                        </Col>
+                                        <Col xs="6" className="text-center">
+                                            DOUBLE<br/>
+                                            <select className="form-control"
+                                                onChange={(e) => self.getPatterns('d', e.target.value)}>
+                                                <option value="12">SELECT</option>
+                                                <option value="13">13</option>
+                                                <option value="14">14</option>
+                                                <option value="15">15</option>
+                                                <option value="16">16</option>
+                                                <option value="17">17</option>
+                                                <option value="18">18</option>
+                                                <option value="19">19</option>
+                                                <option value="20">20</option>
+                                                <option value="21">21</option>
+                                                <option value="22">22</option>
+                                                <option value="23">23</option>
+                                                <option value="24">24</option>
+                                                <option value="25">25+</option>
+                                            </select>
+                                        </Col>
+                                    </Row>
+                                </Col>
 
-                <Row
-                    style={{display: self.state.loaded ? "block" : "none"}}
-                    id="targetTable">
-                    <Col xs="12">
-                        <Card>
-                            <CardHeader style={chback}>
-                                <Row>
-                                    <Col xs="8">
-                                        <h4>Pump It Up XX</h4>
-                                    </Col>
-                                    <Col xs="4" className="text-right nowrap">
-                                        <Button color="secondary" outline onClick={() => self.scrShot('targetTable', "piu_"+self.state.username+"_"+self.state.steptype+"_"+self.state.steplv+"_"+this.unixTimeToText(new Date().getTime())+".jpg")}>
-                                            <FontAwesomeIcon icon={faImages}/>
-                                        </Button>
-                                        <Button color="secondary" outline onClick={() => self.shareURL()} disabled>
-                                            <FontAwesomeIcon icon={faShareAltSquare}/>
-                                        </Button>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col xs="12">
-                                        <h5>{self.state.steptype} Lv.{self.state.steplv} Clear Table</h5>
-                                    </Col>
-                                </Row>
-                            </CardHeader>
-                            <CardBody>
-                                <Row>
-                                    <Col xs="4"
-                                        style={{backgroundColor:""}}>
-                                        <b><span style={{fontSize: "80%"}}>PLAYER NAME</span></b> {self.state.username}<br/>
-                                        <b><span style={{fontSize: "80%"}}>PLAYER LEVEL</span></b> {self.state.userlv}
-                                    </Col>
-                                    <Col xs="8" style={{fontSize: "80%"}} className="text-center">
-                                        {self.state.userrank1}<br/>
-                                        {self.state.userrank2}
-                                    </Col>
-                                </Row>
-                                <Row className="div-lineadd" id="divOver"
-                                    style={{backgroundColor: "#ffadc5"}}>
-                                    <Col xs="12">
-                                        <Row>
-                                            <Col xs="12" className="piu-left" id="catOver">
-                                                {self.state.catOV}
-                                            </Col>
-                                        </Row>
-                                        <Row id="lvOver">
-                                            <PIUTableObj list={self.state.arrOV}
-                                                    key="ov"
-                                                    lang={self.lang}
-                                                    showrank={self.state.showrank}
-                                                    showcheck={self.state.showcheck}
-                                                    updatePatternDialog={self.updatePatternDialog} />
-                                        </Row>
-                                    </Col>
-                                </Row>
-                            
-                                <Row className="div-lineadd" id="divHigh"
-                                    style={{backgroundColor: "#ffa9b0"}}>
-                                    <Col xs="12">
-                                        <Row>
-                                            <Col xs="12" className="piu-left" id="catHigh">
-                                                {self.state.catHI}
-                                            </Col>
-                                        </Row>
-                                        <Row id="lvHigh">
-                                            <PIUTableObj list={self.state.arrHI}
-                                                    key="hi"
-                                                    lang={self.lang}
-                                                    showrank={self.state.showrank}
-                                                    showcheck={self.state.showcheck}
-                                                    updatePatternDialog={self.updatePatternDialog} />
-                                        </Row>
-                                    </Col>
-                                </Row>
+                                <Col xs="12" md="6">
+                                    <Row>
+                                        <Col xs="12" className="text-center">
+                                            {(txtPIU.menu as any)[self.lang]}
+                                        </Col>
+                                    </Row>
+                                    <Row className="text-center">
+                                        <Col xs="12" className="text-center btn-group">
+                                            <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.editUser()}>
+                                                {(txtPIU.edit as any)[self.lang]}
+                                            </Button>
+                                            <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.updatePatternMultiple()}>
+                                                <FontAwesomeIcon icon={faCheckSquare} />
+                                                {(txtPIU.updatecheckedbtn as any)[self.lang]}
+                                            </Button>
+                                        </Col>
+                                        <Col xs="12" className="text-center btn-group">
+                                            <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.hideCheckbox()}>
+                                                <FontAwesomeIcon icon={faCheckSquare} />
+                                                {(txtPIU.display as any)[self.lang]}
+                                            </Button>
+                                            <Button color="secondary" outline style={{width:"50%"}} onClick={() => self.hideRank()}>
+                                                {(txtPIU.rank as any)[self.lang]}
+                                                &nbsp;
+                                                {(txtPIU.display as any)[self.lang]}
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                            <hr/>
+                            <Row>
+                                <Col xs="9" md="8" lg="6">
+                                    <Row>
+                                        <Col xs="12" className="text-center">
+                                            {(txtPIU.songtype as any)[self.lang]}
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs="3" className="text-center">
+                                            <input id="musarcade" type="checkbox" value="musarcade"
+                                                onChange={() => self.handleMusicType(0)}
+                                                checked={self.state.musarcade} />
+                                            <label htmlFor="musarcade">Arcade</label>
+                                        </Col>
+                                        <Col xs="3" className="text-center">
+                                            <input id="musshort" type="checkbox" value="musshort"
+                                                onChange={() => self.handleMusicType(1)}
+                                                checked={self.state.musshort} />
+                                            <label htmlFor="musshort">Shortcut</label>
+                                        </Col>
+                                        <Col xs="3" className="text-center">
+                                            <input id="musfull" type="checkbox" value="musfull"
+                                                onChange={() => self.handleMusicType(2)}
+                                                checked={self.state.musfull} />
+                                            <label htmlFor="musfull">Fullsong</label>
+                                        </Col>
+                                        <Col xs="3" className="text-center">
+                                            <input id="musremix" type="checkbox" value="musremix"
+                                                onChange={() => self.handleMusicType(3)}
+                                                checked={self.state.musremix} />
+                                            <label htmlFor="musremix">Remix</label>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+
+                    <Row
+                        style={{display: self.state.loaded ? "block" : "none"}}
+                        id="targetTable">
+                        <Col xs="12">
+                            <Card>
+                                <CardHeader style={chback}>
+                                    <Row>
+                                        <Col xs="8">
+                                            <h4>Pump It Up XX</h4>
+                                        </Col>
+                                        <Col xs="4" className="text-right nowrap">
+                                            <Button color="secondary" outline onClick={() => self.scrShot('targetTable', "piu_"+self.state.username+"_"+self.state.steptype+"_"+self.state.steplv+"_"+this.unixTimeToText(new Date().getTime())+".jpg")}>
+                                                <FontAwesomeIcon icon={faImages}/>
+                                            </Button>
+                                            <Button color="secondary" outline onClick={() => self.shareURL()} disabled>
+                                                <FontAwesomeIcon icon={faShareAltSquare}/>
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs="12">
+                                            <h5>{self.state.steptype} Lv.{self.state.steplv} Clear Table</h5>
+                                        </Col>
+                                    </Row>
+                                </CardHeader>
+                                <CardBody>
+                                    <Row>
+                                        <Col xs="4"
+                                            style={{backgroundColor:""}}>
+                                            <b><span style={{fontSize: "80%"}}>PLAYER NAME</span></b> {self.state.username}<br/>
+                                            <b><span style={{fontSize: "80%"}}>PLAYER LEVEL</span></b> {self.state.userlv}
+                                        </Col>
+                                        <Col xs="8" style={{fontSize: "80%"}} className="text-center">
+                                            {self.state.userrank1}<br/>
+                                            {self.state.userrank2}
+                                        </Col>
+                                    </Row>
+                                    <Row className="div-lineadd" id="divOver"
+                                        style={{backgroundColor: "#ffadc5"}}>
+                                        <Col xs="12">
+                                            <Row>
+                                                <Col xs="12" className="piu-left" id="catOver">
+                                                    {self.state.catOV}
+                                                </Col>
+                                            </Row>
+                                            <Row id="lvOver">
+                                                <PIUTableObj list={self.state.arrOV}
+                                                        key="ov"
+                                                        lang={self.lang}
+                                                        showrank={self.state.showrank}
+                                                        showcheck={self.state.showcheck}
+                                                        updatePatternDialog={self.updatePatternDialog} />
+                                            </Row>
+                                        </Col>
+                                    </Row>
                                 
-                                <Row className="div-lineadd" id="divNH"
-                                    style={{backgroundColor: "#ffdda6"}}>
-                                    <Col xs="12">
-                                        <Row>
-                                            <Col xs="12" className="piu-left" id="catNH">
-                                                {self.state.catNH}
-                                            </Col>
-                                        </Row>
-                                        <Row id="lvNH">
-                                            <PIUTableObj list={self.state.arrNH}
-                                                    key="nh"
-                                                    lang={self.lang}
-                                                    showrank={self.state.showrank}
-                                                    showcheck={self.state.showcheck}
-                                                    updatePatternDialog={self.updatePatternDialog} />
-                                        </Row>
-                                    </Col>
-                                </Row>
-                                
-                                <Row className="div-lineadd" id="divNormal"
-                                    style={{backgroundColor: "#f8e5d0"}}>
-                                    <Col xs="12">
-                                        <Row>
-                                            <Col xs="12" className="piu-left" id="catNormal">
-                                                {self.state.catNR}
-                                            </Col>
-                                        </Row>
-                                        <Row id="lvNormal">
-                                            <PIUTableObj list={self.state.arrNR}
-                                                    key="nr"
-                                                    lang={self.lang}
-                                                    showrank={self.state.showrank}
-                                                    showcheck={self.state.showcheck}
-                                                    updatePatternDialog={self.updatePatternDialog} />
-                                        </Row>
-                                    </Col>
-                                </Row>
+                                    <Row className="div-lineadd" id="divHigh"
+                                        style={{backgroundColor: "#ffa9b0"}}>
+                                        <Col xs="12">
+                                            <Row>
+                                                <Col xs="12" className="piu-left" id="catHigh">
+                                                    {self.state.catHI}
+                                                </Col>
+                                            </Row>
+                                            <Row id="lvHigh">
+                                                <PIUTableObj list={self.state.arrHI}
+                                                        key="hi"
+                                                        lang={self.lang}
+                                                        showrank={self.state.showrank}
+                                                        showcheck={self.state.showcheck}
+                                                        updatePatternDialog={self.updatePatternDialog} />
+                                            </Row>
+                                        </Col>
+                                    </Row>
                                     
-                                <Row className="div-lineadd" id="divNE"
-                                    style={{backgroundColor: "#a9e2c5"}}>
-                                    <Col xs="12">
-                                        <Row>
-                                            <Col xs="12" className="piu-left" id="catNE">
-                                                {self.state.catNE}
-                                            </Col>
-                                        </Row>
-                                        <Row id="lvNE">
-                                            <PIUTableObj list={self.state.arrNE}
-                                                    key="ne"
-                                                    lang={self.lang}
-                                                    showrank={self.state.showrank}
-                                                    showcheck={self.state.showcheck}
-                                                    updatePatternDialog={self.updatePatternDialog} />
-                                        </Row>
-                                    </Col>
-                                </Row>
-                                
-                                <Row className="div-lineadd" id="divEasy"
-                                    style={{backgroundColor: "#bbd1e8"}}>
-                                    <Col xs="12">
-                                        <Row>
-                                            <Col xs="12" className="piu-left" id="catEasy">
-                                                {self.state.catEZ}
-                                            </Col>
-                                        </Row>
-                                        <Row id="lvEasy">
-                                            <PIUTableObj list={self.state.arrEZ}
-                                                    key="ez"
-                                                    lang={self.lang}
-                                                    showrank={self.state.showrank}
-                                                    showcheck={self.state.showcheck}
-                                                    updatePatternDialog={self.updatePatternDialog} />
-                                        </Row>
-                                    </Col>
-                                </Row>
-                                
-                                <Row className="div-lineadd" id="divBelow"
-                                    style={{backgroundColor: "#c6d6f7"}}>
-                                    <Col xs="12">
-                                        <Row>
-                                            <Col xs="12" className="piu-left" id="catBelow">
-                                                {self.state.catBE}
-                                            </Col>
-                                        </Row>
-                                        <Row id="lvBelow">
-                                            <PIUTableObj list={self.state.arrBE}
-                                                    key="be"
-                                                    lang={self.lang}
-                                                    showrank={self.state.showrank}
-                                                    showcheck={self.state.showcheck}
-                                                    updatePatternDialog={self.updatePatternDialog} />
-                                        </Row>
-                                    </Col>
-                                </Row>
-                                
-                                <Row id="divRandom"
-                                    style={{backgroundColor: "#ab95d4"}}>
-                                    <Col xs="12">
-                                        <Row>
-                                            <Col xs="12" className="piu-left" id="catRandom">
-                                                {self.state.catRD}
-                                            </Col>
-                                        </Row>
-                                        <Row id="lvRandom">
-                                            <PIUTableObj list={self.state.arrRD}
-                                                    key="rd"
-                                                    lang={self.lang}
-                                                    showrank={self.state.showrank}
-                                                    showcheck={self.state.showcheck}
-                                                    updatePatternDialog={self.updatePatternDialog} />
-                                        </Row>
-                                    </Col>
-                                </Row>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
+                                    <Row className="div-lineadd" id="divNH"
+                                        style={{backgroundColor: "#ffdda6"}}>
+                                        <Col xs="12">
+                                            <Row>
+                                                <Col xs="12" className="piu-left" id="catNH">
+                                                    {self.state.catNH}
+                                                </Col>
+                                            </Row>
+                                            <Row id="lvNH">
+                                                <PIUTableObj list={self.state.arrNH}
+                                                        key="nh"
+                                                        lang={self.lang}
+                                                        showrank={self.state.showrank}
+                                                        showcheck={self.state.showcheck}
+                                                        updatePatternDialog={self.updatePatternDialog} />
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                    
+                                    <Row className="div-lineadd" id="divNormal"
+                                        style={{backgroundColor: "#f8e5d0"}}>
+                                        <Col xs="12">
+                                            <Row>
+                                                <Col xs="12" className="piu-left" id="catNormal">
+                                                    {self.state.catNR}
+                                                </Col>
+                                            </Row>
+                                            <Row id="lvNormal">
+                                                <PIUTableObj list={self.state.arrNR}
+                                                        key="nr"
+                                                        lang={self.lang}
+                                                        showrank={self.state.showrank}
+                                                        showcheck={self.state.showcheck}
+                                                        updatePatternDialog={self.updatePatternDialog} />
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                        
+                                    <Row className="div-lineadd" id="divNE"
+                                        style={{backgroundColor: "#a9e2c5"}}>
+                                        <Col xs="12">
+                                            <Row>
+                                                <Col xs="12" className="piu-left" id="catNE">
+                                                    {self.state.catNE}
+                                                </Col>
+                                            </Row>
+                                            <Row id="lvNE">
+                                                <PIUTableObj list={self.state.arrNE}
+                                                        key="ne"
+                                                        lang={self.lang}
+                                                        showrank={self.state.showrank}
+                                                        showcheck={self.state.showcheck}
+                                                        updatePatternDialog={self.updatePatternDialog} />
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                    
+                                    <Row className="div-lineadd" id="divEasy"
+                                        style={{backgroundColor: "#bbd1e8"}}>
+                                        <Col xs="12">
+                                            <Row>
+                                                <Col xs="12" className="piu-left" id="catEasy">
+                                                    {self.state.catEZ}
+                                                </Col>
+                                            </Row>
+                                            <Row id="lvEasy">
+                                                <PIUTableObj list={self.state.arrEZ}
+                                                        key="ez"
+                                                        lang={self.lang}
+                                                        showrank={self.state.showrank}
+                                                        showcheck={self.state.showcheck}
+                                                        updatePatternDialog={self.updatePatternDialog} />
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                    
+                                    <Row className="div-lineadd" id="divBelow"
+                                        style={{backgroundColor: "#c6d6f7"}}>
+                                        <Col xs="12">
+                                            <Row>
+                                                <Col xs="12" className="piu-left" id="catBelow">
+                                                    {self.state.catBE}
+                                                </Col>
+                                            </Row>
+                                            <Row id="lvBelow">
+                                                <PIUTableObj list={self.state.arrBE}
+                                                        key="be"
+                                                        lang={self.lang}
+                                                        showrank={self.state.showrank}
+                                                        showcheck={self.state.showcheck}
+                                                        updatePatternDialog={self.updatePatternDialog} />
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                    
+                                    <Row id="divRandom"
+                                        style={{backgroundColor: "#ab95d4"}}>
+                                        <Col xs="12">
+                                            <Row>
+                                                <Col xs="12" className="piu-left" id="catRandom">
+                                                    {self.state.catRD}
+                                                </Col>
+                                            </Row>
+                                            <Row id="lvRandom">
+                                                <PIUTableObj list={self.state.arrRD}
+                                                        key="rd"
+                                                        lang={self.lang}
+                                                        showrank={self.state.showrank}
+                                                        showcheck={self.state.showcheck}
+                                                        updatePatternDialog={self.updatePatternDialog} />
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
+                </CardBody>
+            
                 
                 <input id="fileopen" accept=".csv" type="file"
                     name="fileopen" style={{display:"none"}} />
@@ -1402,7 +1393,7 @@ class PIUTable extends Component<Props, State> {
                     content1={self.state.shareDlgCont1}
                     content2={self.state.shareDlgCont2}
                     close={self.shareDlgClose} />
-            </Container>
+            </Fragment>
         )
     }
 }

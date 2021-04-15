@@ -1,5 +1,5 @@
 /*****************************************************
- * GITADORA Info Server
+ * PIU Manager
  * Developed by Tae Jun Kang a.k.a Prunus Nira
  * (c) Nira 2016
  *
@@ -9,6 +9,12 @@
  *    this server are on USED-LIBRARIES file on root
  *****************************************************/
 const txtPIU = {
+    tableinfo: {
+        "jp":"本アプリで使用する難易度表はHypnosisさんの難易度表の一部を採用しております",
+        "ko":`본 툴에서 사용하는 난이도 표는 힙노시스님께서 제작하시는 난이도 표의 내용을 일부 차용하고 있습니다 (허가 받음)`,
+        "en":`Some part of difficulty table used in this tool is based on Hypnosis' table`,
+        "cn":`Some part of difficulty table used in this tool is based on Hypnosis' table`
+    },
     notice: {
         "jp":"最近のシステム更新後ファイルを保存できない方はprunusnira@gmail.comもしやTwitter @_nira_oneにてご連絡ください(CSVファイルを送ってください)",
         "ko":"최근 업데이트 후 파일 저장이 안되시는 분들은 prunusnira@gmail.com 혹은 트위터 @_nira_one으로 반드시 연락주세요 (CSV 파일을 보내주세요)",
