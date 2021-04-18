@@ -11,97 +11,93 @@ import {
 } from 'reactstrap';
 
 interface Props {
-    curname: string,
-    curlv: string,
-    handler: (name: string, lv: string) => void,
-    toggle: () => void,
-    display: boolean,
     title: string,
-    button: string
+    curname: string,
+    curlv: number,
+    button: string,
+    display: boolean,
+
+    setUserName: (name: string) => void,
+    setUserLv: (lv: number) => void,
+    setLoaded: (is: boolean) => void,
+
+    toggle: () => void
 }
 
-class UserDialog extends Component<Props> {
-    private nameinput = React.createRef<HTMLInputElement>();
-    private lvinput = React.createRef<HTMLInputElement>();
-    private curname = this.props.curname;
-    private curlv = this.props.curlv;
+const UserDialog = (props: Props) => {
+    const nameInpRef = React.createRef<HTMLInputElement>();
+    const lvInpRef = React.createRef<HTMLInputElement>();
 
-    nameValidCheck() {
+    const nameValidCheck = () => {
         const regex = /^[a-zA-Z0-9]+$/;
-        const name = this.nameinput.current;
+        const name = nameInpRef.current;
         if (name && regex.test(name.value) !== true)
             name.value = name.value.replace(/[^a-zA-Z0-9]+/, '');
     }
 
-    addNewUser() {
+    const addNewUser = () => {
         // 새 유저 UI에서 이름과 레벨 정보를 입력
         // username과 userlv를 업데이트하고 난이도 선택 버튼 표시
-        const name = this.nameinput.current;
-        const lv = this.lvinput.current;
+        const name = nameInpRef.current;
+        const lv = lvInpRef.current;
         
         if(name && lv) {
             if(name.value !== "" && lv.value !== "") {
-                this.props.handler(name.value, lv.value);
+                props.setUserName(name.value);
+                props.setUserLv(parseInt(lv.value));
+                props.setLoaded(true);
             }
             else {
                 alert("Not enough info");
                 //alert(txtPIU.newuserempty[lang]);
             }
             
-            this.props.toggle();
+            props.toggle();
         }
     }
 
-    closeDialog() {
-        this.props.toggle();
+    const closeDialog = () => {
+        props.toggle();
     }
 
-    render() {
-        const prop = this.props;
-        const self = this;
-
-        this.curname = prop.curname;
-        this.curlv = prop.curlv;
-
-        return (
-            <Modal isOpen={prop.display}>
-                <ModalHeader>{prop.title}</ModalHeader>
-                <ModalBody>
-                    <Row>
-                        <Col xs="4">
-                            User Name
-                        </Col>
-                        <Col xs="8">
-                            <input ref={this.nameinput} className='form-control'
-                                type='text' id='newname' placeholder='NAME'
-                                defaultValue={self.curname}
-                                onKeyUp={() => self.nameValidCheck()} />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col xs="4">
-                            User Level
-                        </Col>
-                        <Col xs="8">
-                            <input ref={this.lvinput} className='form-control'
-                                type='number' min='1' step='1' id='newlv'
-                                defaultValue={self.curlv}
-                                onKeyPress={(event) => (event.charCode >= 48 && event.charCode <= 57)}
-                                placeholder='LEVEL'/>
-                        </Col>
-                    </Row>
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="secondary" outlined="true" onClick={() => self.closeDialog()}>
-                        Close
-                    </Button>
-                    <Button color="secondary" outlined="true" onClick={() => self.addNewUser()}>
-                        {prop.button}
-                    </Button>
-                </ModalFooter>
-            </Modal>
-        )
-    }
+    return (
+        <Modal isOpen={props.display}>
+            <ModalHeader>{props.title}</ModalHeader>
+            <ModalBody>
+                <Row>
+                    <Col xs="4">
+                        User Name
+                    </Col>
+                    <Col xs="8">
+                        <input ref={nameInpRef} className='form-control'
+                            type='text' id='newname' placeholder='NAME'
+                            defaultValue={props.curname}
+                            onKeyUp={() => nameValidCheck()} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col xs="4">
+                        User Level
+                    </Col>
+                    <Col xs="8">
+                        <input ref={lvInpRef} className='form-control'
+                            type='number' min='1' step='1' id='newlv'
+                            defaultValue={props.curlv}
+                            onKeyPress={(event) => (event.charCode >= 48 && event.charCode <= 57)}
+                            placeholder='LEVEL'/>
+                    </Col>
+                </Row>
+            </ModalBody>
+            <ModalFooter>
+                <Button color="secondary" outlined="true" onClick={() => closeDialog()}>
+                    Close
+                </Button>
+                <Button color="secondary" outlined="true" onClick={() => addNewUser()}>
+                    {props.button}
+                </Button>
+            </ModalFooter>
+        </Modal>
+    );
 }
 
 export default UserDialog;

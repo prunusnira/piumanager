@@ -210,7 +210,7 @@ class PIUTable extends Component<Props, State> {
     }
 
     userLog(type: string) {
-        axios.post(CommonData.dataUrl+'userlog/'+this.state.username+'/'+type);
+        axios.get(CommonData.dataUrl+'userlog/'+this.state.username+'/'+type);
         // 로그 남기는 부분은 없애거나 추후 수정 필요
     }
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import PIUFooter from './piutable/piufooter';
 import {Route} from 'react-router-dom';
 import SavedTable from './piutable/savedtable';
 import MainContainer from './main/mainContainer';

@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {
     Row,
     Col,
     CardFooter
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import txtPIU from '../piutable/txtpiu';
 import styled from 'styled-components';
+import TxtFooter from './txtFooter';
 
 const Footer: React.FC<{lang:string}> = ({lang}) => {
     const langChange = (type: string): void => {
@@ -44,7 +44,7 @@ const Footer: React.FC<{lang:string}> = ({lang}) => {
                 <Row>
                     <Col xs="12">
                         Caution:<br/>
-                        <span>{(txtPIU as any).iosalert[lang]}</span>
+                        <span>{(TxtFooter as any).iosalert[lang]}</span>
                     </Col>
                 </Row>
                 <hr/>
@@ -59,7 +59,7 @@ const Footer: React.FC<{lang:string}> = ({lang}) => {
                         <a style={astyle} href="https://github.com/prunusnira/piumanager"
                             target="_blank" rel="noopener noreferrer">GitHub</a><br/>
                         Recent System Update: Feb. 17, 2021<br/>
-                        {(txtPIU as any).fanpage[lang]}<br/><br/>
+                        {(TxtFooter as any).fanpage[lang]}<br/><br/>
                         Developed with React & DynamoDB, Hosted on AWS S3
                     </Col>
                 </Row>

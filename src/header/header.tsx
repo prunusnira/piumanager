@@ -1,7 +1,7 @@
 import React from "react";
 import { CardHeader } from "reactstrap";
-import txtPIU from "../piutable/txtpiu";
 import styled from 'styled-components';
+import TxtHeader from "./txtHeader";
 
 const Header: React.FC<{lang: string}> = ({ lang }) => {
 
@@ -19,9 +19,9 @@ const Header: React.FC<{lang: string}> = ({ lang }) => {
                 &nbsp;
                 <span style={{fontSize:"150%"}}>Pump It Up</span>
                 &nbsp;
-                <span>{(txtPIU.subtitle as any)[lang]}</span>
+                <span>{(TxtHeader.subtitle as any)[lang]}</span>
                 <br/>
-                <span>{(txtPIU.tableinfo as any)[lang]}</span>
+                <span>{(TxtHeader.tableinfo as any)[lang]}</span>
             </CardHeader>
         </Wrapper>
     );
