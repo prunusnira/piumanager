@@ -9,19 +9,22 @@ import {
     Row,
     Col
 } from 'reactstrap';
+import Language from './language';
+import txtPIU from './txtpiu';
 
 interface Props {
     display: boolean,
     title: string,
-    type: number,
-    ptid: number,
-    updatePatternDialog: (ptid: number, title: string) => void,
-    updateData: (ptid: number, rank: string) => void,
-    updateMultipleData: (rank: string) => void,
-    button: string,
+    type: boolean,
+
     currentUpdateTitle: string,
-    steptype: string,
-    steplv: number
+    sdType: string,
+    level: number
+    ptid: Array<number>,
+
+    updateData: (ptid: number, rank: string) => void,
+    updatePatternDialog: (ptid: number, title: string) => void,
+    updateMultipleData: (rank: string) => void,
 }
 
 interface State {
@@ -34,6 +37,8 @@ class PatternUpdateDialog extends Component<Props, State> {
 
         this.changeRank = this.changeRank.bind(this);
     }
+    private langObj: Language = new Language();
+    private lang: string = this.langObj.getLang();
 
     state:State = {
         rank: "0"
@@ -62,7 +67,7 @@ class PatternUpdateDialog extends Component<Props, State> {
                             <Col xs="12">
                                 {prop.currentUpdateTitle}
                                 <br/>
-                                {prop.steptype}&nbsp;{prop.steplv}
+                                {prop.sdType}&nbsp;{prop.level}
                             </Col>
                         </Row>
                         <hr/>
@@ -91,14 +96,14 @@ class PatternUpdateDialog extends Component<Props, State> {
                             Close
                         </Button>
                         <Button color="secondary" outlined="true" onClick={() => {
-                            if(prop.type === 0) {
-                                prop.updateData(prop.ptid, self.state.rank);
+                            if(!prop.type) {
+                                prop.updateData(prop.ptid[0], self.state.rank);
                             }
                             else {
                                 prop.updateMultipleData(self.state.rank);
                             }
                             }}>
-                            {prop.button}
+                            {(txtPIU.update as any)[self.lang]}
                         </Button>
                     </ModalFooter>
                 </Modal>

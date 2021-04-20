@@ -960,10 +960,10 @@ class PIUTable extends Component<Props, State> {
 
         const obj = new UserInfo();
         obj.username = this.state.username;
-        obj.userlv = this.state.userlv;
+        obj.userlv = parseInt(this.state.userlv);
         obj.lv = lv;
         obj.type = type;
-        obj.lvdata = sharedata;
+        //obj.lvdata = sharedata;
         obj.stat = clearstatus;
 
         const json = JSON.stringify(obj);
@@ -1018,7 +1018,7 @@ class PIUTable extends Component<Props, State> {
 
         return (
             <Fragment>
-                <CardBody>
+                {/*<CardBody>
                     <Row>
                         <Col xs="12" md="8">
                             {(txtPIU.howto1 as any)[self.lang]}<br/>
@@ -1392,7 +1392,7 @@ class PIUTable extends Component<Props, State> {
                 <ShareDialog display={self.state.shareDlgShow}
                     content1={self.state.shareDlgCont1}
                     content2={self.state.shareDlgCont2}
-                    close={self.shareDlgClose} />
+                    close={self.shareDlgClose} />*/}
             </Fragment>
         )
     }

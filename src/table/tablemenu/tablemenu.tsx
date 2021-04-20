@@ -59,37 +59,13 @@ interface TableMenuProps {
     setDlgTitle: (msg: string) => void,
     setDlgBtn: (msg: string) => void,
 
-    rankCountReset: () => void,
-
-    setSSSCount: (cnt: number) => void,
-    setSSCount: (cnt: number) => void,
-    setSCount: (cnt: number) => void,
-    setAOnCount: (cnt: number) => void,
-    setAOffCount: (cnt: number) => void,
-    setBCDOnCount: (cnt: number) => void,
-    setBCDOffCount: (cnt: number) => void,
-    setFCount: (cnt: number) => void,
-    setNPCount: (cnt: number) => void,
-
-    showTable: boolean,
-    showUpdateDlg: boolean,
-
-    setShowTable: (b: boolean) => void,
-    setShowUpdateDlg: (b: boolean) => void,
-    setUpdateDlgTitle: (t: string) => void,
-    setMultipleUpdate: (b: boolean) => void,
-
-    setRankTxt1: (txt: string) => void,
-    setRankTxt2: (txt: string) => void,
-
-    musicSelectedIds: Array<number>,
-    setMusicSelectedName: (name: string) => void,
-    setMusicSelectedIds: (arr: Array<number>) => void,
-
     showTableRank: boolean,
     showTableCheck: boolean,
     setShowTableRank: (c: boolean) => void,
     setShowTableCheck: (c: boolean) => void,
+
+    updateData: (ptid: number, rank: string) => void,
+    openUpdatePatternMultiple: () => void,
 }
 
 const TableMenu = (props: TableMenuProps) => {
@@ -114,7 +90,7 @@ const TableMenu = (props: TableMenuProps) => {
 
             if(props.userStatus.has(ptid)) {
                 const rank = props.userStatus.get(ptid);
-                updateData(ptid, rank!);
+                props.updateData(ptid, rank!);
             }
         }
     }, [props.ptIdList]);
@@ -174,18 +150,23 @@ const TableMenu = (props: TableMenuProps) => {
     }
 
     const resetTable = () => {
-        props.setArrOver([]);
-        props.setArrHigh([]);
-        props.setArrNh([]);
-        props.setArrNormal([]);
-        props.setArrNe([]);
-        props.setArrEasy([]);
-        props.setArrBelow([]);
-        props.setArrRandom([]);
-        props.setShowAC(true);
-        props.setShowSH(true);
-        props.setShowFU(true);
-        props.setShowRM(true);
+        props.arrOver.splice(0, props.arrOver.length);
+        props.arrHigh.splice(0, props.arrHigh.length);
+        props.arrNh.splice(0, props.arrNh.length);
+        props.arrNormal.splice(0, props.arrNormal.length);
+        props.arrNe.splice(0, props.arrNe.length);
+        props.arrEasy.splice(0, props.arrEasy.length);
+        props.arrBelow.splice(0, props.arrBelow.length);
+        props.arrRandom.splice(0, props.arrRandom.length);
+
+        props.setArrOver(props.arrOver);
+        props.setArrHigh(props.arrHigh);
+        props.setArrNh(props.arrNh);
+        props.setArrNormal(props.arrNormal);
+        props.setArrNe(props.arrNe);
+        props.setArrEasy(props.arrEasy);
+        props.setArrBelow(props.arrBelow);
+        props.setArrRandom(props.arrRandom);
     }
 
     const handleMusicType = (type: number) => {
@@ -360,19 +341,15 @@ const TableMenu = (props: TableMenuProps) => {
             }
         }
 
+        props.setArrOver(props.arrOver);
+        props.setArrHigh(props.arrHigh);
+        props.setArrNh(props.arrNh);
+        props.setArrNormal(props.arrNormal);
+        props.setArrNe(props.arrNe);
+        props.setArrEasy(props.arrEasy);
+        props.setArrBelow(props.arrBelow);
+        props.setArrRandom(props.arrRandom);
         props.setPtIdList(ptidlist);
-    }
-
-    const updateData = (ptid: number, rank: string) => {
-        props.userStatus.set(ptid, rank);
-        updateRecord(ptid);
-        props.rankCountReset();
-        updateRankData();
-
-        // 창 닫기
-        if(props.showUpdateDlg) {
-            closeUpdatePatternDlg();
-        }
     }
 
     const editUser = () => {
@@ -381,96 +358,12 @@ const TableMenu = (props: TableMenuProps) => {
         props.setDlgBtn((TxtTableMenu.edituserbtn as any)[props.lang]);
     }
 
-    const updatePatternDialog = (ptid: number, title: string) => {
-        props.setShowUpdateDlg(true);
-        props.setMusicSelectedName(title);
-        props.setMultipleUpdate(false);
-        props.setUpdateDlgTitle((TxtTableMenu.updatedivtitle as any)[props.lang]);
-        props.musicSelectedIds.push(ptid);
-    }
-
-    const openUpdatePatternMultiple = () => {
-        props.setShowUpdateDlg(true);
-        props.setMultipleUpdate(true);
-        props.setUpdateDlgTitle((TxtTableMenu.updatedivtitle as any)[props.lang]);
-    }
-
-    const closeUpdatePatternDlg = () => {
-        props.setShowUpdateDlg(false);
-    }
-
     const hideRank = () => {
         props.setShowTableRank(!props.showTableRank);
     }
 
     const hideCheckbox = () => {
         props.setShowTableCheck(!props.showTableCheck);
-    }
-
-    const updateRecord = (ptid: number) => {
-        const div = document.getElementById("cs"+ptid);
-        const rankval = props.userStatus.get(ptid);
-
-        if(rankval) {
-            let rank = "";
-            switch(parseInt(rankval)) {
-                case 0: rank = "ss"; break;
-                case 1: rank = "gs"; break;
-                case 2: rank = "s"; break;
-                case 3: rank = "aon"; break;
-                case 4: rank = "aoff"; break;
-                case 5: rank = "bcdoff"; break;
-                case 6: rank = "f"; break;
-                case 7: rank = "np"; break;
-                case 8: rank = "bcdon"; break;
-            }
-
-            if(div)
-                div.innerHTML =
-                    "<img style='width: 50%; position: absolute; right: 0px; top: 0px;'"+
-                        "src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
-        }
-    }
-    
-    const updateRankData = () => {
-        let ranksss = 0;
-        let rankss = 0;
-        let ranks = 0;
-        let ranka = 0;
-        let rankao = 0;
-        let rankbcdo = 0;
-        let rankf = 0;
-        let rankbcd = 0;
-
-        for(let i = 0; i < props.ptIdList.length; i++) {
-            if(props.userStatus.has(props.ptIdList[i])) {
-                switch(props.userStatus.get(props.ptIdList[i])) {
-                case "0": ranksss++; break;
-                case "1": rankss++; break;
-                case "2": ranks++; break;
-                case "3": ranka++; break;
-                case "4": rankao++; break;
-                case "5": rankbcdo++; break;
-                case "6": rankf++; break;
-                case "8": rankbcd++; break;
-                }
-            }
-        }
-
-        props.setSSSCount(ranksss);
-        props.setSSCount(rankss);
-        props.setSCount(ranks);
-        props.setAOnCount(ranka);
-        props.setAOffCount(rankao);
-        props.setBCDOnCount(rankbcd);
-        props.setBCDOffCount(rankbcdo);
-        props.setFCount(rankf);
-        props.setNPCount(props.ptIdList.length - ranksss - rankss - ranks - ranka - rankao
-            - rankbcd - rankbcdo - rankf);
-
-        props.setRankTxt1(`SSS: ${ranksss} | SS: ${rankss} | S: ${ranks} | A: ${ranka} | BCD: ${rankbcd}`);
-        props.setRankTxt2(`A: ${rankao} (Off) | BCD: ${rankbcdo} (Off) | F: ${rankf} | No Play: ${
-            props.ptIdList.length - ranksss - rankss - ranks - ranka - rankao - rankbcd - rankbcdo - rankf}`);
     }
 
     const TableTitle = styled.tr`
@@ -549,7 +442,7 @@ const TableMenu = (props: TableMenuProps) => {
                                 <Button color="secondary" outline style={{width:"50%"}} onClick={() => editUser()}>
                                     {(TxtTableMenu.edit as any)[props.lang]}
                                 </Button>
-                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => openUpdatePatternMultiple()}>
+                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => props.openUpdatePatternMultiple()}>
                                     <FontAwesomeIcon icon={faCheckSquare} />
                                     {(TxtTableMenu.updatecheckedbtn as any)[props.lang]}
                                 </Button>

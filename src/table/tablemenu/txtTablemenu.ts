@@ -103,18 +103,6 @@ const TxtTableMenu = {
         "en":"Modify",
         "cn":"更改"
     },
-    updatedivtitle: {
-        "jp":"譜面ランク更新",
-        "ko":"패턴 랭크 갱신",
-        "en":"Update pattern rank",
-        "cn":"更新谱面评价"
-    },
-    updatealldiv: {
-        "jp":"選択された全譜面を更新",
-        "ko":"선택된 모든 패턴 갱신",
-        "en":"Update all selected patterns",
-        "cn":"更新所有已选择的谱面"
-    },
 };
 
 export default TxtTableMenu;

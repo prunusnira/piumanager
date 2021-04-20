@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { CardBody } from "reactstrap";
-import PatternUpdateDialog from "../piutable/patternUpdateDialog";
-import PIUTable from "../piutable/piutable";
-import ShareDialog from "../piutable/shareDialog";
-import UserDialog from "../piutable/userInfoDialog";
+import ShareDialog from "./shareDialog/shareDialog";
+import UserDialog from "./userDialog/userDialog";
 import { MusicData } from "./data/musicdataType";
 import FileMenu from "./filemenu/filemenu";
+import TableWrapper from "./tableinner/tableWrapper";
 import TableMenu from "./tablemenu/tablemenu";
+import TxtTable from "./txtTable";
+import PatternUpdateDialog from "./patternDialog/patternUpdateDialog";
 
 const TableContainer: React.FC<{lang: string}> = ({lang}) => {
+    //#region State
+
     // 사용자 프로필 다이얼로그
     const [showUserDlg, setShowUserDlg] = useState(false);      // 오픈 여부 변경
     const [userDlgTitle, setDlgTitle] = useState('');   // 다이얼로그 타이틀
@@ -82,12 +85,144 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
     const [showTableCheck, setShowTableCheck] = useState(false);
 
     // 테이블 상단에 랭크 개수 표시
-    const [rankTxt1, setRankTxt1] = useState('');
-    const [rankTxt2, setRankTxt2] = useState('');
+    const [rankCountTxt1, setRankTxt1] = useState('');
+    const [rankCountTxt2, setRankTxt2] = useState('');
 
     // 선택된 곡 제목(단일)/패턴아이디
     const [musicSelectedName, setMusicSelectedName] = useState(''); // 단일 선택시 곡 제목 설정
     const [musicSelectedIds, setMusicSelectedIds] = useState(new Array<number>());
+
+    // 공유 다이얼로그
+    const [showShareDlg, setShowShareDlg] = useState(false);
+    const [shareDlgCont1, setShareDlgCont1] = useState('');
+    const [shareDlgCont2, setShareDlgCont2] = useState('');
+
+    //#endregion
+
+    const newUser = () => {
+        setShowUserDlg(true);
+        setDlgTitle((TxtTable.newuserdiv as any)[lang]);
+        setDlgBtn((TxtTable.newuserbtn as any)[lang]);
+    }
+
+    const updateRecord = (ptid: number) => {
+        const div = document.getElementById("cs"+ptid);
+        const rankval = userStatus.get(ptid);
+
+        if(rankval) {
+            let rank = "";
+            switch(parseInt(rankval)) {
+                case 0: rank = "ss"; break;
+                case 1: rank = "gs"; break;
+                case 2: rank = "s"; break;
+                case 3: rank = "aon"; break;
+                case 4: rank = "aoff"; break;
+                case 5: rank = "bcdoff"; break;
+                case 6: rank = "f"; break;
+                case 7: rank = "np"; break;
+                case 8: rank = "bcdon"; break;
+            }
+
+            if(div)
+                div.innerHTML =
+                    "<img style='width: 50%; position: absolute; right: 0px; top: 0px;'"+
+                        "src='"+process.env.PUBLIC_URL+"/img/grade_"+rank+".png' />";
+        }
+    }
+
+    const updateRankCount = () => {
+        let ranksss = 0;
+        let rankss = 0;
+        let ranks = 0;
+        let ranka = 0;
+        let rankao = 0;
+        let rankbcdo = 0;
+        let rankf = 0;
+        let rankbcd = 0;
+
+        for(let i = 0; i < ptIdList.length; i++) {
+            if(userStatus.has(ptIdList[i])) {
+                switch(userStatus.get(ptIdList[i])) {
+                case "0": ranksss++; break;
+                case "1": rankss++; break;
+                case "2": ranks++; break;
+                case "3": ranka++; break;
+                case "4": rankao++; break;
+                case "5": rankbcdo++; break;
+                case "6": rankf++; break;
+                case "8": rankbcd++; break;
+                }
+            }
+        }
+
+        setSSSCount(ranksss);
+        setSSCount(rankss);
+        setSCount(ranks);
+        setAOnCount(ranka);
+        setAOffCount(rankao);
+        setBCDOnCount(rankbcd);
+        setBCDOffCount(rankbcdo);
+        setFCount(rankf);
+        setNPCount(ptIdList.length - ranksss - rankss - ranks - ranka - rankao
+            - rankbcd - rankbcdo - rankf);
+
+        setRankTxt1(`SSS: ${ranksss} | SS: ${rankss} | S: ${ranks} | A: ${ranka} | BCD: ${rankbcd}`);
+        setRankTxt2(`A: ${rankao} (Off) | BCD: ${rankbcdo} (Off) | F: ${rankf} | No Play: ${
+            ptIdList.length - ranksss - rankss - ranks - ranka - rankao - rankbcd - rankbcdo - rankf}`);
+    }
+
+    const updateData = (ptid: number, rank: string) => {
+        userStatus.set(ptid, rank);
+        updateRecord(ptid);
+        rankCountReset();
+        updateRankCount();
+
+        musicSelectedIds.splice(0, musicSelectedIds.length);
+        setMusicSelectedIds(musicSelectedIds);
+
+        // 창 닫기
+        if(showUpdateDlg) {
+            closeUpdatePatternDlg();
+        }
+    }
+    
+    const updateMultipleData = (rank: string) => {
+        const checked = document.querySelectorAll("input[id=ptnsel]:checked");
+        for(let i = 0; i < checked.length; i++) {
+            const ptid = (checked[i] as HTMLInputElement).value;
+            userStatus.set(parseInt(ptid), rank);
+            updateRecord(parseInt(ptid));
+        }
+        rankCountReset();
+        updateRankCount();
+
+        // 창 닫기
+        if(showUpdateDlg) {
+            closeUpdatePatternDlg();
+        }
+    }
+
+    // 업데이트 창 열기
+    const openUpdatePatternDialog = (ptid: number, title: string) => {
+        setShowUpdateDlg(true);
+        setMusicSelectedName(title);
+        setMultipleUpdate(false);
+        setUpdateDlgTitle((TxtTable.updatedivtitle as any)[lang]);
+        musicSelectedIds.push(ptid);
+    }
+
+    const openUpdatePatternMultiple = () => {
+        setShowUpdateDlg(true);
+        setMultipleUpdate(true);
+        setUpdateDlgTitle((TxtTable.updatedivtitle as any)[lang]);
+    }
+
+    // 업데이트 창 닫기
+    const closeUpdatePatternDlg = () => {
+        musicSelectedIds.splice(0, musicSelectedIds.length);
+        setMusicSelectedIds(musicSelectedIds);
+        setShowUpdateDlg(false);
+    }
 
     const rankCountReset = () => {
         setSSSCount(0);
@@ -101,19 +236,32 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
         setNPCount(0);
     }
 
+    // Share dlg
+    const openShareDlg = () => {
+        setShowShareDlg(true);
+    }
+
+    const closeShareDlg = () => {
+        setShowShareDlg(false);
+    }
+
     return (
         <CardBody>
             <FileMenu
                 lang={lang}
+
+                newUser={newUser}
+
                 setShowUserDlg={setShowUserDlg}
                 setDlgTitle={setDlgTitle}
                 setDlgBtn={setDlgBtn}
                 setLoaded={setLoaded}
+
                 userName={userName}
-                setUserName={setUserName}
                 userLv={userLv}
-                setUserLv={setUserLv}
                 userStatus={userStatus}
+                setUserName={setUserName}
+                setUserLv={setUserLv}
                 setUserStatus={setUserStatus} />
             <TableMenu
                 lang={lang}
@@ -166,38 +314,53 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
                 setDlgTitle={setDlgTitle}
                 setDlgBtn={setDlgBtn}
                 
-                rankCountReset={rankCountReset}
-                
-                setSSSCount={setSSSCount}
-                setSSCount={setSSCount}
-                setSCount={setSCount}
-                setAOnCount={setAOnCount}
-                setAOffCount={setAOffCount}
-                setBCDOnCount={setBCDOnCount}
-                setBCDOffCount={setBCDOffCount}
-                setFCount={setFCount}
-                setNPCount={setNPCount}
-                
-                showTable={showTable}
-                showUpdateDlg={showUpdateDlg}
-
-                setShowTable={setShowTable}
-                setShowUpdateDlg={setShowUpdateDlg}
-                setUpdateDlgTitle={setUpdateDlgTitle}
-                setMultipleUpdate={setMultipleUpdate}
-                
-                setRankTxt1={setRankTxt1}
-                setRankTxt2={setRankTxt2}
-                
-                musicSelectedIds={musicSelectedIds}
-                setMusicSelectedName={setMusicSelectedName}
-                setMusicSelectedIds={setMusicSelectedIds}
-                
                 showTableRank={showTableRank}
                 showTableCheck={showTableCheck}
                 setShowTableRank={setShowTableRank}
-                setShowTableCheck={setShowTableCheck} />
-            <PIUTable />
+                setShowTableCheck={setShowTableCheck}
+                
+                updateData={updateData}
+                openUpdatePatternMultiple={openUpdatePatternMultiple} />
+            <TableWrapper
+                lang={lang}
+
+                isLoaded={isLoaded}
+                sdType={selSDType}
+                level={selDiffLv}
+
+                userName={userName}
+                userLv={userLv}
+                userStatus={userStatus}
+
+                txtOver={txtOver}
+                txtHigh={txtHigh}
+                txtNh={txtNh}
+                txtNormal={txtNormal}
+                txtNe={txtNe}
+                txtEasy={txtEasy}
+                txtBelow={txtBelow}
+                txtRandom={txtRandom}
+                            
+                arrOver={arrOver}
+                arrHigh={arrHigh}
+                arrNh={arrNh}
+                arrNormal={arrNormal}
+                arrNe={arrNe}
+                arrEasy={arrEasy}
+                arrBelow={arrBelow}
+                arrRandom={arrRandom}
+                
+                setShowShareDlg={setShowShareDlg}
+                setShareDlgCont1={setShareDlgCont1}
+                setShareDlgCont2={setShareDlgCont2}
+                
+                rankCountTxt1={rankCountTxt1}
+                rankCountTxt2={rankCountTxt2}
+                
+                showTableRank={showTableRank}
+                showTableCheck={showTableCheck}
+
+                openUpdatePatternDlg={openUpdatePatternDialog} />
 
             <input id="fileopen" accept=".csv" type="file"
                     name="fileopen" style={{display:"none"}} />
@@ -207,28 +370,36 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
                 curname={userName}
                 curlv={userLv}
                 button={userDlgBtn}
-                display={showUserDlg}
+                showUserDlg={showUserDlg}
+
                 setUserName={setUserName}
                 setUserLv={setUserLv}
                 setLoaded={setLoaded}
-                toggle={self.newUser} />
+
+                newUser={newUser}
+                setShowUserDlg={setShowUserDlg} />
             <PatternUpdateDialog
-                title={self.state.updatedlgTitle}
-                type={self.state.updatedlgType}
-                button={(txtPIU.update as any)[self.lang]}
-                display={self.state.pattern}
-                ptid={self.state.currentpt}
-                updateData={self.updateData}
-                currentUpdateTitle={self.state.currentUpdateTitle}
-                updateMultipleData={self.updateMultipleData}
-                updatePatternDialog={self.updatePatternDialog}
-                steptype={self.state.steptype}
-                steplv={self.state.steplv} />
+                lang={lang}
+
+                display={showUpdateDlg}
+                title={updateDlgTitle}
+                type={isMultipleUpdate}
+
+                currentUpdateTitle={musicSelectedName}
+                sdType={selSDType}
+                level={selDiffLv}
+                ptid={musicSelectedIds}
+
+                updateData={updateData}
+                updateMultipleData={updateMultipleData}
+                updatePatternDialog={openUpdatePatternDialog}
+                closeUpdatePatternDlg={closeUpdatePatternDlg} />
             <ShareDialog
-                display={self.state.shareDlgShow}
-                content1={self.state.shareDlgCont1}
-                content2={self.state.shareDlgCont2}
-                close={self.shareDlgClose} />
+                lang={lang}
+                display={showShareDlg}
+                content1={shareDlgCont1}
+                content2={shareDlgCont2}
+                close={closeShareDlg} />
         </CardBody>
     );
 }

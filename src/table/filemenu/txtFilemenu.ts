@@ -1,16 +1,4 @@
 const TxtFilemenu = {
-    newuserdiv: {
-        "jp":"新規ユーザー追加：ユーザーネームには半角英文字と数字が使えます",
-        "ko":"새로운 사용자 추가: 이름에는 영문자와 숫자만 사용 가능합니다",
-        "en":"Add new user: Only alphabet and number are allowed for user name",
-        "cn":"添加新用户：用户名仅允许使用字母与数字"
-    },
-    newuserbtn: {
-        "jp":"登録",
-        "ko":"유저 작성",
-        "en":"Create Profile",
-        "cn":"创建个人信息"
-    },
     loadwarn: {
         "jp":`このブラウザは正常的に動作しない可能性があります<br/>
             ファイル読みを試してみますが、正常ではない場合はGoogle Chromeを利用してください`,

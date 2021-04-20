@@ -1,8 +1,8 @@
 import React, {Component, Fragment} from 'react';
 
 import { Col, Row } from 'reactstrap';
-import CommonData from './commonData';
-import { MusicData } from '../table/data/musicdataType';
+import CommonData from '../../piutable/commonData';
+import { MusicData } from '../data/musicdataType';
 
 interface Props {
     list: Array<MusicData>,

@@ -608,7 +608,7 @@ class SavedTable extends Component<
                                 </Col>
                             </CardHeader>
                             <CardBody>
-                                <Row className="div-lineadd" id="divOver"
+                                {/*<Row className="div-lineadd" id="divOver"
                                     style={{backgroundColor: "#ffadc5"}}>
                                     <Col xs="12">
                                         <Row>
@@ -758,7 +758,7 @@ class SavedTable extends Component<
                                                     updatePatternDialog={self.updatePatternDialog} />
                                         </Row>
                                     </Col>
-                                </Row>
+        </Row>*/}
                             </CardBody>
                         </Card>
                     </Col>

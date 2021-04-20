@@ -3,28 +3,27 @@ import { Button, Col, Row } from "reactstrap";
 import axios from 'axios';
 import TxtFileMenu from './txtFilemenu';
 import CommonData from "../../piutable/commonData";
+import {unixTimeToText} from '../tool';
 
 interface FileMenuProps {
     lang: string,
+
+    newUser: () => void,
+
     setShowUserDlg: (status: boolean) => void,
     setDlgTitle: (msg: string) => void,
     setDlgBtn: (msg: string) => void,
     setLoaded: (b: boolean) => void,
+
     userName: string,
-    setUserName: (name: string) => void,
     userLv: number,
-    setUserLv: (lv: number) => void,
     userStatus: Map<number, string>,
+    setUserName: (name: string) => void,
+    setUserLv: (lv: number) => void,
     setUserStatus: (map: Map<number, string>) => void
 }
 
 const FileMenu = (props: FileMenuProps) => {
-    const newUser = () => {
-        props.setShowUserDlg(true);
-        props.setDlgTitle((TxtFileMenu.newuserdiv as any)[props.lang]);
-        props.setDlgBtn((TxtFileMenu.newuserbtn as any)[props.lang]);
-    }
-
     const loadUser = () => {
         // 파일 열기 대화상자를 열고 데이터를 가져옴
         if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
@@ -106,19 +105,6 @@ const FileMenu = (props: FileMenuProps) => {
         document.body.removeChild(elem);
     }
 
-    const unixTimeToText = (uxtime: number, onlyday = false) => {
-        const now = new Date(uxtime);
-        let time = now.getFullYear()
-            + ((now.getMonth()+1)<10?'0':'') + (now.getMonth()+1)
-            + (now.getDate()<10?'0':'') + now.getDate();
-        if(!onlyday) 
-            time += "_"
-                + now.getHours()
-                + (now.getMinutes()<10?'0':'') + now.getMinutes()
-                + (now.getSeconds()<10?'0':'') + now.getSeconds();
-        return time;
-    }
-
     return (
         <Row>
             <Col xs="12" md="8">
@@ -133,7 +119,7 @@ const FileMenu = (props: FileMenuProps) => {
             <Col xs="12" md="4">
                 <Row>
                     <Col xs="12" className="btn-group-vertical">
-                        <Button color="secondary" outline onClick={() => newUser()}>
+                        <Button color="secondary" outline onClick={() => props.newUser()}>
                             {(TxtFileMenu.newuser as any)[props.lang]}
                         </Button>
                         <Button color="secondary" outline onClick={() => loadUser()}>
