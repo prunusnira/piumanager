@@ -24,6 +24,6 @@ yarn-error.log*
 
 # user added
 /server/commondata.ts
-/src/piutable/commonData.ts
+/src/table/data/commonData.ts
 /design
 /serverBuild

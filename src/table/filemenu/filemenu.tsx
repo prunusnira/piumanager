@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Col, Row } from "reactstrap";
 import axios from 'axios';
 import TxtFileMenu from './txtFilemenu';
-import CommonData from "../../piutable/commonData";
+import CommonData from "../data/commonData";
 import {unixTimeToText} from '../tool';
 
 interface FileMenuProps {

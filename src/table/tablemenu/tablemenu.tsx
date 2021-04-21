@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
 import TxtTableMenu from './txtTablemenu';
 import { MusicData } from '../data/musicdataType';
-import CommonData from '../../piutable/commonData';
+import CommonData from '../data/commonData';
 
 interface TableMenuProps {
     lang: string,

@@ -1,7 +1,7 @@
-import React, {Component, Fragment} from 'react';
+import React, {Fragment} from 'react';
 
 import { Col, Row } from 'reactstrap';
-import CommonData from '../../piutable/commonData';
+import CommonData from '../data/commonData';
 import { MusicData } from '../data/musicdataType';
 
 interface Props {

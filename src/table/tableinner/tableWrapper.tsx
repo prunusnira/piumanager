@@ -5,7 +5,7 @@ import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
 import { MusicData } from '../data/musicdataType';
-import UserInfo from '../../piutable/userInfo';
+import UserInfo from '../data/userInfo';
 import {unixTimeToText} from '../tool';
 import TxtTable from './txtTable';
 import PIUTableObj from '../tableobj/piuTableObj';
@@ -131,13 +131,14 @@ const TableWrapper = (props: TableProps) => {
             }
         }
 
-        const obj = new UserInfo();
-        obj.username = props.userName;
-        obj.userlv = props.userLv;
-        obj.lv = lv;
-        obj.type = type;
-        obj.lvdata = sharedata;
-        obj.stat = clearstatus;
+        const obj: UserInfo = {
+            username: props.userName,
+            userlv: props.userLv,
+            lv: lv,
+            type: type,
+            lvdata: sharedata,
+            stat: clearstatus
+        };
 
         const json = JSON.stringify(obj);
 
