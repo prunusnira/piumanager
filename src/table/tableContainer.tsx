@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CardBody } from "reactstrap";
+import axios from 'axios';
 import ShareDialog from "./shareDialog/shareDialog";
 import UserDialog from "./userDialog/userDialog";
 import { MusicData } from "./data/musicdataType";
@@ -8,8 +9,17 @@ import TableWrapper from "./tableinner/tableWrapper";
 import TableMenu from "./tablemenu/tablemenu";
 import TxtTable from "./txtTable";
 import PatternUpdateDialog from "./patternDialog/patternUpdateDialog";
+import { useParams } from "react-router-dom";
+import CommonData from "./data/commonData";
+
+interface MatchProps {
+    savedId: string;
+}
 
 const TableContainer: React.FC<{lang: string}> = ({lang}) => {
+    // URL Parameter
+    const {savedId} = useParams<MatchProps>();
+
     //#region State
 
     // 사용자 프로필 다이얼로그
@@ -90,7 +100,7 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
 
     // 선택된 곡 제목(단일)/패턴아이디
     const [musicSelectedName, setMusicSelectedName] = useState(''); // 단일 선택시 곡 제목 설정
-    const [musicSelectedIds, setMusicSelectedIds] = useState(new Array<number>());
+    const [musicSelectedId, setMusicSelectedId] = useState(0);
 
     // 공유 다이얼로그
     const [showShareDlg, setShowShareDlg] = useState(false);
@@ -103,6 +113,28 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
         setShowUserDlg(true);
         setDlgTitle((TxtTable.newuserdiv as any)[lang]);
         setDlgBtn((TxtTable.newuserbtn as any)[lang]);
+    }
+    
+    const userDataAnalyze = (result: string, type: string) => {
+        const str = result.split("\n");
+        
+        const userinfo = str[0].split(",");
+        
+        for(let i = 1; i < str.length; i++) {
+            const cur = str[i].split(",");
+            if(cur[0] !== "") {
+                setUserStatus(userStatus.set(parseInt(cur[0]), cur[1]));
+            }
+        }
+
+        setUserName(userinfo[0]);
+        setUserLv(parseInt(userinfo[1]));
+        setLoaded(true);
+        userLog(type);
+    }
+
+    const userLog = (type: string) => {
+        axios.post(CommonData.dataUrl+'userlog/'+userName+'/'+type);
     }
 
     const updateRecord = (ptid: number) => {
@@ -166,9 +198,8 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
         setNPCount(ptIdList.length - ranksss - rankss - ranks - ranka - rankao
             - rankbcd - rankbcdo - rankf);
 
-        setRankTxt1(`SSS: ${ranksss} | SS: ${rankss} | S: ${ranks} | A: ${ranka} | BCD: ${rankbcd}`);
-        setRankTxt2(`A: ${rankao} (Off) | BCD: ${rankbcdo} (Off) | F: ${rankf} | No Play: ${
-            ptIdList.length - ranksss - rankss - ranks - ranka - rankao - rankbcd - rankbcdo - rankf}`);
+        setRankTxt1(`SSS: ${sssCount} | SS: ${ssCount} | S: ${sCount} | A: ${aOnCount} | BCD: ${bcdOnCount}`);
+        setRankTxt2(`A: ${aOffCount} (Off) | BCD: ${bcdOffCount} (Off) | F: ${fCount} | No Play: ${npCount}`);
     }
 
     const updateData = (ptid: number, rank: string) => {
@@ -177,8 +208,7 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
         rankCountReset();
         updateRankCount();
 
-        musicSelectedIds.splice(0, musicSelectedIds.length);
-        setMusicSelectedIds(musicSelectedIds);
+        setMusicSelectedId(0);
 
         // 창 닫기
         if(showUpdateDlg) {
@@ -208,7 +238,7 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
         setMusicSelectedName(title);
         setMultipleUpdate(false);
         setUpdateDlgTitle((TxtTable.updatedivtitle as any)[lang]);
-        musicSelectedIds.push(ptid);
+        setMusicSelectedId(ptid);
     }
 
     const openUpdatePatternMultiple = () => {
@@ -219,8 +249,7 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
 
     // 업데이트 창 닫기
     const closeUpdatePatternDlg = () => {
-        musicSelectedIds.splice(0, musicSelectedIds.length);
-        setMusicSelectedIds(musicSelectedIds);
+        setMusicSelectedId(0);
         setShowUpdateDlg(false);
     }
 
@@ -245,12 +274,25 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
         setShowShareDlg(false);
     }
 
+    // 최초 실행 시 실행되는 effect, constructor 대신에 처리
+    useEffect(() => {
+        if(savedId !== undefined) {
+            // DB에 공유용으로 저장된 값을 불러와서 데이터 표시
+            axios.get(`${CommonData.dataUrl}saved/${savedId}`)
+            .then(d => {
+                const str = atob(d.data);
+                userDataAnalyze(str, "saved");
+            });
+        }
+    }, []);
+
     return (
         <CardBody>
             <FileMenu
                 lang={lang}
 
                 newUser={newUser}
+                userDataAnalyze={userDataAnalyze}
 
                 setShowUserDlg={setShowUserDlg}
                 setDlgTitle={setDlgTitle}
@@ -388,7 +430,7 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
                 currentUpdateTitle={musicSelectedName}
                 sdType={selSDType}
                 level={selDiffLv}
-                ptid={musicSelectedIds}
+                ptid={musicSelectedId}
 
                 updateData={updateData}
                 updateMultipleData={updateMultipleData}

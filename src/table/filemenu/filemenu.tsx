@@ -1,14 +1,13 @@
 import React from "react";
 import { Button, Col, Row } from "reactstrap";
-import axios from 'axios';
 import TxtFileMenu from './txtFilemenu';
-import CommonData from "../data/commonData";
 import {unixTimeToText} from '../tool';
 
 interface FileMenuProps {
     lang: string,
 
     newUser: () => void,
+    userDataAnalyze: (data: string, type: string) => void,
 
     setShowUserDlg: (status: boolean) => void,
     setDlgTitle: (msg: string) => void,
@@ -50,7 +49,7 @@ const FileMenu = (props: FileMenuProps) => {
                 callbackOpen(result);
             }
             else {
-                callbackOpenOrigin(result);
+                props.userDataAnalyze(result, "load");
             }
         };
         fr.readAsText(file);
@@ -58,30 +57,7 @@ const FileMenu = (props: FileMenuProps) => {
 
     const callbackOpen = (result: string) => {
         const str = atob(result);
-        callbackOpenOrigin(str);
-    }
-    
-    const callbackOpenOrigin = (result: string) => {
-        const str = result.split("\n");
-        
-        const userinfo = str[0].split(",");
-        
-        for(let i = 1; i < str.length; i++) {
-            const cur = str[i].split(",");
-            if(cur[0] !== "") {
-                props.setUserStatus(props.userStatus.set(parseInt(cur[0]), cur[1]));
-            }
-        }
-
-        props.setUserName(userinfo[0]);
-        props.setUserLv(parseInt(userinfo[1]));
-        props.setLoaded(true);
-        userLog("load");
-    }
-
-    const userLog = (type: string) => {
-        axios.get(CommonData.dataUrl+'userlog/'+props.userName+'/'+type);
-        // 로그 남기는 부분은 없애거나 추후 수정 필요
+        props.userDataAnalyze(str, "load");
     }
 
     const saveUser = () => {

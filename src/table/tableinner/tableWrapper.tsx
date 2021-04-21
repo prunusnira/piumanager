@@ -4,11 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import SHA1 from 'crypto-js/sha1';
 import { MusicData } from '../data/musicdataType';
 import UserInfo from '../data/userInfo';
 import {unixTimeToText} from '../tool';
 import TxtTable from './txtTable';
 import PIUTableObj from '../tableobj/piuTableObj';
+import CommonData from '../data/commonData';
 
 interface TableProps {
     lang: string,
@@ -141,12 +143,14 @@ const TableWrapper = (props: TableProps) => {
         };
 
         const json = JSON.stringify(obj);
+        
+        // 랜덤코드 발행
+        const code = SHA1(props.userName+new Date().toTimeString());
 
-        axios.post(`/d/save/${props.userName}/${props.sdType}/${props.level}/`+
-                    unixTimeToText(new Date().getTime(), true),
-                    {
-                        json: json
-                    })
+        axios.post(`${CommonData.dataUrl}share/${code}/0`,
+            {
+                data: json
+            })
             .then((res) => {
                 let message1 = "";
                 let message2 = "";
@@ -154,7 +158,7 @@ const TableWrapper = (props: TableProps) => {
                 const json = res.data;
                 if(json.status !== "error") {
                     message1 = (TxtTable.sharedlg.cont as any)[props.lang];
-                    message2 = "https://piu.nira.one/"+json.msg;
+                    message2 = "https://piu.nira.one/saved/"+code;
                 }
                 else {
                     message1 = (TxtTable.sharedlg.error as any)[props.lang];
@@ -182,7 +186,7 @@ const TableWrapper = (props: TableProps) => {
                                 <Button color="secondary" outline onClick={() => scrShot('targetTable', `piu_${props.userName}_${props.sdType}_${props.level}_${unixTimeToText(new Date().getTime())}.jpg`)}>
                                     <FontAwesomeIcon icon={faImages}/>
                                 </Button>
-                                <Button color="secondary" outline onClick={() => shareURL()} disabled>
+                                <Button color="secondary" outline onClick={() => shareURL()}>
                                     <FontAwesomeIcon icon={faShareAltSquare}/>
                                 </Button>
                             </Col>

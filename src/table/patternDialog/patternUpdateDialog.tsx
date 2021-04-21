@@ -21,7 +21,7 @@ interface Props {
     currentUpdateTitle: string,
     sdType: string,
     level: number
-    ptid: Array<number>,
+    ptid: number,
 
     updateData: (ptid: number, rank: string) => void,
     updatePatternDialog: (ptid: number, title: string) => void,
@@ -80,7 +80,7 @@ const PatternUpdateDialog = (props: Props) => {
                     </Button>
                     <Button color="secondary" outlined="true" onClick={() => {
                         if(!props.type) {
-                            props.updateData(props.ptid[0], rank);
+                            props.updateData(props.ptid, rank);
                         }
                         else {
                             props.updateMultipleData(rank);
