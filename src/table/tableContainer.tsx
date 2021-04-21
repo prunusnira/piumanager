@@ -130,11 +130,11 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
         setUserName(userinfo[0]);
         setUserLv(parseInt(userinfo[1]));
         setLoaded(true);
-        userLog(type);
+        userLog(userinfo[0], type);
     }
 
-    const userLog = (type: string) => {
-        axios.post(CommonData.dataUrl+'userlog/'+userName+'/'+type);
+    const userLog = (name: string, type: string) => {
+        axios.post(CommonData.dataUrl+'userlog/'+name+'/'+type);
     }
 
     const updateRecord = (ptid: number) => {
@@ -417,9 +417,8 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
                 setUserName={setUserName}
                 setUserLv={setUserLv}
                 setLoaded={setLoaded}
-
-                newUser={newUser}
-                setShowUserDlg={setShowUserDlg} />
+                setShowUserDlg={setShowUserDlg}
+                userLog={userLog} />
             <PatternUpdateDialog
                 lang={lang}
 

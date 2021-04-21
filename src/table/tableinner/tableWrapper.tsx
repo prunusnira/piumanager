@@ -4,9 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
-import SHA1 from 'crypto-js/sha1';
+import CryptoJS from 'crypto-js';
 import { MusicData } from '../data/musicdataType';
-import UserInfo from '../data/userInfo';
 import {unixTimeToText} from '../tool';
 import TxtTable from './txtTable';
 import PIUTableObj from '../tableobj/piuTableObj';
@@ -83,86 +82,35 @@ const TableWrapper = (props: TableProps) => {
         }
     }
 
-    const shareCheckHas = (keyval: number, arr: Array<MusicData>) => {
-        let rtn = false;
-        for(let i = 0; i < props.arrOver.length - 1; i++) {
-            if(props.arrOver[i].ptid === keyval) {
-                rtn = true;
-                break;
-            }
-        }
-        return rtn;
-    }
-
     const shareURL = () => {
-        const lv = props.level;
-        const type = props.sdType;
-        const sharedata = new Map<string, Array<MusicData>>();
-        sharedata.set("ov", props.arrOver);
-        sharedata.set("hi", props.arrHigh);
-        sharedata.set("nh", props.arrNh);
-        sharedata.set("nr", props.arrNormal);
-        sharedata.set("ne", props.arrNe);
-        sharedata.set("ez", props.arrEasy);
-        sharedata.set("be", props.arrBelow);
-        sharedata.set("rd", props.arrRandom);
+        let text = props.userName+"," + props.userLv + "\n";
         
-        const clearstatus = new Map<string, string>();
         const keys = props.userStatus.keys();
-        
-        let end = false;
-        while(!end) {
-            const itor = keys.next();
-
-            if(itor.value !== undefined) {
-                // 1. ptid 값이 들어있는지 확인
-                let has = false;
-
-                has = shareCheckHas(itor.value, props.arrOver);
-                if(!has) has = shareCheckHas(itor.value, props.arrHigh);
-                if(!has) has = shareCheckHas(itor.value, props.arrNh);
-                if(!has) has = shareCheckHas(itor.value, props.arrNormal);
-                if(!has) has = shareCheckHas(itor.value, props.arrNe);
-                if(!has) has = shareCheckHas(itor.value, props.arrEasy);
-                if(!has) has = shareCheckHas(itor.value, props.arrBelow);
-                if(!has) has = shareCheckHas(itor.value, props.arrRandom);
-                if(has) clearstatus.set(itor.value, props.userStatus.get(itor.value)!);
-            }
-            else {
-                end = true;
-            }
+        for(let i = 0; i < props.userStatus.size; i++) {
+            const ckey = keys.next();
+            if(ckey.value !== "")
+                text += ckey.value + "," + props.userStatus.get(ckey.value) + "\n";
         }
 
-        const obj: UserInfo = {
-            username: props.userName,
-            userlv: props.userLv,
-            lv: lv,
-            type: type,
-            lvdata: sharedata,
-            stat: clearstatus
-        };
-
-        const json = JSON.stringify(obj);
+        const datafixed = btoa(text);
         
         // 랜덤코드 발행
-        const code = SHA1(props.userName+new Date().toTimeString());
+        const code = CryptoJS.SHA1(props.userName+new Date().toTimeString()).toString();
 
         axios.post(`${CommonData.dataUrl}share/${code}/0`,
             {
-                data: json
+                "data": datafixed
             })
             .then((res) => {
-                let message1 = "";
-                let message2 = "";
-                console.log(res.data);
-                const json = res.data;
-                if(json.status !== "error") {
+                let message1 = '';
+                let message2 = '';
+                if(res.status === 200) {
                     message1 = (TxtTable.sharedlg.cont as any)[props.lang];
-                    message2 = "https://piu.nira.one/saved/"+code;
+                    message2 = `https://piu.nira.one/saved/${code}`;
                 }
                 else {
                     message1 = (TxtTable.sharedlg.error as any)[props.lang];
-                    message2 = json.msg;
+                    message2 = ``;
                 }
 
                 props.setShowShareDlg(true);

@@ -20,9 +20,8 @@ interface Props {
     setUserName: (name: string) => void,
     setUserLv: (lv: number) => void,
     setLoaded: (is: boolean) => void,
-
-    newUser: () => void,
     setShowUserDlg: (b: boolean) => void,
+    userLog: (name: string, type: string) => void,
 }
 
 const UserDialog = (props: Props) => {
@@ -47,6 +46,7 @@ const UserDialog = (props: Props) => {
                 props.setUserName(name.value);
                 props.setUserLv(parseInt(lv.value));
                 props.setLoaded(true);
+                props.userLog(name.value, "new");
                 closeDialog();
             }
             else {
