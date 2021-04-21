@@ -107,6 +107,9 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
     const [shareDlgCont1, setShareDlgCont1] = useState('');
     const [shareDlgCont2, setShareDlgCont2] = useState('');
 
+    // 저장된 값 부른 여부 확인
+    const [isSavedData, setIsSaved] = useState(false);
+
     //#endregion
 
     const newUser = () => {
@@ -278,10 +281,10 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
     useEffect(() => {
         if(savedId !== undefined) {
             // DB에 공유용으로 저장된 값을 불러와서 데이터 표시
-            axios.get(`${CommonData.dataUrl}saved/${savedId}`)
+            axios.get(`${CommonData.dataUrl}saved/${savedId}/0`)
             .then(d => {
-                const str = atob(d.data);
-                userDataAnalyze(str, "saved");
+                setIsSaved(true);
+                userDataAnalyze(atob(d.data[0].saved), "saved");
             });
         }
     }, []);
@@ -304,7 +307,9 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
                 userStatus={userStatus}
                 setUserName={setUserName}
                 setUserLv={setUserLv}
-                setUserStatus={setUserStatus} />
+                setUserStatus={setUserStatus}
+                
+                isSavedData={isSavedData} />
             <TableMenu
                 lang={lang}
                 isLoaded={isLoaded}

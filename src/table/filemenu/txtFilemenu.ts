@@ -50,6 +50,12 @@ const TxtFilemenu = {
         "ko":"파일 저장",
         "en":"Save File",
         "cn":"保存文件"
+    },
+    sharedata: {
+        "jp":"共有されたデータです",
+        "ko":"공유된 데이터입니다",
+        "en":"This data is shared table",
+        "cn":"共享的数据"
     }
 };
 

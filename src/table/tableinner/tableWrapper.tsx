@@ -100,6 +100,11 @@ const TableWrapper = (props: TableProps) => {
         axios.post(`${CommonData.dataUrl}share/${code}/0`,
             {
                 "data": datafixed
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json"
+                }
             })
             .then((res) => {
                 let message1 = '';

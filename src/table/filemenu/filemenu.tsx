@@ -19,7 +19,9 @@ interface FileMenuProps {
     userStatus: Map<number, string>,
     setUserName: (name: string) => void,
     setUserLv: (lv: number) => void,
-    setUserStatus: (map: Map<number, string>) => void
+    setUserStatus: (map: Map<number, string>) => void,
+
+    isSavedData: boolean
 }
 
 const FileMenu = (props: FileMenuProps) => {
@@ -81,34 +83,45 @@ const FileMenu = (props: FileMenuProps) => {
         document.body.removeChild(elem);
     }
 
-    return (
-        <Row>
-            <Col xs="12" md="8">
-                {(TxtFileMenu.howto1 as any)[props.lang]}<br/>
-                <ol>
-                    <li>{(TxtFileMenu.howto2 as any)[props.lang]}</li>
-                    <li>{(TxtFileMenu.howto3 as any)[props.lang]}</li>
-                    <li>{(TxtFileMenu.howto4 as any)[props.lang]}</li>
-                </ol>
-            </Col>
+    if(props.isSavedData) {
+        return (
+            <Row>
+                <Col xs='12' className='text-center'>
+                    <h4>{(TxtFileMenu.sharedata as any)[props.lang]}</h4>
+                </Col>
+            </Row>
+        );
+    }
+    else {
+        return (
+            <Row>
+                <Col xs="12" md="8">
+                    {(TxtFileMenu.howto1 as any)[props.lang]}<br/>
+                    <ol>
+                        <li>{(TxtFileMenu.howto2 as any)[props.lang]}</li>
+                        <li>{(TxtFileMenu.howto3 as any)[props.lang]}</li>
+                        <li>{(TxtFileMenu.howto4 as any)[props.lang]}</li>
+                    </ol>
+                </Col>
 
-            <Col xs="12" md="4">
-                <Row>
-                    <Col xs="12" className="btn-group-vertical">
-                        <Button color="secondary" outline onClick={() => props.newUser()}>
-                            {(TxtFileMenu.newuser as any)[props.lang]}
-                        </Button>
-                        <Button color="secondary" outline onClick={() => loadUser()}>
-                            {(TxtFileMenu.load as any)[props.lang]}
-                        </Button>
-                        <Button color="secondary" outline onClick={() => saveUser()}>
-                            {(TxtFileMenu.save as any)[props.lang]}
-                        </Button>
-                    </Col>
-                </Row>
-            </Col>
-        </Row>
-    );
+                <Col xs="12" md="4">
+                    <Row>
+                        <Col xs="12" className="btn-group-vertical">
+                            <Button color="secondary" outline onClick={() => props.newUser()}>
+                                {(TxtFileMenu.newuser as any)[props.lang]}
+                            </Button>
+                            <Button color="secondary" outline onClick={() => loadUser()}>
+                                {(TxtFileMenu.load as any)[props.lang]}
+                            </Button>
+                            <Button color="secondary" outline onClick={() => saveUser()}>
+                                {(TxtFileMenu.save as any)[props.lang]}
+                            </Button>
+                        </Col>
+                    </Row>
+                </Col>
+            </Row>
+        );
+    }
 }
 
 export default FileMenu;
