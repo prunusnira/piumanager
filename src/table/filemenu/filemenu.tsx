@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Col, Row } from "reactstrap";
 import TxtFileMenu from './txtFilemenu';
 import {unixTimeToText} from '../tool';
@@ -82,6 +82,10 @@ const FileMenu = (props: FileMenuProps) => {
         elem.click();
         document.body.removeChild(elem);
     }
+
+    useEffect(() => {
+        (window as any).callbackOpen = callbackOpen;
+    }, []);
 
     if(props.isSavedData) {
         return (

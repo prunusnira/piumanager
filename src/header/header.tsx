@@ -20,8 +20,6 @@ const Header: React.FC<{lang: string}> = ({ lang }) => {
                 <span style={{fontSize:"150%"}}>Pump It Up</span>
                 &nbsp;
                 <span>{(TxtHeader.subtitle as any)[lang]}</span>
-                <br/>
-                <span>{(TxtHeader.tableinfo as any)[lang]}</span>
             </CardHeader>
         </Wrapper>
     );

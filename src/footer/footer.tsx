@@ -47,6 +47,12 @@ const Footer: React.FC<{lang:string}> = ({lang}) => {
                         <span>{(TxtFooter as any).iosalert[lang]}</span>
                     </Col>
                 </Row>
+                <br/>
+                <Row>
+                    <Col xs="12">
+                        <span>{(TxtFooter.tableinfo as any)[lang]}</span>
+                    </Col>
+                </Row>
                 <hr/>
                 <Row>
                     <Col xs="12">

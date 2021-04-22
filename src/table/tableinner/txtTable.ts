@@ -7,10 +7,10 @@ const TxtTable = {
             "cn":"可分享URL"
         },
         cont: {
-            "jp":"以下のURLを使ってデータを共有できます。このURLは一週から二週の間で有効です。",
-            "ko":"다음 URL을 복사하여 공유할 수 있습니다. 이 URL은 최소 일주일, 최대 2주일 유효합니다.",
-            "en":"You can share your status with URL below. This url will be maintained for one week or two weeks",
-            "cn":"你可以用下方的URL来分享你的状态。这个URL将会被维护一至两周。"
+            "jp":"以下のURLを使ってデータを共有できます。このURLは場合により非定期的に削除されることもあります。",
+            "ko":"다음 URL을 복사하여 공유할 수 있습니다. 이 URL은 경우에 따라 비정기적으로 삭제될 수 있습니다.",
+            "en":"You can share your status with URL below. This url can be terminated irregularly.",
+            "cn":"你可以用下方的URL来分享你的状态。URL 可能不定期被删除 。"
         },
         error: {
             "jp":"エラーが発生しました",
