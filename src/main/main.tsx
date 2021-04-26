@@ -1,19 +1,25 @@
-import React from 'react';
-import { Card, Container } from 'reactstrap';
-import Footer from '../footer/footer';
-import Header from '../header/header';
+import React  from 'react';
+import SearchPage from '../search/searchPage';
 import TableContainer from '../table/tableContainer';
 
-const Main: React.FC<{ lang: string }> = ({ lang }) => {
-    return (
-        <Container fluid>
-            <Card>
-                <Header lang={lang} />
-                <TableContainer lang={lang} />
-                <Footer lang={lang} />
-            </Card>
-        </Container>
-    );
+interface Props {
+    lang: string,
+    mode: number
+}
+
+const Main = (props: Props) => {
+    switch(props.mode) {
+        case 0:
+            return (
+                <TableContainer lang={props.lang} />
+            );
+        case 1:
+            return (
+                <SearchPage lang={props.lang} />
+            );
+        default:
+            return null;
+    }
 }
 
 export default Main;

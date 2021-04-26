@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import { Button, Col, Row, Table } from 'reactstrap';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -366,19 +365,19 @@ const TableMenu = (props: TableMenuProps) => {
         props.setShowTableCheck(!props.showTableCheck);
     }
 
-    const TableTitle = styled.tr`
-        color: white;
-        background-color: rgb(37, 37, 37);
-        height: 50px;
-    `;
-
     return (
         <Row style={{display: props.isLoaded ? "block" : "none"}}>
             <Col xs="12">
                 <Table>
-                    <TableTitle id="seldiffSingletitle">
+                    <tr
+                        id="seldiffSingletitle"
+                        style={{
+                            color: 'white',
+                            backgroundColor: 'rgb(37, 37, 37)',
+                            height: '50px'
+                        }}>
                         <td><h4>{(TxtTableMenu.menu as any)[props.lang]}</h4></td>
-                    </TableTitle>
+                    </tr>
                 </Table>
 
                 <Row id="seldiffSingle">

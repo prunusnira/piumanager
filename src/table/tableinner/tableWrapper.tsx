@@ -154,8 +154,8 @@ const TableWrapper = (props: TableProps) => {
                         <Row>
                             <Col xs="4"
                                 style={{backgroundColor:""}}>
-                                <b><span style={{fontSize: "80%"}}>PLAYER NAME</span></b> {props.userName}<br/>
-                                <b><span style={{fontSize: "80%"}}>PLAYER LEVEL</span></b> {props.userLv}
+                                <b><span style={{fontSize: "80%"}}>PLAYER NAME</span></b> <span data-testid='txtPlayerName'>{props.userName}</span><br/>
+                                <b><span style={{fontSize: "80%"}}>PLAYER LEVEL</span></b> <span>{props.userLv}</span>
                             </Col>
                             <Col xs="8" style={{fontSize: "80%"}} className="text-center">
                                 {props.rankCountTxt1}<br/>

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 
 import {
     Modal,
@@ -91,7 +91,7 @@ const UserDialog = (props: Props) => {
                 <Button color="secondary" outlined="true" onClick={() => closeDialog()}>
                     Close
                 </Button>
-                <Button color="secondary" outlined="true" onClick={() => addNewUser()}>
+                <Button color="secondary" outlined="true" data-testid='btnChangeUser' onClick={() => addNewUser()}>
                     {props.button}
                 </Button>
             </ModalFooter>
