@@ -1,5 +1,5 @@
 import React  from 'react';
-import SearchPage from '../search/searchPage';
+import SearchContainer from '../search/searchContainer';
 import TableContainer from '../table/tableContainer';
 
 interface Props {
@@ -15,7 +15,7 @@ const Main = (props: Props) => {
             );
         case 1:
             return (
-                <SearchPage lang={props.lang} />
+                <SearchContainer lang={props.lang} />
             );
         default:
             return null;

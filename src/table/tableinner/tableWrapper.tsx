@@ -136,10 +136,10 @@ const TableWrapper = (props: TableProps) => {
                                 <h4>Pump It Up XX</h4>
                             </Col>
                             <Col xs="4" className="text-right nowrap">
-                                <Button color="secondary" outline onClick={() => scrShot('targetTable', `piu_${props.userName}_${props.sdType}_${props.level}_${unixTimeToText(new Date().getTime())}.jpg`)}>
+                                <Button color="secondary" onClick={() => scrShot('targetTable', `piu_${props.userName}_${props.sdType}_${props.level}_${unixTimeToText(new Date().getTime())}.jpg`)}>
                                     <FontAwesomeIcon icon={faImages}/>
                                 </Button>
-                                <Button color="secondary" outline onClick={() => shareURL()}>
+                                <Button color="secondary" onClick={() => shareURL()}>
                                     <FontAwesomeIcon icon={faShareAltSquare}/>
                                 </Button>
                             </Col>

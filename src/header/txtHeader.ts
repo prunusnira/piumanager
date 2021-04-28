@@ -12,10 +12,10 @@ const TxtHeader = {
         "cn":"Cleared表格"
     },
     btnSearch: {
-        "jp":"検索モード",
-        "ko":"검색모드",
-        "en":"Search mode",
-        "cn":"搜索"
+        "jp":"曲名で検索",
+        "ko":"곡 제목으로 검색",
+        "en":"Search music by title",
+        "cn":"搜索歌曲名"
     },
 
     modeChange: {

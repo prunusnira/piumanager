@@ -438,20 +438,20 @@ const TableMenu = (props: TableMenuProps) => {
                         </Row>
                         <Row className="text-center">
                             <Col xs="12" className="text-center btn-group">
-                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => editUser()}>
+                                <Button color="secondary" style={{width:"50%"}} onClick={() => editUser()}>
                                     {(TxtTableMenu.edit as any)[props.lang]}
                                 </Button>
-                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => props.openUpdatePatternMultiple()}>
+                                <Button color="secondary" style={{width:"50%"}} onClick={() => props.openUpdatePatternMultiple()}>
                                     <FontAwesomeIcon icon={faCheckSquare} />
                                     {(TxtTableMenu.updatecheckedbtn as any)[props.lang]}
                                 </Button>
                             </Col>
                             <Col xs="12" className="text-center btn-group">
-                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => hideCheckbox()}>
+                                <Button color="secondary" style={{width:"50%"}} onClick={() => hideCheckbox()}>
                                     <FontAwesomeIcon icon={faCheckSquare} />
                                     {(TxtTableMenu.display as any)[props.lang]}
                                 </Button>
-                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => hideRank()}>
+                                <Button color="secondary" style={{width:"50%"}} onClick={() => hideRank()}>
                                     {(TxtTableMenu.rank as any)[props.lang]}
                                     &nbsp;
                                     {(TxtTableMenu.display as any)[props.lang]}

@@ -111,13 +111,13 @@ const FileMenu = (props: FileMenuProps) => {
                 <Col xs="12" md="4">
                     <Row>
                         <Col xs="12" className="btn-group-vertical">
-                            <Button color="secondary" outline onClick={() => props.newUser()}>
+                            <Button color="secondary" onClick={() => props.newUser()}>
                                 {(TxtFileMenu.newuser as any)[props.lang]}
                             </Button>
-                            <Button color="secondary" outline onClick={() => loadUser()}>
+                            <Button color="secondary" onClick={() => loadUser()}>
                                 {(TxtFileMenu.load as any)[props.lang]}
                             </Button>
-                            <Button color="secondary" outline onClick={() => saveUser()}>
+                            <Button color="secondary" onClick={() => saveUser()}>
                                 {(TxtFileMenu.save as any)[props.lang]}
                             </Button>
                         </Col>
