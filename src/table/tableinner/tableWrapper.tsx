@@ -136,10 +136,10 @@ const TableWrapper = (props: TableProps) => {
                                 <h4>Pump It Up XX</h4>
                             </Col>
                             <Col xs="4" className="text-right nowrap">
-                                <Button color="secondary" outline onClick={() => scrShot('targetTable', `piu_${props.userName}_${props.sdType}_${props.level}_${unixTimeToText(new Date().getTime())}.jpg`)}>
+                                <Button color="secondary" onClick={() => scrShot('targetTable', `piu_${props.userName}_${props.sdType}_${props.level}_${unixTimeToText(new Date().getTime())}.jpg`)}>
                                     <FontAwesomeIcon icon={faImages}/>
                                 </Button>
-                                <Button color="secondary" outline onClick={() => shareURL()}>
+                                <Button color="secondary" onClick={() => shareURL()}>
                                     <FontAwesomeIcon icon={faShareAltSquare}/>
                                 </Button>
                             </Col>
@@ -154,8 +154,8 @@ const TableWrapper = (props: TableProps) => {
                         <Row>
                             <Col xs="4"
                                 style={{backgroundColor:""}}>
-                                <b><span style={{fontSize: "80%"}}>PLAYER NAME</span></b> {props.userName}<br/>
-                                <b><span style={{fontSize: "80%"}}>PLAYER LEVEL</span></b> {props.userLv}
+                                <b><span style={{fontSize: "80%"}}>PLAYER NAME</span></b> <span data-testid='txtPlayerName'>{props.userName}</span><br/>
+                                <b><span style={{fontSize: "80%"}}>PLAYER LEVEL</span></b> <span>{props.userLv}</span>
                             </Col>
                             <Col xs="8" style={{fontSize: "80%"}} className="text-center">
                                 {props.rankCountTxt1}<br/>

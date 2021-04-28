@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import { Button, Col, Row, Table } from 'reactstrap';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -366,19 +365,19 @@ const TableMenu = (props: TableMenuProps) => {
         props.setShowTableCheck(!props.showTableCheck);
     }
 
-    const TableTitle = styled.tr`
-        color: white;
-        background-color: rgb(37, 37, 37);
-        height: 50px;
-    `;
-
     return (
         <Row style={{display: props.isLoaded ? "block" : "none"}}>
             <Col xs="12">
                 <Table>
-                    <TableTitle id="seldiffSingletitle">
+                    <tr
+                        id="seldiffSingletitle"
+                        style={{
+                            color: 'white',
+                            backgroundColor: 'rgb(37, 37, 37)',
+                            height: '50px'
+                        }}>
                         <td><h4>{(TxtTableMenu.menu as any)[props.lang]}</h4></td>
-                    </TableTitle>
+                    </tr>
                 </Table>
 
                 <Row id="seldiffSingle">
@@ -439,20 +438,20 @@ const TableMenu = (props: TableMenuProps) => {
                         </Row>
                         <Row className="text-center">
                             <Col xs="12" className="text-center btn-group">
-                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => editUser()}>
+                                <Button color="secondary" style={{width:"50%"}} onClick={() => editUser()}>
                                     {(TxtTableMenu.edit as any)[props.lang]}
                                 </Button>
-                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => props.openUpdatePatternMultiple()}>
+                                <Button color="secondary" style={{width:"50%"}} onClick={() => props.openUpdatePatternMultiple()}>
                                     <FontAwesomeIcon icon={faCheckSquare} />
                                     {(TxtTableMenu.updatecheckedbtn as any)[props.lang]}
                                 </Button>
                             </Col>
                             <Col xs="12" className="text-center btn-group">
-                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => hideCheckbox()}>
+                                <Button color="secondary" style={{width:"50%"}} onClick={() => hideCheckbox()}>
                                     <FontAwesomeIcon icon={faCheckSquare} />
                                     {(TxtTableMenu.display as any)[props.lang]}
                                 </Button>
-                                <Button color="secondary" outline style={{width:"50%"}} onClick={() => hideRank()}>
+                                <Button color="secondary" style={{width:"50%"}} onClick={() => hideRank()}>
                                     {(TxtTableMenu.rank as any)[props.lang]}
                                     &nbsp;
                                     {(TxtTableMenu.display as any)[props.lang]}

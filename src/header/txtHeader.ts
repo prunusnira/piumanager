@@ -4,6 +4,33 @@ const TxtHeader = {
         "ko":"기록 관리 툴",
         "en":"Rank Manage Tool",
         "cn":"评价管理工具"
+    },
+    btnMode: {
+        "jp":"クリアテーブル",
+        "ko":"클리어 테이블",
+        "en":"Cleared table",
+        "cn":"Cleared表格"
+    },
+    btnSearch: {
+        "jp":"曲名で検索",
+        "ko":"곡 제목으로 검색",
+        "en":"Search music by title",
+        "cn":"搜索歌曲名"
+    },
+
+    modeChange: {
+        title: {
+            "jp":"モード変更の注意",
+            "ko":"모드 변경 주의",
+            "en":"Warning for changing mode",
+            "cn":"注意模式更改"
+        },
+        body: {
+            "jp":"モードを変更すると保存されてないデータは削除されます。進みますか？",
+            "ko":"모드를 변경하면 저장되지 않은 항목이 사라집니다. 진행하시겠습니까?",
+            "en":"If you proceed, unsaved data will be lost. Will you continue?",
+            "cn":"未保存的条目将会消失 。 确定要进行吗？"
+        }
     }
 }
 

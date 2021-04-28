@@ -85,8 +85,7 @@ p {
 }
 
 .btn {
-	background-color: #dbdbdb;
-	color: #000000;
+	outline: auto;
 }
 
 .btn:hover {

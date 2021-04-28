@@ -69,9 +69,6 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
     const [selDiffLv, setDiffLv] = useState(0);
     const [selSDType, setSDType] = useState('');
 
-    // 테이블 표시 유무 정보
-    const [showTable, setShowTable] = useState(false);
-
     // 데이터 갱신 타입
     const [isMultipleUpdate, setMultipleUpdate] = useState(false);
 
