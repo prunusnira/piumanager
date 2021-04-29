@@ -16,7 +16,7 @@ const SearchContainer = (props: Props) => {
     const [list, setList] = useState(new Array<SearchItemData>());
 
     const querySearch = (text: string) => {
-        fetch(`${CommonData.dataUrl}search/${text}/0`, {
+        fetch(`${CommonData.dataUrl}search/${text.replace(' ', '')}/0`, {
             method: 'get',
             headers: {
                 'Content-Type': 'application/json'
