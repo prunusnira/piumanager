@@ -65,6 +65,10 @@ interface TableMenuProps {
 
     updateData: (ptid: number, rank: string) => void,
     openUpdatePatternMultiple: () => void,
+
+    setMusicSelectedId: (id: number) => void,
+    rankCountReset: () => void,
+    updateRankCount: () => void,
 }
 
 const TableMenu = (props: TableMenuProps) => {
@@ -92,6 +96,9 @@ const TableMenu = (props: TableMenuProps) => {
                 props.updateData(ptid, rank!);
             }
         }
+        props.setMusicSelectedId(0);
+        props.rankCountReset();
+        props.updateRankCount();
     }, [props.ptIdList]);
 
     const getPatterns = (type: string, level: number) => {
@@ -368,17 +375,18 @@ const TableMenu = (props: TableMenuProps) => {
     return (
         <Row style={{display: props.isLoaded ? "block" : "none"}}>
             <Col xs="12">
-                <Table>
-                    <tr
+                <Row>
+                    <Col xs='12'
                         id="seldiffSingletitle"
                         style={{
                             color: 'white',
                             backgroundColor: 'rgb(37, 37, 37)',
-                            height: '50px'
+                            height: '50px',
+                            padding: '10px'
                         }}>
-                        <td><h4>{(TxtTableMenu.menu as any)[props.lang]}</h4></td>
-                    </tr>
-                </Table>
+                            <h4>{(TxtTableMenu.menu as any)[props.lang]}</h4>
+                    </Col>
+                </Row>
 
                 <Row id="seldiffSingle">
                     <Col xs="12" md="6">

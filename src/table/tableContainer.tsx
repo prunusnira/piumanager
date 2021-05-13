@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CardBody } from "reactstrap";
 import axios from 'axios';
 import ShareDialog from "./shareDialog/shareDialog";
@@ -11,6 +11,7 @@ import TxtTable from "./txtTable";
 import PatternUpdateDialog from "./patternDialog/patternUpdateDialog";
 import { useParams } from "react-router-dom";
 import CommonData from "./data/commonData";
+import UserResetModal from "../userResetModal/userResteModal";
 
 interface MatchProps {
     savedId: string;
@@ -21,6 +22,11 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
     const {savedId} = useParams<MatchProps>();
 
     //#region State
+
+    // 사용자 초기화 다이얼로그
+    const [showUserResetDlg, setShowUserResetDlg] = useState(false)
+    const [resetType, setResetType] = useState(0)   // 1: 새유저, 2: 로드
+    const [allowUserLoad, setAllowUserLoad] = useState(false)
 
     // 사용자 프로필 다이얼로그
     const [showUserDlg, setShowUserDlg] = useState(false);      // 오픈 여부 변경
@@ -91,10 +97,6 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
     const [showTableRank, setShowTableRank] = useState(true);
     const [showTableCheck, setShowTableCheck] = useState(false);
 
-    // 테이블 상단에 랭크 개수 표시
-    const [rankCountTxt1, setRankTxt1] = useState('');
-    const [rankCountTxt2, setRankTxt2] = useState('');
-
     // 선택된 곡 제목(단일)/패턴아이디
     const [musicSelectedName, setMusicSelectedName] = useState(''); // 단일 선택시 곡 제목 설정
     const [musicSelectedId, setMusicSelectedId] = useState(0);
@@ -107,8 +109,81 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
     // 저장된 값 부른 여부 확인
     const [isSavedData, setIsSaved] = useState(false);
 
+    // 파일열기 ref
+    const fileOpenRef = useRef<HTMLInputElement>(null)
+
     //#endregion
 
+    // 최초 실행 시 실행되는 effect, constructor 대신에 처리
+    useEffect(() => {
+        if(savedId !== undefined) {
+            // DB에 공유용으로 저장된 값을 불러와서 데이터 표시
+            axios.get(`${CommonData.dataUrl}saved/${savedId}/0`)
+            .then(d => {
+                setIsSaved(true);
+                userDataAnalyze(atob(d.data[0].saved), "saved");
+            });
+        }
+    }, []);
+
+    // 사용자 초기화 관련
+    // 새 유저 만들기 전에 검사
+    const checkUserBeforeNew = () => {
+        // 이미 사용자가 로드 된 상태이면 Modal을 띄우고 새 유저를 작성할지 결정
+        if(isLoaded) {
+            setResetType(1)
+            setShowUserResetDlg(true)
+        }
+        else {
+            newUser()
+        }
+    }
+
+    // 유저 불러오기 전에 검사
+    const checkUserBeforeLoad = () => {
+        // 이미 사용자가 로드 된 상태이면 Modal을 띄우고 새 유저를 작성할지 결정
+        if(isLoaded) {
+            setResetType(2)
+            setShowUserResetDlg(true)
+        }
+        else {
+            // 불러오기
+            setAllowUserLoad(true)
+        }
+    }
+
+    // 사용자 초기화 다이얼로그 닫기
+    const closeUserResetDlg = () => {
+        setShowUserResetDlg(false)
+    }
+
+    // 사용자 초기화 실행
+    const runUserReset = () => {
+        setLoaded(false)
+        setUserName('')
+        setUserLv(0)
+        setUserStatus(new Map<number, string>())
+        setDiffLv(0)
+        setSDType('')
+        setArrOver(new Array<MusicData>())
+        setArrHigh(new Array<MusicData>())
+        setArrNh(new Array<MusicData>())
+        setArrNormal(new Array<MusicData>())
+        setArrNe(new Array<MusicData>())
+        setArrEasy(new Array<MusicData>())
+        setArrBelow(new Array<MusicData>())
+        setArrRandom(new Array<MusicData>())
+
+        closeUserResetDlg()
+        if(resetType === 1) {
+            newUser()
+        }
+        else if(resetType === 2) {
+            setAllowUserLoad(true)
+        }
+    }
+
+    // 신규 사용자 생성
     const newUser = () => {
         setShowUserDlg(true);
         setDlgTitle((TxtTable.newuserdiv as any)[lang]);
@@ -197,18 +272,11 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
         setFCount(rankf);
         setNPCount(ptIdList.length - ranksss - rankss - ranks - ranka - rankao
             - rankbcd - rankbcdo - rankf);
-
-        setRankTxt1(`SSS: ${sssCount} | SS: ${ssCount} | S: ${sCount} | A: ${aOnCount} | BCD: ${bcdOnCount}`);
-        setRankTxt2(`A: ${aOffCount} (Off) | BCD: ${bcdOffCount} (Off) | F: ${fCount} | No Play: ${npCount}`);
     }
 
     const updateData = (ptid: number, rank: string) => {
         userStatus.set(ptid, rank);
         updateRecord(ptid);
-        rankCountReset();
-        updateRankCount();
-
-        setMusicSelectedId(0);
 
         // 창 닫기
         if(showUpdateDlg) {
@@ -223,8 +291,6 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
             userStatus.set(parseInt(ptid), rank);
             updateRecord(parseInt(ptid));
         }
-        rankCountReset();
-        updateRankCount();
 
         // 창 닫기
         if(showUpdateDlg) {
@@ -274,176 +340,191 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
         setShowShareDlg(false);
     }
 
-    // 최초 실행 시 실행되는 effect, constructor 대신에 처리
-    useEffect(() => {
-        if(savedId !== undefined) {
-            // DB에 공유용으로 저장된 값을 불러와서 데이터 표시
-            axios.get(`${CommonData.dataUrl}saved/${savedId}/0`)
-            .then(d => {
-                setIsSaved(true);
-                userDataAnalyze(atob(d.data[0].saved), "saved");
-            });
-        }
-    }, []);
-
     return (
-        <CardBody>
-            <FileMenu
-                lang={lang}
+        <>
+            <CardBody>
+                <FileMenu
+                    lang={lang}
+                    fileOpenRef={fileOpenRef}
 
-                newUser={newUser}
-                userDataAnalyze={userDataAnalyze}
+                    allowUserLoad={allowUserLoad}
+                    setAllowUserLoad={setAllowUserLoad}
+                    checkUserBeforeNew={checkUserBeforeNew}
+                    checkUserBeforeLoad={checkUserBeforeLoad}
+                    userDataAnalyze={userDataAnalyze}
 
-                setShowUserDlg={setShowUserDlg}
-                setDlgTitle={setDlgTitle}
-                setDlgBtn={setDlgBtn}
-                setLoaded={setLoaded}
+                    setShowUserDlg={setShowUserDlg}
+                    setDlgTitle={setDlgTitle}
+                    setDlgBtn={setDlgBtn}
+                    setLoaded={setLoaded}
 
-                userName={userName}
-                userLv={userLv}
-                userStatus={userStatus}
-                setUserName={setUserName}
-                setUserLv={setUserLv}
-                setUserStatus={setUserStatus}
-                
-                isSavedData={isSavedData} />
-            <TableMenu
-                lang={lang}
-                isLoaded={isLoaded}
-                userStatus={userStatus}
-                
-                arrOver={arrOver}
-                arrHigh={arrHigh}
-                arrNh={arrNh}
-                arrNormal={arrNormal}
-                arrNe={arrNe}
-                arrEasy={arrEasy}
-                arrBelow={arrBelow}
-                arrRandom={arrRandom}
+                    userName={userName}
+                    userLv={userLv}
+                    userStatus={userStatus}
+                    setUserName={setUserName}
+                    setUserLv={setUserLv}
+                    setUserStatus={setUserStatus}
+                    
+                    isSavedData={isSavedData} />
+                <TableMenu
+                    lang={lang}
+                    isLoaded={isLoaded}
+                    userStatus={userStatus}
+                    
+                    arrOver={arrOver}
+                    arrHigh={arrHigh}
+                    arrNh={arrNh}
+                    arrNormal={arrNormal}
+                    arrNe={arrNe}
+                    arrEasy={arrEasy}
+                    arrBelow={arrBelow}
+                    arrRandom={arrRandom}
 
-                setArrOver={setArrOver}
-                setArrHigh={setArrHigh}
-                setArrNh={setArrNh}
-                setArrNormal={setArrNormal}
-                setArrNe={setArrNe}
-                setArrEasy={setArrEasy}
-                setArrBelow={setArrBelow}
-                setArrRandom={setArrRandom}
-                
-                setTxtOver={setTxtOver}
-                setTxtHigh={setTxtHigh}
-                setTxtNh={setTxtNh}
-                setTxtNormal={setTxtNormal}
-                setTxtNe={setTxtNe}
-                setTxtEasy={setTxtEasy}
-                setTxtBelow={setTxtBelow}
-                setTxtRandom={setTxtRandom}
-                
-                showArcade={showArcade}
-                setShowAC={setShowAC}
-                showShort={showShort}
-                setShowSH={setShowSH}
-                showFull={showFull}
-                setShowFU={setShowFU}
-                showRemix={showRemix}
-                setShowRM={setShowRM}
-                
-                setSDType={setSDType}
-                setDiffLv={setDiffLv}
-                
-                ptIdList={ptIdList}
-                setPtIdList={setPtIdList}
+                    setArrOver={setArrOver}
+                    setArrHigh={setArrHigh}
+                    setArrNh={setArrNh}
+                    setArrNormal={setArrNormal}
+                    setArrNe={setArrNe}
+                    setArrEasy={setArrEasy}
+                    setArrBelow={setArrBelow}
+                    setArrRandom={setArrRandom}
+                    
+                    setTxtOver={setTxtOver}
+                    setTxtHigh={setTxtHigh}
+                    setTxtNh={setTxtNh}
+                    setTxtNormal={setTxtNormal}
+                    setTxtNe={setTxtNe}
+                    setTxtEasy={setTxtEasy}
+                    setTxtBelow={setTxtBelow}
+                    setTxtRandom={setTxtRandom}
+                    
+                    showArcade={showArcade}
+                    setShowAC={setShowAC}
+                    showShort={showShort}
+                    setShowSH={setShowSH}
+                    showFull={showFull}
+                    setShowFU={setShowFU}
+                    showRemix={showRemix}
+                    setShowRM={setShowRM}
+                    
+                    setSDType={setSDType}
+                    setDiffLv={setDiffLv}
+                    
+                    ptIdList={ptIdList}
+                    setPtIdList={setPtIdList}
 
-                setUserDlg={setShowUserDlg}
-                setDlgTitle={setDlgTitle}
-                setDlgBtn={setDlgBtn}
-                
-                showTableRank={showTableRank}
-                showTableCheck={showTableCheck}
-                setShowTableRank={setShowTableRank}
-                setShowTableCheck={setShowTableCheck}
-                
-                updateData={updateData}
-                openUpdatePatternMultiple={openUpdatePatternMultiple} />
-            <TableWrapper
-                lang={lang}
+                    setUserDlg={setShowUserDlg}
+                    setDlgTitle={setDlgTitle}
+                    setDlgBtn={setDlgBtn}
+                    
+                    showTableRank={showTableRank}
+                    showTableCheck={showTableCheck}
+                    setShowTableRank={setShowTableRank}
+                    setShowTableCheck={setShowTableCheck}
+                    
+                    updateData={updateData}
+                    openUpdatePatternMultiple={openUpdatePatternMultiple}
+                    
+                    setMusicSelectedId={setMusicSelectedId}
+                    rankCountReset={rankCountReset}
+                    updateRankCount={updateRankCount} />
+                <TableWrapper
+                    lang={lang}
 
-                isLoaded={isLoaded}
-                sdType={selSDType}
-                level={selDiffLv}
+                    isLoaded={isLoaded}
+                    sdType={selSDType}
+                    level={selDiffLv}
 
-                userName={userName}
-                userLv={userLv}
-                userStatus={userStatus}
+                    userName={userName}
+                    userLv={userLv}
+                    userStatus={userStatus}
 
-                txtOver={txtOver}
-                txtHigh={txtHigh}
-                txtNh={txtNh}
-                txtNormal={txtNormal}
-                txtNe={txtNe}
-                txtEasy={txtEasy}
-                txtBelow={txtBelow}
-                txtRandom={txtRandom}
-                            
-                arrOver={arrOver}
-                arrHigh={arrHigh}
-                arrNh={arrNh}
-                arrNormal={arrNormal}
-                arrNe={arrNe}
-                arrEasy={arrEasy}
-                arrBelow={arrBelow}
-                arrRandom={arrRandom}
-                
-                setShowShareDlg={setShowShareDlg}
-                setShareDlgCont1={setShareDlgCont1}
-                setShareDlgCont2={setShareDlgCont2}
-                
-                rankCountTxt1={rankCountTxt1}
-                rankCountTxt2={rankCountTxt2}
-                
-                showTableRank={showTableRank}
-                showTableCheck={showTableCheck}
+                    txtOver={txtOver}
+                    txtHigh={txtHigh}
+                    txtNh={txtNh}
+                    txtNormal={txtNormal}
+                    txtNe={txtNe}
+                    txtEasy={txtEasy}
+                    txtBelow={txtBelow}
+                    txtRandom={txtRandom}
+                                
+                    arrOver={arrOver}
+                    arrHigh={arrHigh}
+                    arrNh={arrNh}
+                    arrNormal={arrNormal}
+                    arrNe={arrNe}
+                    arrEasy={arrEasy}
+                    arrBelow={arrBelow}
+                    arrRandom={arrRandom}
+                    
+                    setShowShareDlg={setShowShareDlg}
+                    setShareDlgCont1={setShareDlgCont1}
+                    setShareDlgCont2={setShareDlgCont2}
+                    
+                    sssCount={sssCount}
+                    ssCount={ssCount}
+                    sCount={sCount}
+                    aOnCount={aOnCount}
+                    aOffCount={aOffCount}
+                    bcdOnCount={bcdOnCount}
+                    bcdOffCount={bcdOffCount}
+                    fCount={fCount}
+                    npCount={npCount}
+                    
+                    showTableRank={showTableRank}
+                    showTableCheck={showTableCheck}
 
-                openUpdatePatternDlg={openUpdatePatternDialog} />
+                    openUpdatePatternDlg={openUpdatePatternDialog} />
+                <UserDialog
+                    title={userDlgTitle}
+                    curname={userName}
+                    curlv={userLv}
+                    button={userDlgBtn}
+                    showUserDlg={showUserDlg}
+
+                    setUserName={setUserName}
+                    setUserLv={setUserLv}
+                    setLoaded={setLoaded}
+                    setShowUserDlg={setShowUserDlg}
+                    userLog={userLog} />
+                <PatternUpdateDialog
+                    lang={lang}
+
+                    display={showUpdateDlg}
+                    title={updateDlgTitle}
+                    type={isMultipleUpdate}
+
+                    currentUpdateTitle={musicSelectedName}
+                    sdType={selSDType}
+                    level={selDiffLv}
+                    ptid={musicSelectedId}
+
+                    updateData={updateData}
+                    updateMultipleData={updateMultipleData}
+                    updatePatternDialog={openUpdatePatternDialog}
+                    closeUpdatePatternDlg={closeUpdatePatternDlg}
+                    
+                    setMusicSelectedId={setMusicSelectedId}
+                    rankCountReset={rankCountReset}
+                    updateRankCount={updateRankCount} />
+                <ShareDialog
+                    lang={lang}
+                    display={showShareDlg}
+                    content1={shareDlgCont1}
+                    content2={shareDlgCont2}
+                    close={closeShareDlg} />
+            </CardBody>
 
             <input id="fileopen" accept=".csv" type="file"
-                    name="fileopen" style={{display:"none"}} />
+                name="fileopen" style={{display:"none"}}
+                ref={fileOpenRef} />
 
-            <UserDialog
-                title={userDlgTitle}
-                curname={userName}
-                curlv={userLv}
-                button={userDlgBtn}
-                showUserDlg={showUserDlg}
-
-                setUserName={setUserName}
-                setUserLv={setUserLv}
-                setLoaded={setLoaded}
-                setShowUserDlg={setShowUserDlg}
-                userLog={userLog} />
-            <PatternUpdateDialog
+            <UserResetModal
                 lang={lang}
-
-                display={showUpdateDlg}
-                title={updateDlgTitle}
-                type={isMultipleUpdate}
-
-                currentUpdateTitle={musicSelectedName}
-                sdType={selSDType}
-                level={selDiffLv}
-                ptid={musicSelectedId}
-
-                updateData={updateData}
-                updateMultipleData={updateMultipleData}
-                updatePatternDialog={openUpdatePatternDialog}
-                closeUpdatePatternDlg={closeUpdatePatternDlg} />
-            <ShareDialog
-                lang={lang}
-                display={showShareDlg}
-                content1={shareDlgCont1}
-                content2={shareDlgCont2}
-                close={closeShareDlg} />
-        </CardBody>
+                showUserResetDlg={showUserResetDlg}
+                closeUserResetDlg={closeUserResetDlg}
+                runUserReset={runUserReset} />
+        </>
     );
 }
 

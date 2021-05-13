@@ -1,5 +1,4 @@
 import SearchItemData from "./searchItemData";
-import SearchPatternData from "./searchPatternData";
 
 class SearchItemTool {
     static addPattern = (arr: Array<SearchItemData>, item: SearchItemData) => {

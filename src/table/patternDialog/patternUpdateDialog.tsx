@@ -27,6 +27,10 @@ interface Props {
     updatePatternDialog: (ptid: number, title: string) => void,
     updateMultipleData: (rank: string) => void,
     closeUpdatePatternDlg: () => void,
+
+    setMusicSelectedId: (id: number) => void,
+    rankCountReset: () => void,
+    updateRankCount: () => void,
 }
 
 const PatternUpdateDialog = (props: Props) => {
@@ -81,10 +85,13 @@ const PatternUpdateDialog = (props: Props) => {
                     <Button color="secondary" outlined="true" onClick={() => {
                         if(!props.type) {
                             props.updateData(props.ptid, rank);
+                            props.setMusicSelectedId(0);
                         }
                         else {
                             props.updateMultipleData(rank);
                         }
+                        props.rankCountReset();
+                        props.updateRankCount();
                         }}>
                         {(TxtPatternDlg.update as any)[props.lang]}
                     </Button>

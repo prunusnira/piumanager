@@ -5,8 +5,12 @@ import {unixTimeToText} from '../tool';
 
 interface FileMenuProps {
     lang: string,
+    fileOpenRef: React.RefObject<HTMLInputElement>,
 
-    newUser: () => void,
+    allowUserLoad: boolean,
+    setAllowUserLoad: (e: boolean) => void,
+    checkUserBeforeNew: () => void,
+    checkUserBeforeLoad: () => void,
     userDataAnalyze: (data: string, type: string) => void,
 
     setShowUserDlg: (status: boolean) => void,
@@ -26,12 +30,25 @@ interface FileMenuProps {
 
 const FileMenu = (props: FileMenuProps) => {
     const loadUser = () => {
+        props.setAllowUserLoad(false)
         // 파일 열기 대화상자를 열고 데이터를 가져옴
         if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
             alert((TxtFileMenu.loadwarn as any)[props.lang]);
         }
 
-        const fileopen = document.getElementById("fileopen");
+        const fileOpen = props.fileOpenRef.current
+        if(fileOpen) {
+            fileOpen.click()
+            fileOpen.onchange = (e: any) => {
+                // 데이터 열기
+                handleFileSelect(e.target.files[0])
+                props.setLoaded(true)
+                e.target.value=''
+                fileOpen.value = ''
+            }
+        }
+
+        /*const fileopen = document.getElementById("fileopen");
         if(fileopen) {
             fileopen.click();
             fileopen.onchange = (e: any) => {
@@ -39,7 +56,7 @@ const FileMenu = (props: FileMenuProps) => {
                 handleFileSelect(e.target.files[0]);
                 props.setLoaded(true);
             }
-        }
+        }*/
     }
 
     const handleFileSelect = (file: File) => {
@@ -87,6 +104,12 @@ const FileMenu = (props: FileMenuProps) => {
         (window as any).callbackOpen = callbackOpen;
     }, []);
 
+    useEffect(() => {
+        if(props.allowUserLoad) {
+            loadUser()
+        }
+    }, [props.allowUserLoad])
+
     if(props.isSavedData) {
         return (
             <Row>
@@ -111,13 +134,13 @@ const FileMenu = (props: FileMenuProps) => {
                 <Col xs="12" md="4">
                     <Row>
                         <Col xs="12" className="btn-group-vertical">
-                            <Button color="secondary" onClick={() => props.newUser()}>
+                            <Button color="secondary" onClick={props.checkUserBeforeNew}>
                                 {(TxtFileMenu.newuser as any)[props.lang]}
                             </Button>
-                            <Button color="secondary" onClick={() => loadUser()}>
+                            <Button color="secondary" onClick={props.checkUserBeforeLoad}>
                                 {(TxtFileMenu.load as any)[props.lang]}
                             </Button>
-                            <Button color="secondary" onClick={() => saveUser()}>
+                            <Button color="secondary" onClick={saveUser}>
                                 {(TxtFileMenu.save as any)[props.lang]}
                             </Button>
                         </Col>
