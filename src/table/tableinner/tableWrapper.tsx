@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { faImages, faShareAltSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import html2canvas from 'html2canvas';
@@ -44,8 +44,15 @@ interface TableProps {
     setShareDlgCont1: (cont: string) => void,
     setShareDlgCont2: (cont: string) => void,
 
-    rankCountTxt1: string,
-    rankCountTxt2: string,
+    sssCount: number,
+    ssCount: number,
+    sCount: number,
+    aOnCount: number,
+    aOffCount: number,
+    bcdOnCount: number,
+    bcdOffCount: number,
+    fCount: number,
+    npCount: number,
 
     showTableRank: boolean,
     showTableCheck: boolean,
@@ -98,30 +105,30 @@ const TableWrapper = (props: TableProps) => {
         const code = CryptoJS.SHA1(props.userName+new Date().toTimeString()).toString();
 
         axios.post(`${CommonData.dataUrl}share/${code}/0`,
-            {
-                "data": datafixed
-            },
-            {
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then((res) => {
-                let message1 = '';
-                let message2 = '';
-                if(res.status === 200) {
-                    message1 = (TxtTable.sharedlg.cont as any)[props.lang];
-                    message2 = `https://piu.nira.one/saved/${code}`;
-                }
-                else {
-                    message1 = (TxtTable.sharedlg.error as any)[props.lang];
-                    message2 = ``;
-                }
+        {
+            "data": datafixed
+        },
+        {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then((res) => {
+            let message1 = '';
+            let message2 = '';
+            if(res.status === 200) {
+                message1 = (TxtTable.sharedlg.cont as any)[props.lang];
+                message2 = `https://piu.nira.one/saved/${code}`;
+            }
+            else {
+                message1 = (TxtTable.sharedlg.error as any)[props.lang];
+                message2 = ``;
+            }
 
-                props.setShowShareDlg(true);
-                props.setShareDlgCont1(message1);
-                props.setShareDlgCont2(message2);
-            });
+            props.setShowShareDlg(true);
+            props.setShareDlgCont1(message1);
+            props.setShareDlgCont2(message2);
+        });
     }
 
     return (
@@ -158,8 +165,14 @@ const TableWrapper = (props: TableProps) => {
                                 <b><span style={{fontSize: "80%"}}>PLAYER LEVEL</span></b> <span>{props.userLv}</span>
                             </Col>
                             <Col xs="8" style={{fontSize: "80%"}} className="text-center">
-                                {props.rankCountTxt1}<br/>
-                                {props.rankCountTxt2}
+                                <Row>
+                                    <Col xs='12' className='text-center'>
+                                        {`SSS: ${props.sssCount} | SS: ${props.ssCount} | S: ${props.sCount} | A: ${props.aOnCount} | BCD: ${props.bcdOnCount}`}
+                                    </Col>
+                                    <Col xs='12' className='text-center'>
+                                        {`A: ${props.aOffCount} (Off) | BCD: ${props.bcdOffCount} (Off) | F: ${props.fCount} | No Play: ${props.npCount}`}
+                                    </Col>
+                                </Row>
                             </Col>
                         </Row>
                         <Row className="div-lineadd" id="divOver"
@@ -173,7 +186,7 @@ const TableWrapper = (props: TableProps) => {
                                 <Row id="lvOver">
                                     <PIUTableObj
                                         list={props.arrOver}
-                                        key="ov"
+                                        keyv="ov"
                                         lang={props.lang}
                                         showrank={props.showTableRank}
                                         showcheck={props.showTableCheck}
@@ -193,7 +206,7 @@ const TableWrapper = (props: TableProps) => {
                                 <Row id="lvHigh">
                                     <PIUTableObj
                                         list={props.arrHigh}
-                                        key="hi"
+                                        keyv="hi"
                                         lang={props.lang}
                                         showrank={props.showTableRank}
                                         showcheck={props.showTableCheck}
@@ -213,7 +226,7 @@ const TableWrapper = (props: TableProps) => {
                                 <Row id="lvNH">
                                     <PIUTableObj
                                         list={props.arrNh}
-                                        key="nh"
+                                        keyv="nh"
                                         lang={props.lang}
                                         showrank={props.showTableRank}
                                         showcheck={props.showTableCheck}
@@ -233,7 +246,7 @@ const TableWrapper = (props: TableProps) => {
                                 <Row id="lvNormal">
                                     <PIUTableObj
                                         list={props.arrNormal}
-                                        key="nr"
+                                        keyv="nr"
                                         lang={props.lang}
                                         showrank={props.showTableRank}
                                         showcheck={props.showTableCheck}
@@ -253,7 +266,7 @@ const TableWrapper = (props: TableProps) => {
                                 <Row id="lvNE">
                                     <PIUTableObj
                                         list={props.arrNe}
-                                        key="ne"
+                                        keyv="ne"
                                         lang={props.lang}
                                         showrank={props.showTableRank}
                                         showcheck={props.showTableCheck}
@@ -273,7 +286,7 @@ const TableWrapper = (props: TableProps) => {
                                 <Row id="lvEasy">
                                     <PIUTableObj
                                         list={props.arrEasy}
-                                        key="ez"
+                                        keyv="ez"
                                         lang={props.lang}
                                         showrank={props.showTableRank}
                                         showcheck={props.showTableCheck}
@@ -292,7 +305,7 @@ const TableWrapper = (props: TableProps) => {
                                 </Row>
                                 <Row id="lvBelow">
                                     <PIUTableObj list={props.arrBelow}
-                                            key="be"
+                                            keyv="be"
                                             lang={props.lang}
                                             showrank={props.showTableRank}
                                             showcheck={props.showTableCheck}
@@ -311,7 +324,7 @@ const TableWrapper = (props: TableProps) => {
                                 </Row>
                                 <Row id="lvRandom">
                                     <PIUTableObj list={props.arrRandom}
-                                            key="rd"
+                                            keyv="rd"
                                             lang={props.lang}
                                             showrank={props.showTableRank}
                                             showcheck={props.showTableCheck}

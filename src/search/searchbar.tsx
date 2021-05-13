@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Button, Input, InputGroup } from "reactstrap";
+import { Button, InputGroup } from "reactstrap";
 import TxtSearch from "./txtSearch";
 
 interface Props {
