@@ -12,6 +12,7 @@ import PatternUpdateDialog from "./patternDialog/patternUpdateDialog";
 import { useParams } from "react-router-dom";
 import CommonData from "./data/commonData";
 import UserResetModal from "../userResetModal/userResteModal";
+import SaveBeforeLoadDlg from "../saveBeforeLoadDlg/saveBeforeLoadDlg";
 
 interface MatchProps {
     savedId: string;
@@ -27,6 +28,10 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
     const [showUserResetDlg, setShowUserResetDlg] = useState(false)
     const [resetType, setResetType] = useState(0)   // 1: 새유저, 2: 로드
     const [allowUserLoad, setAllowUserLoad] = useState(false)
+    const [allowUserSave, setAllowUserSave] = useState(false)
+
+    // 로드되지 않은 상태로 저장을 수행했다는 알림 다이얼로그
+    const [showSaveBeforeLoadDlg, setShowSaveBeforeLoadDlg] = useState(false)
 
     // 사용자 프로필 다이얼로그
     const [showUserDlg, setShowUserDlg] = useState(false);      // 오픈 여부 변경
@@ -142,6 +147,8 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
     // 유저 불러오기 전에 검사
     const checkUserBeforeLoad = () => {
         // 이미 사용자가 로드 된 상태이면 Modal을 띄우고 새 유저를 작성할지 결정
+        
+        console.log('allowUserLoad: '+allowUserLoad)
         if(isLoaded) {
             setResetType(2)
             setShowUserResetDlg(true)
@@ -152,9 +159,24 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
         }
     }
 
+    // 저장하기 전에 검사
+    const checkUserBeforeSave = () => {
+        if(isLoaded) {
+            setAllowUserSave(true)
+        }
+        else {
+            setShowSaveBeforeLoadDlg(true)
+        }
+    }
+
     // 사용자 초기화 다이얼로그 닫기
     const closeUserResetDlg = () => {
         setShowUserResetDlg(false)
+    }
+
+    // 열기 전 저장 막기 다이얼로그 닫기
+    const closeSaveBeforeLoadDlg = () => {
+        setShowSaveBeforeLoadDlg(false)
     }
 
     // 사용자 초기화 실행
@@ -202,10 +224,12 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
             }
         }
 
-        setUserName(userinfo[0]);
-        setUserLv(parseInt(userinfo[1]));
-        setLoaded(true);
-        userLog(userinfo[0], type);
+        setUserName(userinfo[0])
+        setUserLv(parseInt(userinfo[1]))
+        setLoaded(true)
+        userLog(userinfo[0], type)
+        setAllowUserLoad(false)
+        console.log('allowUserLoad: '+allowUserLoad)
     }
 
     const userLog = (name: string, type: string) => {
@@ -348,9 +372,12 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
                     fileOpenRef={fileOpenRef}
 
                     allowUserLoad={allowUserLoad}
+                    allowUserSave={allowUserSave}
                     setAllowUserLoad={setAllowUserLoad}
+                    setAllowUserSave={setAllowUserSave}
                     checkUserBeforeNew={checkUserBeforeNew}
                     checkUserBeforeLoad={checkUserBeforeLoad}
+                    checkUserBeforeSave={checkUserBeforeSave}
                     userDataAnalyze={userDataAnalyze}
 
                     setShowUserDlg={setShowUserDlg}
@@ -524,6 +551,11 @@ const TableContainer: React.FC<{lang: string}> = ({lang}) => {
                 showUserResetDlg={showUserResetDlg}
                 closeUserResetDlg={closeUserResetDlg}
                 runUserReset={runUserReset} />
+
+            <SaveBeforeLoadDlg
+                lang={lang}
+                showSaveBeforeLoadDlg={showSaveBeforeLoadDlg}
+                closeSaveBeforeLoadDlg={closeSaveBeforeLoadDlg} />
         </>
     );
 }

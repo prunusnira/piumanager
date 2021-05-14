@@ -8,9 +8,12 @@ interface FileMenuProps {
     fileOpenRef: React.RefObject<HTMLInputElement>,
 
     allowUserLoad: boolean,
+    allowUserSave: boolean,
     setAllowUserLoad: (e: boolean) => void,
+    setAllowUserSave: (e: boolean) => void,
     checkUserBeforeNew: () => void,
     checkUserBeforeLoad: () => void,
+    checkUserBeforeSave: () => void,
     userDataAnalyze: (data: string, type: string) => void,
 
     setShowUserDlg: (status: boolean) => void,
@@ -47,16 +50,6 @@ const FileMenu = (props: FileMenuProps) => {
                 fileOpen.value = ''
             }
         }
-
-        /*const fileopen = document.getElementById("fileopen");
-        if(fileopen) {
-            fileopen.click();
-            fileopen.onchange = (e: any) => {
-                // 데이터 열기
-                handleFileSelect(e.target.files[0]);
-                props.setLoaded(true);
-            }
-        }*/
     }
 
     const handleFileSelect = (file: File) => {
@@ -80,6 +73,7 @@ const FileMenu = (props: FileMenuProps) => {
     }
 
     const saveUser = () => {
+        props.setAllowUserSave(false)
         let text = "";
         text += props.userName+"," + props.userLv + "\n";
         
@@ -109,6 +103,12 @@ const FileMenu = (props: FileMenuProps) => {
             loadUser()
         }
     }, [props.allowUserLoad])
+
+    useEffect(() => {
+        if(props.allowUserSave) {
+            saveUser()
+        }
+    }, [props.allowUserSave])
 
     if(props.isSavedData) {
         return (
@@ -140,7 +140,7 @@ const FileMenu = (props: FileMenuProps) => {
                             <Button color="secondary" onClick={props.checkUserBeforeLoad}>
                                 {(TxtFileMenu.load as any)[props.lang]}
                             </Button>
-                            <Button color="secondary" onClick={saveUser}>
+                            <Button color="secondary" onClick={props.checkUserBeforeSave}>
                                 {(TxtFileMenu.save as any)[props.lang]}
                             </Button>
                         </Col>
