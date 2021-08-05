@@ -60,7 +60,7 @@ const useTableData = (): TableDataReturn => {
         else if(status.status.patternType === PatternType.COOP) {
             apiGetPatternData(status.status.patternType, status.status.patternLv)
             .then((data) => {
-                updateTable(data as Array<MusicData>, true)
+                updateTable(data as Array<MusicData>, false)
                 table.table.random.title = ''
                 table.table.below.title = ''
                 table.table.easy.title = ''
