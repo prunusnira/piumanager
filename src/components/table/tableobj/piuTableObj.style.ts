@@ -4,7 +4,7 @@ export const ObjWrapper = styled.div`
     display: flex;
     flex-direction: column;
     padding: 1px;
-    width: 150px;
+    width: 100px;
 `;
 
 export const SongType = styled.span`
