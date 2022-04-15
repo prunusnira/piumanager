@@ -8,8 +8,6 @@ export const ButtonEmpty = styled.button`
     border: none;
 
     color: rgb(16, 50, 90);
-    text-shadow: 1px 1px 1px white, -1px 1px 1px white, 1px 1px 1px white, 1px -1px 1px white,
-        1px 0 1px white, 0 1px 1px white, -1px 0 1px white, 0 -1px 1px white;
     font-size: 80%;
     font-weight: bold;
     line-height: 1.5em;

@@ -1,12 +1,5 @@
 import styled from "styled-components";
 
-export const DiffWrapper = styled.section`
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: 100%;
-`;
-
 export const ObjWrapper = styled.div`
     display: flex;
     flex-direction: column;

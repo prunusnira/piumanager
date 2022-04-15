@@ -12,5 +12,9 @@ export const FooterWrapper = styled.section`
     background-color: ${TitleBlack};
 
     padding: 10px;
-    font-size: 14px;
+    font-size: 12px;
+`;
+
+export const FooterRow = styled.div`
+    width: 100%;
 `;

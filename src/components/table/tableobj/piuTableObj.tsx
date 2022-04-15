@@ -6,7 +6,6 @@ import { observer } from "mobx-react";
 import {
     CheckBox,
     CheckBoxWrapper,
-    DiffWrapper,
     JacketWrapper,
     NameWrapper,
     ObjWrapper,
@@ -26,7 +25,7 @@ const PIUTableObj = observer((props: Props) => {
     const { status, language } = IntegratedStore;
 
     return (
-        <DiffWrapper>
+        <>
             {props.list.map((d, i) => {
                 const title = language.language === "ko" ? d.title_ko : d.title_en;
 
@@ -61,7 +60,7 @@ const PIUTableObj = observer((props: Props) => {
                     </ObjWrapper>
                 );
             })}
-        </DiffWrapper>
+        </>
     );
 });
 

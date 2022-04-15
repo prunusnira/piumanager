@@ -50,19 +50,15 @@ const FilemenuPres = observer((props: FilemenuPresProps) => {
                 </FileMenuHowTo>
 
                 <FileMenuButton>
-                    <Row>
-                        <Col xs="12" className="btn-group-vertical">
-                            <Button color="secondary" onClick={props.checkUserBeforeNew}>
-                                {TxtFileMenu.newuser}
-                            </Button>
-                            <Button color="secondary" onClick={props.checkUserBeforeLoad}>
-                                {TxtFileMenu.load}
-                            </Button>
-                            <Button color="secondary" onClick={props.checkUserBeforeSave}>
-                                {TxtFileMenu.save}
-                            </Button>
-                        </Col>
-                    </Row>
+                    <Button color="secondary" onClick={props.checkUserBeforeNew}>
+                        {TxtFileMenu.newuser}
+                    </Button>
+                    <Button color="secondary" onClick={props.checkUserBeforeLoad}>
+                        {TxtFileMenu.load}
+                    </Button>
+                    <Button color="secondary" onClick={props.checkUserBeforeSave}>
+                        {TxtFileMenu.save}
+                    </Button>
                 </FileMenuButton>
             </FileMenuWrapper>
         );
