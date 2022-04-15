@@ -61,14 +61,26 @@ const useTableData = (): TableDataReturn => {
             apiGetPatternData(status.status.patternType, status.status.patternLv)
             .then((data) => {
                 updateTable(data as Array<MusicData>, false)
-                table.table.random.title = ''
-                table.table.below.title = ''
-                table.table.easy.title = ''
-                table.table.normaleasy.title = ''
-                table.table.normal.title = `CO-OP x${status.status.patternLv}`
-                table.table.normalhigh.title = ''
-                table.table.high.title = ''
-                table.table.over.title = ''
+                if(status.status.patternLv === 2) {
+                    table.table.random.title = 'CO-OP x2 Turn'
+                    table.table.below.title = 'CO-OP x2 VE'
+                    table.table.easy.title = 'CO-OP x2 EZ'
+                    table.table.normaleasy.title = 'CO-OP x2 NE'
+                    table.table.normal.title = `CO-OP x2 NR`
+                    table.table.normalhigh.title = 'CO-OP x2 NH'
+                    table.table.high.title = 'CO-OP x2 HD'
+                    table.table.over.title = 'CO-OP x2 VH'
+                }
+                else {
+                    table.table.random.title = ''
+                    table.table.below.title = ''
+                    table.table.easy.title = ''
+                    table.table.normaleasy.title = ''
+                    table.table.normal.title = `CO-OP x${status.status.patternLv}`
+                    table.table.normalhigh.title = ''
+                    table.table.high.title = ''
+                    table.table.over.title = ''
+                }
             })
         }
         else {

@@ -1,49 +1,55 @@
-import React from "react"
-import { Button, Col, Row } from "reactstrap"
-import { observer } from 'mobx-react'
+import React from "react";
+import { Col, Row } from "reactstrap";
+import { observer } from "mobx-react";
 
-import TxtFileMenuKo from '../../../text/table/filemenu/txtFilemenu-ko'
-import TxtFileMenuJp from '../../../text/table/filemenu/txtFilemenu-jp'
-import TxtFileMenuCn from '../../../text/table/filemenu/txtFilemenu-cn'
-import TxtFileMenuEn from '../../../text/table/filemenu/txtFilemenu-en'
-import IntegratedStore from "../../../mobx/integratedStore"
+import TxtFileMenuKo from "../../../text/table/filemenu/txtFilemenu-ko";
+import TxtFileMenuJp from "../../../text/table/filemenu/txtFilemenu-jp";
+import TxtFileMenuCn from "../../../text/table/filemenu/txtFilemenu-cn";
+import TxtFileMenuEn from "../../../text/table/filemenu/txtFilemenu-en";
+import IntegratedStore from "../../../mobx/integratedStore";
+import { FileMenuButton, FileMenuHowTo, FileMenuWrapper } from "./filemenu.style";
+import { Button } from "../../../styled/common.style";
 
 type FilemenuPresProps = {
-    checkUserBeforeNew: () => void,
-    checkUserBeforeLoad: () => void,
-    checkUserBeforeSave: () => void,
-}
+    checkUserBeforeNew: () => void;
+    checkUserBeforeLoad: () => void;
+    checkUserBeforeSave: () => void;
+};
 
 const FilemenuPres = observer((props: FilemenuPresProps) => {
-    const {language, status} = IntegratedStore
+    const { language, status } = IntegratedStore;
 
     const TxtFileMenu =
-        language.language === 'ko' ? TxtFileMenuKo :
-        language.language === 'jp' ? TxtFileMenuJp :
-        language.language === 'cn' ? TxtFileMenuCn : TxtFileMenuEn
-            
-    if(status.status.isShareData) {
+        language.language === "ko"
+            ? TxtFileMenuKo
+            : language.language === "jp"
+            ? TxtFileMenuJp
+            : language.language === "cn"
+            ? TxtFileMenuCn
+            : TxtFileMenuEn;
+
+    if (status.status.isShareData) {
         return (
             <Row>
-                <Col xs='12' className='text-center'>
+                <Col xs="12" className="text-center">
                     <h4>{TxtFileMenu.sharedata}</h4>
                 </Col>
             </Row>
         );
-    }
-    else {
+    } else {
         return (
-            <Row>
-                <Col xs="12" md="8">
-                    {TxtFileMenu.howto1}<br/>
+            <FileMenuWrapper>
+                <FileMenuHowTo>
+                    {TxtFileMenu.howto1}
+                    <br />
                     <ol>
                         <li>{TxtFileMenu.howto2}</li>
                         <li>{TxtFileMenu.howto3}</li>
                         <li>{TxtFileMenu.howto4}</li>
                     </ol>
-                </Col>
+                </FileMenuHowTo>
 
-                <Col xs="12" md="4">
+                <FileMenuButton>
                     <Row>
                         <Col xs="12" className="btn-group-vertical">
                             <Button color="secondary" onClick={props.checkUserBeforeNew}>
@@ -57,10 +63,10 @@ const FilemenuPres = observer((props: FilemenuPresProps) => {
                             </Button>
                         </Col>
                     </Row>
-                </Col>
-            </Row>
-        )
+                </FileMenuButton>
+            </FileMenuWrapper>
+        );
     }
-})
+});
 
-export default FilemenuPres
+export default FilemenuPres;
