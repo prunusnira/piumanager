@@ -64,11 +64,6 @@ const Footer = observer(() => {
 
             <FooterRow>&nbsp;</FooterRow>
 
-            <FooterRow>Caution:</FooterRow>
-            <FooterRow>{TxtFooter.iosalert}</FooterRow>
-
-            <FooterRow>&nbsp;</FooterRow>
-
             <FooterRow>{TxtFooter.tableinfo}</FooterRow>
 
             <FooterRow>&nbsp;</FooterRow>
@@ -93,7 +88,7 @@ const Footer = observer(() => {
                     GitHub
                 </a>
             </FooterRow>
-            <FooterRow>Recent System Update: Apr. 16, 2022</FooterRow>
+            <FooterRow>Recent System Update: Apr. 17, 2022</FooterRow>
 
             <FooterRow>&nbsp;</FooterRow>
 
