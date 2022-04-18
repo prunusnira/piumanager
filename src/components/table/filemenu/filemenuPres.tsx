@@ -30,11 +30,9 @@ const FilemenuPres = observer((props: FilemenuPresProps) => {
 
     if (status.status.isShareData) {
         return (
-            <Row>
-                <Col xs="12" className="text-center">
-                    <h4>{TxtFileMenu.sharedata}</h4>
-                </Col>
-            </Row>
+            <div>
+                <h4>{TxtFileMenu.sharedata}</h4>
+            </div>
         );
     } else {
         return (

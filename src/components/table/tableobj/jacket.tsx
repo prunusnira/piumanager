@@ -52,7 +52,7 @@ const Jacket = observer(({ bgImageUrl, musicData: d, showrank }: Props) => {
                 src={`${CommonData.imgUrl}${d.musicid}.png`}
                 onError={(e) => {
                     e.currentTarget.onerror = null;
-                    e.currentTarget.src = `${process.env.PUBLIC_URL}/img/empty.jpg`;
+                    e.currentTarget.src = `${process.env.PUBLIC_URL}/img/empty.png`;
                 }}
             />
         </JacketDiv>
