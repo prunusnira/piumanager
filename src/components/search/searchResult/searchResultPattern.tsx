@@ -1,28 +1,19 @@
 import React from "react";
-import { Button } from "reactstrap";
-import SearchPatternData from "../searchItems/searchPatternData"
+import { Button } from "../../../styled/common.style";
+import SearchPatternData from "../searchItems/searchPatternData";
 
-const SearchResultPattern:React.FC<{pt: SearchPatternData}> = (pt) => {
+const SearchResultPattern: React.FC<{ pt: SearchPatternData }> = (pt) => {
     const process = () => {
         let type;
-        if(pt.pt.sdtype === 0) {
-            type = 'S'
+        if (pt.pt.sdtype === 0) {
+            type = "S";
+        } else {
+            type = "D";
         }
-        else {
-            type = 'D'
-        }
-        return (
-            <Button color={(type === 'S') ? 'warning':'success'}>
-                {type+pt.pt.lv}
-            </Button>
-        )
-    }
+        return <Button color={type === "S" ? "warning" : "success"}>{type + pt.pt.lv}</Button>;
+    };
 
-    return (
-        <>
-            {process()}
-        </>
-    )
-}
+    return <>{process()}</>;
+};
 
-export default SearchResultPattern
+export default SearchResultPattern;

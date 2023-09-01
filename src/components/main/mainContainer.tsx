@@ -1,25 +1,28 @@
-import React, { useState } from 'react'
-import Main from './main'
-import './piuCustom.css'
-import { Card, Container } from 'reactstrap'
-import Footer from '../footer/footer'
-import Header from '../header/header'
+import React, { useState } from "react";
+import "./piuCustom.css";
+import CommonLayout from "../../layout/commonLayout";
+import Search from "../search/search";
+import PIUTable from "../table/piuTable";
 
-const MainContainer = () => {
-    const [mode, setPageMode] = useState(0) // 0: 테이블, 1: 검색
-    
-    return (
-        <Container fluid>
-            <Card>
-                <Header
-                    mode={mode}
-                    setPageMode={setPageMode} />
-                <Main
-                    mode={mode} />
-                <Footer />
-            </Card>
-        </Container>
-    );
-}
+const Main = () => {
+    const [mode, setPageMode] = useState(0); // 0: 테이블, 1: 검색
 
-export default MainContainer;
+    switch (mode) {
+        case 0:
+            return (
+                <CommonLayout mode={mode} setPageMode={setPageMode}>
+                    <PIUTable />
+                </CommonLayout>
+            );
+        case 1:
+            return (
+                <CommonLayout mode={mode} setPageMode={setPageMode}>
+                    <Search />
+                </CommonLayout>
+            );
+        default:
+            return null;
+    }
+};
+
+export default Main;

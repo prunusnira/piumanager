@@ -1,8 +1,20 @@
-import { useEffect } from "react"
+import React from "react"
+import { useEffect, useRef } from "react"
 import IntegratedStore from "../../../mobx/integratedStore"
 
-const useTableMenu = () => {
+type TableMenuReturn = [
+    React.RefObject<HTMLSelectElement>,
+    React.RefObject<HTMLSelectElement>,
+    React.RefObject<HTMLSelectElement>,
+    () => void,
+]
+
+const useTableMenu = (): TableMenuReturn => {
     const {status} = IntegratedStore
+
+    const selDiffSingle = useRef<HTMLSelectElement>(null)
+    const selDiffDouble = useRef<HTMLSelectElement>(null)
+    const selDiffCoop = useRef<HTMLSelectElement>(null)
 
     // 체크박스 등록/해제에 따른 effect
     useEffect(() => {
@@ -35,6 +47,14 @@ const useTableMenu = () => {
             }
         }
     }
+
+    const diffSelReset = () => {
+        selDiffSingle.current!.value = '--'
+        selDiffDouble.current!.value = '--'
+        selDiffCoop.current!.value = '--'
+    }
+
+    return [selDiffSingle, selDiffDouble, selDiffCoop, diffSelReset]
 }
 
 export default useTableMenu
