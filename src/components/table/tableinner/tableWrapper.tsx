@@ -5,7 +5,7 @@ import { unixTimeToText } from "../tool";
 import PIUTableObj from "../tableobj/piuTableObj";
 import IntegratedStore from "../../../mobx/integratedStore";
 import { observer } from "mobx-react";
-import { PatternType } from "../data/patternType";
+import { PatternType } from "../../../data/patternType";
 import {
     DataInner,
     DataTitle,
@@ -15,9 +15,9 @@ import {
     ScoreTableTitleMenu,
     ScoreTableUserInfo,
     ScoreTableWrapper,
-    UserInfoDivide,
 } from "./tableWrapper.style";
 import { Button } from "../../../styled/common.style";
+import {TextCommon, TextTableTitle, TextTitleSub} from "../../../styled/common.font";
 
 interface TableProps {
     scrShot: (div: string, file: string) => void;
@@ -50,40 +50,33 @@ const TableWrapper = observer((props: TableProps) => {
                 </ScoreTableTitleMenu>
             </ScoreTableTitle>
             <ScoreTableLv>
-                <h5>
+                <TextTableTitle>
                     {status.status.patternType === PatternType.SINGLE
                         ? "Single"
                         : status.status.patternType === PatternType.DOUBLE
                         ? "Double"
                         : "CO-OP"}
                     &nbsp; Lv.{status.status.patternLv} Clear Table
-                </h5>
+                </TextTableTitle>
+                <TextTitleSub>{user.user.userName}</TextTitleSub>
             </ScoreTableLv>
             <ScoreTableUserInfo>
-                <UserInfoDivide>
-                    <div>
-                        <b>
-                            <span>PLAYER NAME</span>
-                        </b>
-                        &nbsp;
-                        <span data-testid="txtPlayerName">{user.user.userName}</span>
-                    </div>
-                    <div>
-                        <b>
-                            <span>PLAYER LEVEL</span>
-                        </b>
-                        &nbsp;
-                        <span>{user.user.userLv}</span>
-                    </div>
-                </UserInfoDivide>
-                <UserInfoDivide>
-                    <div>
-                        {`SSS: ${status.status.rankcount.sss} | SS: ${status.status.rankcount.ss} | S: ${status.status.rankcount.s} | A: ${status.status.rankcount.aon} | BCD: ${status.status.rankcount.bcdon}`}
-                    </div>
-                    <div>
-                        {`A: ${status.status.rankcount.aoff} (Off) | BCD: ${status.status.rankcount.bcdoff} (Off) | F: ${status.status.rankcount.f} | No Play: ${status.status.rankcount.np}`}
-                    </div>
-                </UserInfoDivide>
+                <TextCommon>SSS+: {status.status.rankcount.sssp} (BO {status.status.rankcount.ssspb})</TextCommon>
+                <TextCommon>SSS: {status.status.rankcount.sss} (BO {status.status.rankcount.sssb})</TextCommon>
+                <TextCommon>SS+: {status.status.rankcount.ssp} (BO {status.status.rankcount.sspb})</TextCommon>
+                <TextCommon>SS: {status.status.rankcount.ss} (BO {status.status.rankcount.ssb})</TextCommon>
+                <TextCommon>S+: {status.status.rankcount.sp} (BO {status.status.rankcount.spb})</TextCommon>
+                <TextCommon>S: {status.status.rankcount.s} (BO {status.status.rankcount.sb})</TextCommon>
+                <TextCommon>AAA+: {status.status.rankcount.aaap} (BO {status.status.rankcount.aaapb})</TextCommon>
+                <TextCommon>AAA: {status.status.rankcount.aaa} (BO {status.status.rankcount.aaab})</TextCommon>
+                <TextCommon>AA+: {status.status.rankcount.aap} (BO {status.status.rankcount.aapb})</TextCommon>
+                <TextCommon>AA: {status.status.rankcount.aa} (BO {status.status.rankcount.aab})</TextCommon>
+                <TextCommon>A+: {status.status.rankcount.ap} (BO {status.status.rankcount.apb})</TextCommon>
+                <TextCommon>A: {status.status.rankcount.a} (BO {status.status.rankcount.ab})</TextCommon>
+                <TextCommon>B: {status.status.rankcount.b} (BO {status.status.rankcount.bb})</TextCommon>
+                <TextCommon>C: {status.status.rankcount.c} (BO {status.status.rankcount.cb})</TextCommon>
+                <TextCommon>D: {status.status.rankcount.d} (BO {status.status.rankcount.db})</TextCommon>
+                <TextCommon>F: {status.status.rankcount.f} (BO {status.status.rankcount.fb})</TextCommon>
             </ScoreTableUserInfo>
 
             {table.table.over.data.length > 0 && (

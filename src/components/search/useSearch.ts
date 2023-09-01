@@ -14,14 +14,14 @@ const useSearch = (): SearchReturn => {
 
     const querySearch = (text: string) => {
         apiSearch(text)
-        .then(data => {
+        .then(data =>
             listSetup(data as SearchQuery[])
-        })
+        )
     }
 
     const listSetup = (data: Array<SearchQuery>) => {
         const arr = Array<SearchItemData>()
-        data.map(d => {
+        data.forEach(d => {
             // 곡 데이터가 있는지 확인하고 추가
             const ptdata: SearchPatternData = {
                 musicid: d.musicid,

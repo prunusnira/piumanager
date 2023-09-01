@@ -1,5 +1,5 @@
 import React from "react";
-import CommonData from "../../table/data/commonData";
+import CommonData from "../../../data/commonData";
 import SearchItemData from "../searchItems/searchItemData";
 import SearchResultPattern from "./searchResultPattern";
 import { observer } from "mobx-react";

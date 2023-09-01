@@ -6,6 +6,9 @@ const TxtTableMenu = {
     display: "显示",
     rank: "评价",
     songtype: "选择显示在列表中的乐曲种类",
+    option: "设定",
+    withRemovedMusic: "显示已删除的歌曲",
+    withRemovedPattern: "显示已删除的乐谱",
     diff: {
         random: "?",
         below: "级",

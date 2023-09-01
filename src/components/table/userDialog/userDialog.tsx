@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from "reactstrap";
 import IntegratedStore from "../../../mobx/integratedStore";
-import { UserDlgType } from "../data/userDlgType";
+import { UserDlgType } from "../../../data/userDlgType";
 import { observer } from "mobx-react";
 
 import TxtUserDlgKo from "../../../text/table/userDlg/txtUserDlg-ko";

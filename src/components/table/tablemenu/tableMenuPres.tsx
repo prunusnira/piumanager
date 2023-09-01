@@ -1,11 +1,11 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckSquare } from "@fortawesome/free-solid-svg-icons";
-import { PatternType } from "../data/patternType";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCheckSquare} from "@fortawesome/free-solid-svg-icons";
+import {PatternType} from "../../../data/patternType";
 import IntegratedStore from "../../../mobx/integratedStore";
-import { UserDlgType } from "../data/userDlgType";
-import { observer } from "mobx-react";
-import { PatternDlgType } from "../data/patternDlgType";
+import {UserDlgType} from "../../../data/userDlgType";
+import {observer} from "mobx-react";
+import {PatternDlgType} from "../../../data/patternDlgType";
 
 import TxtTableMenuKo from "../../../text/table/tablemenu/txtTablemenu-ko";
 import TxtTableMenuJp from "../../../text/table/tablemenu/txtTablemenu-jp";
@@ -23,7 +23,7 @@ import {
     TableMenuTitle,
     TableMenuWrapper,
 } from "./tableMenu.style";
-import { Button } from "../../../styled/common.style";
+import {Button} from "../../../styled/common.style";
 
 type TableMenuProps = {
     selDiffSingle: React.RefObject<HTMLSelectElement>;
@@ -32,16 +32,16 @@ type TableMenuProps = {
 };
 
 const TableMenuPres = observer((props: TableMenuProps) => {
-    const { language, status } = IntegratedStore;
+    const {language, status} = IntegratedStore;
 
     const TxtTableMenu =
         language.language === "ko"
             ? TxtTableMenuKo
             : language.language === "jp"
-            ? TxtTableMenuJp
-            : language.language === "cn"
-            ? TxtTableMenuCn
-            : TxtTableMenuEn;
+                ? TxtTableMenuJp
+                : language.language === "cn"
+                    ? TxtTableMenuCn
+                    : TxtTableMenuEn;
 
     return (
         <TableMenuWrapper display={status.status.isUserLoaded}>
@@ -60,8 +60,8 @@ const TableMenuPres = observer((props: TableMenuProps) => {
                                 ref={props.selDiffSingle}
                                 onChange={(e) => {
                                     if (e.currentTarget.value !== "--") {
-                                        status.status.patternType = PatternType.SINGLE;
-                                        status.status.patternLv = parseInt(e.currentTarget.value);
+                                        status.setPatternType(PatternType.SINGLE);
+                                        status.setPatternLv(parseInt(e.currentTarget.value));
                                     }
                                 }}
                             >
@@ -86,8 +86,8 @@ const TableMenuPres = observer((props: TableMenuProps) => {
                                 ref={props.selDiffDouble}
                                 onChange={(e) => {
                                     if (e.currentTarget.value !== "--") {
-                                        status.status.patternType = PatternType.DOUBLE;
-                                        status.status.patternLv = parseInt(e.currentTarget.value);
+                                        status.setPatternType(PatternType.DOUBLE);
+                                        status.setPatternLv(parseInt(e.currentTarget.value));
                                     }
                                 }}
                             >
@@ -113,8 +113,8 @@ const TableMenuPres = observer((props: TableMenuProps) => {
                                 ref={props.selDiffCoop}
                                 onChange={(e) => {
                                     if (e.currentTarget.value !== "--") {
-                                        status.status.patternType = PatternType.COOP;
-                                        status.status.patternLv = parseInt(e.currentTarget.value);
+                                        status.setPatternType(PatternType.COOP);
+                                        status.setPatternLv(parseInt(e.currentTarget.value));
                                     }
                                 }}
                             >
@@ -129,46 +129,43 @@ const TableMenuPres = observer((props: TableMenuProps) => {
                 </TableMenuPattern>
 
                 <TableMenuPattern>
-                    <TableMenuSubTitle>
-                        <h5>{TxtTableMenu.menu}</h5>
-                    </TableMenuSubTitle>
                     <TableMenuSubWrapper>
                         <Button
                             color="secondary"
-                            style={{ width: "50%" }}
+                            style={{width: "50%"}}
                             onClick={() => {
-                                status.status.showUserDialog = true;
-                                status.status.userDlgType = UserDlgType.EDITUSER;
+                                status.setShowUserDialog(true);
+                                status.setUserDlgType(UserDlgType.EDITUSER);
                             }}
                         >
                             {TxtTableMenu.edit}
                         </Button>
                         <Button
                             color="secondary"
-                            style={{ width: "50%" }}
+                            style={{width: "50%"}}
                             onClick={() => {
                                 status.status.showPtUpdDlg = true;
                                 status.status.patternUpdDlgType = PatternDlgType.MULTIPLE;
                             }}
                         >
-                            <FontAwesomeIcon icon={faCheckSquare} />
+                            <FontAwesomeIcon icon={faCheckSquare}/>
                             {TxtTableMenu.updatecheckedbtn}
                         </Button>
                     </TableMenuSubWrapper>
                     <TableMenuSubWrapper>
                         <Button
                             color="secondary"
-                            style={{ width: "50%" }}
+                            style={{width: "50%"}}
                             onClick={() => {
                                 status.status.showTableCheck = !status.status.showTableCheck;
                             }}
                         >
-                            <FontAwesomeIcon icon={faCheckSquare} />
+                            <FontAwesomeIcon icon={faCheckSquare}/>
                             {TxtTableMenu.display}
                         </Button>
                         <Button
                             color="secondary"
-                            style={{ width: "50%" }}
+                            style={{width: "50%"}}
                             onClick={() => {
                                 status.status.showTableRank = !status.status.showTableRank;
                             }}
@@ -192,7 +189,7 @@ const TableMenuPres = observer((props: TableMenuProps) => {
                                 type="checkbox"
                                 value="musarcade"
                                 onChange={() => {
-                                    status.status.showArcade = !status.status.showArcade;
+                                    status.setShowArcade(!status.status.showArcade);
                                 }}
                                 checked={status.status.showArcade}
                             />
@@ -205,7 +202,7 @@ const TableMenuPres = observer((props: TableMenuProps) => {
                                 type="checkbox"
                                 value="musshort"
                                 onChange={() => {
-                                    status.status.showShort = !status.status.showShort;
+                                    status.setShowShort(!status.status.showShort);
                                 }}
                                 checked={status.status.showShort}
                             />
@@ -218,7 +215,7 @@ const TableMenuPres = observer((props: TableMenuProps) => {
                                 type="checkbox"
                                 value="musfull"
                                 onChange={() => {
-                                    status.status.showFull = !status.status.showFull;
+                                    status.setShowFull(!status.status.showFull);
                                 }}
                                 checked={status.status.showFull}
                             />
@@ -231,11 +228,31 @@ const TableMenuPres = observer((props: TableMenuProps) => {
                                 type="checkbox"
                                 value="musremix"
                                 onChange={() => {
-                                    status.status.showRemix = !status.status.showRemix;
+                                    status.setShowRemix(!status.status.showRemix);
                                 }}
                                 checked={status.status.showRemix}
                             />
                             <TableInputLabel htmlFor="musremix">Remix</TableInputLabel>
+                        </TableMenuSubWrapper>
+                    </TableMenuSubWrapper>
+                </TableMenuPattern>
+                <TableMenuPattern>
+                    <TableMenuSubTitle>
+                        <h5>{TxtTableMenu.option}</h5>
+                    </TableMenuSubTitle>
+                    <TableMenuSubWrapper>
+                        <TableMenuSubWrapper>
+                            <TableInputCheck
+                                id="withRemovedPattern"
+                                type="checkbox"
+                                value="withRemovedPattern"
+                                onChange={() => {
+                                    status.setShowRemoved(!status.status.showRemovedPattern);
+                                }}
+                                checked={status.status.showRemovedPattern}
+                            />
+                            <TableInputLabel
+                                htmlFor="withRemovedPattern">{TxtTableMenu.withRemovedPattern}</TableInputLabel>
                         </TableMenuSubWrapper>
                     </TableMenuSubWrapper>
                 </TableMenuPattern>

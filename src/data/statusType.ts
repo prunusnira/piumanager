@@ -4,6 +4,7 @@ import { RankType } from "./rankType";
 import { ResetType } from "./resetType";
 import { ShareDlgType } from "./shareDlgType";
 import { UserDlgType } from "./userDlgType";
+import {RankCountType} from "./rankCountType";
 
 type StatusType = {
     patternType: PatternType,
@@ -16,6 +17,8 @@ type StatusType = {
     showShort: boolean,
     showFull: boolean,
     showRemix: boolean,
+
+    showRemovedPattern: boolean,
 
     showTableRank: boolean,
     showTableCheck: boolean,
@@ -35,17 +38,7 @@ type StatusType = {
     selectedMusicTitle: string,
     updateRank: RankType,
 
-    rankcount: {
-        sss: number,
-        ss: number,
-        s: number,
-        aon: number,
-        aoff: number,
-        bcdon: number,
-        bcdoff: number,
-        f: number,
-        np: number,
-    },
+    rankcount: RankCountType,
 }
 
 export default StatusType

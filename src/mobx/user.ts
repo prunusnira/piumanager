@@ -1,5 +1,5 @@
 import {makeAutoObservable} from 'mobx'
-import UserType from "../components/table/data/userType"
+import UserType from "../data/userType"
 
 const emptyUser: UserType = {
     userName: '',
@@ -10,13 +10,19 @@ const emptyUser: UserType = {
 class StoreUser {
     public user = emptyUser
 
+    constructor() {
+        makeAutoObservable(this)
+    }
+
     public setUser = (data: UserType) => {
         this.user = data
     }
 
-    constructor() {
-        makeAutoObservable(this)
+    public setUserName = (name: string) => {
+        this.user.userName = name;
     }
 }
 
-export default new StoreUser()
+const User = new StoreUser()
+
+export default User

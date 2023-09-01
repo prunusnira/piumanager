@@ -1,7 +1,7 @@
 import React from "react";
 import IntegratedStore from "../../../mobx/integratedStore";
-import CommonData from "../data/commonData";
-import { MusicData } from "../data/musicData";
+import CommonData from "../../../data/commonData";
+import { MusicData } from "../../../data/musicData";
 import { observer } from "mobx-react";
 import {
     CheckBox,
@@ -28,6 +28,8 @@ const PIUTableObj = observer((props: Props) => {
         <>
             {props.list.map((d, i) => {
                 const title = language.language === "ko" ? d.title_ko : d.title_en;
+
+                if(!status.status.showRemovedPattern && d.removedPattern === 1) return <></>;
 
                 return (
                     <ObjWrapper key={props.keyv + i}>

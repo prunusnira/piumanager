@@ -1,5 +1,5 @@
 import {makeAutoObservable} from 'mobx'
-import { MusicTable } from "../components/table/data/musicTable"
+import { MusicTable } from "../data/musicTable"
 
 const emptyTable: MusicTable = {
     over: {
@@ -48,4 +48,6 @@ class StoreTable {
     }
 }
 
-export default new StoreTable()
+const Table = new StoreTable()
+
+export default Table;

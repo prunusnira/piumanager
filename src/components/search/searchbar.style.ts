@@ -4,6 +4,8 @@ import { ButtonEmpty } from "../../styled/common.style";
 export const SearchBarWrapper = styled.div`
     width: 100%;
     max-width: 1280px;
+
+  position: relative;
 `;
 
 export const SearchBarElem = styled.input`
@@ -12,11 +14,9 @@ export const SearchBarElem = styled.input`
     max-width: 1280px;
     border-radius: 15px;
     padding: 5px;
-
-    position: relative;
 `;
 
 export const SearchButton = styled(ButtonEmpty)`
-    position: fixed;
+    position: absolute;
     right: 10px;
 `;

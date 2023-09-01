@@ -3,7 +3,7 @@ import axios from "axios";
 import ShareDialog from "./shareDialog/shareDialog";
 import UserDialog from "./userDialog/userDialog";
 import TableWrapper from "./tableinner/tableWrapper";
-import CommonData from "./data/commonData";
+import CommonData from "../../data/commonData";
 import UserResetModal from "./userResetModal/resetModal";
 import SaveBeforeLoadDlg from "./saveBeforeLoadDlg/saveBeforeLoadDlg";
 import useFileMenu from "./filemenu/useFilemenu";
@@ -15,7 +15,7 @@ import IntegratedStore from "../../mobx/integratedStore";
 import usePatternDialog from "./patternDialog/usePatternDialog";
 import PTUpdateDlgPres from "./patternDialog/ptUpdateDlgPres";
 import useResetModal from "./userResetModal/useResetModal";
-import { textToRank } from "./data/rankTextConvert";
+import { textToRank } from "../../data/rankTextConvert";
 import { observer } from "mobx-react";
 import useTableMenu from "./tablemenu/useTableMenu";
 import { PIUTableWrapper } from "./piuTable.style";
@@ -59,7 +59,7 @@ const PIUTable = observer(() => {
     useEffect(() => {
         getPatterns();
         diffSelReset();
-    }, [status.status.patternType, status.status.patternLv]);
+    }, [status.status.patternLv, status.status.patternType]);
 
     /**
      * Table
@@ -69,7 +69,7 @@ const PIUTable = observer(() => {
     /**
      * Dialogs
      */
-    const [closeUpdatePatternDlg, updateMultipleData, rankCountReset, updateRankCount, updateData] =
+    const {closeUpdatePatternDlg, updateMultipleData, rankCountReset, updateRankCount, updateData} =
         usePatternDialog();
 
     const [closeUserResetDlg, runUserReset] = useResetModal(
@@ -87,13 +87,17 @@ const PIUTable = observer(() => {
             for (let i = 1; i < str.length; i++) {
                 const cur = str[i].split(",");
                 if (cur[0] !== "") {
-                    user.user.userStatus.set(parseInt(cur[0]), textToRank(cur[1]));
+                    if(cur.length === 3) {
+                        user.user.userStatus.set(parseInt(cur[0]), {rank: textToRank(cur[1]), breakOff: cur[2] === '1'});
+                    }
+                    else {
+                        user.user.userStatus.set(parseInt(cur[0]), {rank: textToRank(cur[1]), breakOff: false});
+                    }
                 }
             }
 
-            user.user.userName = userinfo[0];
-            user.user.userLv = parseInt(userinfo[1]);
-            status.status.isUserLoaded = true;
+            user.setUserName(userinfo[0]);
+            status.setUserLoaded(true);
             userLog(userinfo[0], type);
             setAllowUserLoad(false);
         }

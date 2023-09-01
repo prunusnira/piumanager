@@ -2,7 +2,7 @@ import html2canvas from "html2canvas"
 import { apiShareCreate } from "../../../api/apiTable"
 
 import IntegratedStore from "../../../mobx/integratedStore"
-import { ShareDlgType } from "../data/shareDlgType"
+import { ShareDlgType } from "../../../data/shareDlgType"
 
 type TableReturn = [
     (d: string, f: string) => void,

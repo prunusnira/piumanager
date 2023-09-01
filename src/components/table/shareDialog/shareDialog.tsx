@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import IntegratedStore from "../../../mobx/integratedStore";
-import { ShareDlgType } from "../data/shareDlgType";
+import { ShareDlgType } from "../../../data/shareDlgType";
 import { observer } from "mobx-react";
 
 import TxtShareDlgKo from "../../../text/table/shareDlg/txtShareDlg-ko";

@@ -8,7 +8,7 @@ import TxtFooterCn from "../../text/footer/txtFooter-cn";
 import TxtFooterEn from "../../text/footer/txtFooter-en";
 import IntegratedStore from "../../mobx/integratedStore";
 import { useEffect } from "react";
-import Language from "../table/data/language";
+import Language from "../../data/language";
 import { FooterRow, FooterWrapper } from "./footer.style";
 
 const Footer = observer(() => {
@@ -22,7 +22,7 @@ const Footer = observer(() => {
         if (language.language === "") {
             language.setLanguage(new Language().getLang());
         }
-    }, []);
+    }, [language]);
 
     const astyle = {
         color: "#dddddd",
@@ -88,7 +88,8 @@ const Footer = observer(() => {
                     GitHub
                 </a>
             </FooterRow>
-            <FooterRow>Recent System Update: Apr. 17, 2022</FooterRow>
+            <FooterRow>Version PHOENIX 2.00: Sep. 1, 2023</FooterRow>
+            <FooterRow>Version XX 1.4: Apr. 17, 2022</FooterRow>
 
             <FooterRow>&nbsp;</FooterRow>
 

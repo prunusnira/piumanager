@@ -14,6 +14,8 @@ export type MusicData = {
     version: number
     newpattern: number
     rank: RankType
+    removedPattern: number
+    breakOff: boolean
 }
 
 /** 버전

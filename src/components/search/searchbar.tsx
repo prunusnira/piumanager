@@ -14,6 +14,8 @@ interface Props {
     setKeyword: (k: string) => void;
     runQuery: () => void;
     checkEnter: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    withRemoved: boolean;
+    setWithRemoved: (b: boolean) => void;
 }
 
 const SearchBar = observer((props: Props) => {
@@ -36,7 +38,7 @@ const SearchBar = observer((props: Props) => {
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     props.setKeyword(e.currentTarget.value);
                 }}
-                onKeyDown={(e) => props.checkEnter(e)}
+                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => props.checkEnter(e)}
             />
             <SearchButton onClick={props.runQuery}>
                 <FontAwesomeIcon icon={faSearch} />

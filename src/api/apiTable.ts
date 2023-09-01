@@ -1,6 +1,6 @@
 import axios from "axios"
-import CommonData from "../components/table/data/commonData"
-import { PatternType } from "../components/table/data/patternType"
+import CommonData from "../data/commonData"
+import { PatternType } from "../data/patternType"
 
 export const apiCheckSaved = async (savedId: string) => {
     const res = await axios.get(`${CommonData.dataUrl}saved/${savedId}/0`)

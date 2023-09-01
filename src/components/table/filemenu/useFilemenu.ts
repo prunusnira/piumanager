@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom"
 import { apiCheckSaved } from "../../../api/apiTable"
 import IntegratedStore from "../../../mobx/integratedStore"
 import { unixTimeToText } from "../tool"
-import { ResetType } from "../data/resetType"
-import { UserDlgType } from "../data/userDlgType"
+import { ResetType } from "../../../data/resetType"
+import { UserDlgType } from "../../../data/userDlgType"
 
 import TxtFileMenuKo from "../../../text/table/filemenu/txtFilemenu-ko"
 import TxtFileMenuJp from "../../../text/table/filemenu/txtFilemenu-jp"
@@ -21,10 +21,6 @@ type FileMenuReturn = [
     string,
 ]
 
-interface MatchProps {
-    savedId: string
-}
-
 const useFileMenu = (
     fileOpenRef: React.RefObject<HTMLInputElement>
 ): FileMenuReturn => {
@@ -38,7 +34,7 @@ const useFileMenu = (
     const [analyzeType, setAnalyzeType] = useState('')
     
     // URL Parameter
-    const {savedId} = useParams<MatchProps>()
+    const {savedId} = useParams<{ savedId: string | undefined }>()
             
     // 최초 실행 시 실행되는 effect, constructor 대신에 처리
     useEffect(() => {
@@ -46,7 +42,7 @@ const useFileMenu = (
             // DB에 공유용으로 저장된 값을 불러와서 데이터 표시
             apiCheckSaved(savedId)
             .then(d => {
-                status.status.isShareData = true
+                status.setShareData(true);
                 setAnalyzeData(atob(d.data[0].saved))
                 setAnalyzeType('saved')
             })
@@ -86,8 +82,8 @@ const useFileMenu = (
     const checkUserBeforeNew = () => {
         // 사용자가 로드 된 상태 -> 알림 modal 열기
         if(status.status.isUserLoaded) {
-            status.status.resetType = ResetType.NEW
-            status.status.showUserResetDialog = true
+            status.setResetType(ResetType.NEW);
+            status.setShowResetDialog(true);
         }
         else {
             setAllowUserNew(true)
@@ -98,8 +94,8 @@ const useFileMenu = (
     const checkUserBeforeLoad = () => {
         // 사용자가 로드 된 상태 -> 알림 modal 열기
         if(status.status.isUserLoaded) {
-            status.status.resetType = ResetType.LOAD
-            status.status.showUserResetDialog = true
+            status.setResetType(ResetType.LOAD);
+            status.setShowResetDialog(true);
         }
         else {
             // 불러오기
@@ -115,14 +111,14 @@ const useFileMenu = (
             setAllowUserSave(true)
         }
         else {
-            status.status.showSaveBeforeLoadDialog = true
+            status.setShowSaveBeforeLoad(true);
         }
     }
 
     // 신규 사용자 생성
     const newUser = () => {
-        status.status.showUserDialog = true
-        status.status.userDlgType = UserDlgType.NEWUSER
+        status.setShowUserDialog(true);
+        status.setUserDlgType(UserDlgType.NEWUSER);
     }
 
     const loadUser = () => {
@@ -138,7 +134,7 @@ const useFileMenu = (
             fileOpen.onchange = (e: any) => {
                 // 데이터 열기
                 handleFileSelect(e.target.files[0])
-                status.status.isUserLoaded = true
+                status.setUserLoaded(true);
                 e.target.value=''
                 fileOpen.value = ''
             }
@@ -175,8 +171,10 @@ const useFileMenu = (
         const keys = user.user.userStatus.keys()
         for(let i = 0; i < user.user.userStatus.size; i++) {
             const ckey = keys.next()
-            if(ckey.value !== "")
-                text += ckey.value + "," + user.user.userStatus.get(ckey.value) + "\n"
+            if(ckey.value !== "") {
+                const data = user.user.userStatus.get(ckey.value)
+                text += ckey.value + "," + data?.rank + "," + data?.breakOff ? '1' : '0' + "\n"
+            }
         }
         
         // 데이터를 새 파일(임시)에 쓰고 다운로드

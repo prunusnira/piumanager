@@ -6,14 +6,23 @@ import useSearchBar from "./useSearchBar"
 
 const Search = () => {
     const [list, querySearch] = useSearch()
-    const [setKeyword, runQuery, checkEnter] = useSearchBar(querySearch)
+    const {
+        setKeyword,
+        runQuery,
+        checkEnter,
+        withRemoved,
+        setWithRemoved
+    } = useSearchBar(querySearch)
 
     return (
         <>
             <SearchBar
                 setKeyword={setKeyword}
                 runQuery={runQuery}
-                checkEnter={checkEnter} />
+                checkEnter={checkEnter}
+                withRemoved={withRemoved}
+                setWithRemoved={setWithRemoved}
+            />
             <SearchResult
                 list={list} />
         </>

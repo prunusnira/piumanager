@@ -61,6 +61,9 @@ export const convertVersion = (version: number) => {
         case 20:
             ver = "xx";
             break;
+        case 21:
+            ver = 'phoenix';
+            break;
         default:
             ver = "";
             break;

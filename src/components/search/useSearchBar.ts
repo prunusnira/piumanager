@@ -1,15 +1,10 @@
 import { useState } from "react"
 
-type SearchBarReturn = [
-    (k: string) => void,
-    () => void,
-    (e: React.KeyboardEvent<HTMLInputElement>) => void,
-]
-
 const useSearchBar = (
     querySearch: (q: string) => void
-): SearchBarReturn => {
+) => {
     const [keyword, setKeyword] = useState('')
+    const [withRemoved, setWithRemoved] = useState(false)
 
     const checkEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if(e.key === 'Enter') runQuery()
@@ -19,7 +14,7 @@ const useSearchBar = (
         querySearch(keyword)
     }
 
-    return [setKeyword, runQuery, checkEnter]
+    return {setKeyword, runQuery, checkEnter, withRemoved, setWithRemoved}
 }
 
 export default useSearchBar

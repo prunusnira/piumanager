@@ -1,5 +1,5 @@
 import axios from "axios"
-import CommonData from "../components/table/data/commonData"
+import CommonData from "../data/commonData"
 
 export const apiSearch = async (searchTxt: string) => {
     const res = await axios.get(

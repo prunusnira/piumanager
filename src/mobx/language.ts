@@ -25,4 +25,6 @@ class StoreLanguage {
     }
 }
 
-export default new StoreLanguage()
+const Language = new StoreLanguage()
+
+export default Language

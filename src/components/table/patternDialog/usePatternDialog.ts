@@ -1,19 +1,11 @@
-import { useEffect } from "react";
+import {useEffect} from "react";
 import IntegratedStore from "../../../mobx/integratedStore";
-import { rankToText, textToRank } from "../data/rankTextConvert";
-import { RankType } from "../data/rankType";
-import { PatternDlgType } from "../data/patternDlgType";
+import {rankToText, textToRank} from "../../../data/rankTextConvert";
+import {RankType} from "../../../data/rankType";
+import {PatternDlgType} from "../../../data/patternDlgType";
 
-type PatternDialogReturn = [
-    () => void,
-    (rank: RankType) => void,
-    () => void,
-    () => void,
-    (ptid: number, rank: RankType) => void
-];
-
-const usePatternDialog = (): PatternDialogReturn => {
-    const { status, user } = IntegratedStore;
+const usePatternDialog = () => {
+    const {status, user} = IntegratedStore;
 
     // 테이블 데이터 변경 이후에 수행하는 effect
     useEffect(() => {
@@ -21,8 +13,8 @@ const usePatternDialog = (): PatternDialogReturn => {
             const ptid = status.status.ptIdList[i];
 
             if (user.user.userStatus.has(ptid)) {
-                const rank = user.user.userStatus.get(ptid);
-                updateData(ptid, rank!);
+                const data = user.user.userStatus.get(ptid);
+                if (data) updateData(ptid, data.rank, data.breakOff);
             }
         }
         status.status.selectedPatternId = 0;
@@ -54,68 +46,133 @@ const usePatternDialog = (): PatternDialogReturn => {
     };
 
     const updateRankCount = () => {
-        let ranksss = 0;
-        let rankss = 0;
-        let ranks = 0;
-        let ranka = 0;
-        let rankao = 0;
-        let rankbcdo = 0;
-        let rankf = 0;
-        let rankbcd = 0;
+        let sssp = 0;
+        let sss = 0;
+        let ssp = 0;
+        let ss = 0;
+        let sp = 0;
+        let s = 0;
+        let aaap = 0;
+        let aaa = 0;
+        let aap = 0;
+        let aa = 0;
+        let ap = 0;
+        let a = 0;
+        let b = 0;
+        let c = 0;
+        let d = 0;
+        let f = 0;
+        let ssspb = 0;
+        let sssb = 0;
+        let sspb = 0;
+        let ssb = 0;
+        let spb = 0;
+        let sb = 0;
+        let aaapb = 0;
+        let aaab = 0;
+        let aapb = 0;
+        let aab = 0;
+        let apb = 0;
+        let ab = 0;
+        let bb = 0;
+        let cb = 0;
+        let db = 0;
+        let fb = 0;
 
         for (let i = 0; i < status.status.ptIdList.length; i++) {
             if (user.user.userStatus.has(status.status.ptIdList[i])) {
-                switch (user.user.userStatus.get(status.status.ptIdList[i])) {
-                    case RankType.SSS:
-                        ranksss++;
+                const stat = user.user.userStatus.get(status.status.ptIdList[i]);
+                switch (stat?.rank) {
+                    case RankType.PH_SSSPlus:
+                        stat.breakOff ? sssp++ : ssspb++;
                         break;
-                    case RankType.SS:
-                        rankss++;
+                    case RankType.PH_SSS:
+                        stat.breakOff ? sss++ : sssb++;
                         break;
-                    case RankType.S:
-                        ranks++;
+                    case RankType.PH_SSPlus:
+                        stat.breakOff ? ssp++ : sspb++;
                         break;
-                    case RankType.Aon:
-                        ranka++;
+                    case RankType.PH_SS:
+                        stat.breakOff ? ss++ : ssb++;
                         break;
-                    case RankType.Aoff:
-                        rankao++;
+                    case RankType.PH_SPlus:
+                        stat.breakOff ? sp++ : spb++;
                         break;
-                    case RankType.BCDoff:
-                        rankbcdo++;
+                    case RankType.PH_S:
+                        stat.breakOff ? s++ : sb++;
                         break;
-                    case RankType.F:
-                        rankf++;
+                    case RankType.PH_AAAPlus:
+                        stat.breakOff ? aaap++ : aaapb++;
                         break;
-                    case RankType.BCDon:
-                        rankbcd++;
+                    case RankType.PH_AAA:
+                        stat.breakOff ? aaa++ : aaab++;
+                        break;
+                    case RankType.PH_AAPlus:
+                        stat.breakOff ? aap++ : aapb++;
+                        break;
+                    case RankType.PH_AA:
+                        stat.breakOff ? aa++ : aab++;
+                        break;
+                    case RankType.PH_APlus:
+                        stat.breakOff ? ap++ : apb++;
+                        break;
+                    case RankType.PH_A:
+                        stat.breakOff ? a++ : ab++;
+                        break;
+                    case RankType.PH_B:
+                        stat.breakOff ? b++ : bb++;
+                        break;
+                    case RankType.PH_C:
+                        stat.breakOff ? c++ : cb++;
+                        break;
+                    case RankType.PH_D:
+                        stat.breakOff ? d++ : db++;
+                        break;
+                    case RankType.PH_F:
+                        stat.breakOff ? f++ : fb++;
                         break;
                 }
             }
         }
 
-        status.status.rankcount.sss = ranksss;
-        status.status.rankcount.ss = rankss;
-        status.status.rankcount.s = ranks;
-        status.status.rankcount.aon = ranka;
-        status.status.rankcount.aoff = rankao;
-        status.status.rankcount.bcdon = rankbcd;
-        status.status.rankcount.bcdoff = rankbcdo;
-        status.status.rankcount.f = rankf;
-        status.status.rankcount.np =
-            status.status.ptIdList.length -
-            ranksss -
-            rankss -
-            ranks -
-            ranka -
-            rankao -
-            rankbcd -
-            rankbcdo -
-            rankf;
+        status.setRankCount({
+            sssp,
+            sss,
+            ssp,
+            ss,
+            sp,
+            s,
+            aaap,
+            aaa,
+            aap,
+            aa,
+            ap,
+            a,
+            b,
+            c,
+            d,
+            f,
+            ssspb,
+            sssb,
+            sspb,
+            ssb,
+            spb,
+            sb,
+            aaapb,
+            aaab,
+            aapb,
+            aab,
+            apb,
+            ab,
+            bb,
+            cb,
+            db,
+            fb
+        })
     };
 
-    const updateData = (ptid: number, rank: RankType) => {
-        user.user.userStatus.set(ptid, rank);
+    const updateData = (ptid: number, rank: RankType, breakOff: boolean) => {
+        user.user.userStatus.set(ptid, {rank, breakOff});
         updateRecord(ptid);
 
         // 창 닫기
@@ -124,11 +181,11 @@ const usePatternDialog = (): PatternDialogReturn => {
         }
     };
 
-    const updateMultipleData = (rank: RankType) => {
+    const updateMultipleData = (rank: RankType, breakOff: boolean) => {
         const checked = document.querySelectorAll("input[id=ptnsel]:checked");
         for (let i = 0; i < checked.length; i++) {
             const ptid = (checked[i] as HTMLInputElement).value;
-            user.user.userStatus.set(parseInt(ptid), rank);
+            user.user.userStatus.set(parseInt(ptid), {rank, breakOff});
             updateRecord(parseInt(ptid));
         }
 
@@ -140,21 +197,18 @@ const usePatternDialog = (): PatternDialogReturn => {
 
     const updateRecord = (ptid: number) => {
         const img = document.getElementById("cs" + ptid);
-        const rankval = user.user.userStatus.get(ptid);
+        const data = user.user.userStatus.get(ptid);
 
-        let rank = "";
-        rank = rankToText(rankval!);
-
-        if (img) {
-            img.setAttribute("src", `${process.env.PUBLIC_URL}/img/grade_${rank}.png`);
+        if (data && img) {
+            img.setAttribute("src", `${process.env.PUBLIC_URL}/img/${rankToText(data.rank)}.png`);
         }
     };
 
     const changeRank = (e: React.FormEvent<HTMLSelectElement>) => {
-        status.status.updateRank = textToRank(e.currentTarget.value);
+        status.setUpdateRank(textToRank(e.currentTarget.value));
     };
 
-    return [closeUpdatePatternDlg, updateMultipleData, rankCountReset, updateRankCount, updateData];
+    return {closeUpdatePatternDlg, updateMultipleData, rankCountReset, updateRankCount, updateData};
 };
 
 export default usePatternDialog;

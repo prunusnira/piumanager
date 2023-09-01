@@ -36,6 +36,8 @@ export const TableMenuPattern = styled.div`
     align-items: center;
 
     width: 100%;
+  
+  padding: 20px;
 `;
 
 export const TableMenuSubWrapper = styled.div`
@@ -53,11 +55,11 @@ export const TableMenuDiff = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 130px;
 `;
 
 export const TableMenuSelect = styled.select`
-    width: 100%;
+    width: 130px;
     height: 40px;
     border-radius: 10px;
 `;

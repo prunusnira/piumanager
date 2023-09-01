@@ -1,5 +1,5 @@
 import IntegratedStore from "../../../mobx/integratedStore"
-import { PatternType } from "../data/patternType"
+import { PatternType } from "../../../data/patternType"
 
 const useResetModal = (
     resetTable: () => void,

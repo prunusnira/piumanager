@@ -6,6 +6,9 @@ const TxtTableMenu = {
     display: "表示",
     rank: "ランク",
     songtype: "表示する曲のタイプを選択",
+    option: "オプション",
+    withRemovedMusic: "削除済みの曲を表示",
+    withRemovedPattern: "削除済みの譜面を表示",
     diff: {
         random: "?",
         below: "級",

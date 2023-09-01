@@ -1,5 +1,4 @@
 import React from "react";
-import { Col, Row } from "reactstrap";
 import { observer } from "mobx-react";
 
 import TxtFileMenuKo from "../../../text/table/filemenu/txtFilemenu-ko";
