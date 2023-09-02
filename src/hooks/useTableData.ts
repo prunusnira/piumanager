@@ -40,6 +40,15 @@ const useTableData = () => {
 
     const getPatterns = () => {
         // 테이블을 모두 리셋헤야함
+        setTableOver([])
+        setTableHigh([])
+        setTableNH([])
+        setTableNormal([])
+        setTableNE([])
+        setTableEasy([])
+        setTableBelow([])
+        setTableRandom([])
+
         // 데이터는 다 저장되어 있음
         if (status.patternType === PatternType.DOUBLE &&
             status.patternLv === 25) {
