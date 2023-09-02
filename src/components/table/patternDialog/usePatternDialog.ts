@@ -3,6 +3,7 @@ import IntegratedStore from "../../../mobx/integratedStore";
 import {rankToText, textToRank} from "../../../data/rankTextConvert";
 import {RankType} from "../../../data/rankType";
 import {PatternDlgType} from "../../../data/patternDlgType";
+import {UserData} from "../../../data/userType";
 
 const usePatternDialog = () => {
     const {status, user} = IntegratedStore;
@@ -14,7 +15,7 @@ const usePatternDialog = () => {
 
             if (user.user.userStatus.has(ptid)) {
                 const data = user.user.userStatus.get(ptid);
-                if (data) updateData(ptid, data.rank, data.breakOff);
+                if (data) updateData(ptid, {rank: data.rank, breakOff: data.breakOff, side: data.side, lv: data.lv});
             }
         }
         status.status.selectedPatternId = 0;
@@ -84,52 +85,52 @@ const usePatternDialog = () => {
                 const stat = user.user.userStatus.get(status.status.ptIdList[i]);
                 switch (stat?.rank) {
                     case RankType.PH_SSSPlus:
-                        stat.breakOff ? sssp++ : ssspb++;
+                        stat.breakOff ? ssspb++ : sssp++;
                         break;
                     case RankType.PH_SSS:
-                        stat.breakOff ? sss++ : sssb++;
+                        stat.breakOff ? sssb++ : sss++;
                         break;
                     case RankType.PH_SSPlus:
-                        stat.breakOff ? ssp++ : sspb++;
+                        stat.breakOff ? sspb++ : ssp++;
                         break;
                     case RankType.PH_SS:
-                        stat.breakOff ? ss++ : ssb++;
+                        stat.breakOff ? ssb++ : ss++;
                         break;
                     case RankType.PH_SPlus:
-                        stat.breakOff ? sp++ : spb++;
+                        stat.breakOff ? spb++ : sp++;
                         break;
                     case RankType.PH_S:
-                        stat.breakOff ? s++ : sb++;
+                        stat.breakOff ? sb++ : s++;
                         break;
                     case RankType.PH_AAAPlus:
-                        stat.breakOff ? aaap++ : aaapb++;
+                        stat.breakOff ? aaapb++ : aaap++;
                         break;
                     case RankType.PH_AAA:
-                        stat.breakOff ? aaa++ : aaab++;
+                        stat.breakOff ? aaab++ : aaa++;
                         break;
                     case RankType.PH_AAPlus:
-                        stat.breakOff ? aap++ : aapb++;
+                        stat.breakOff ? aapb++ : aap++;
                         break;
                     case RankType.PH_AA:
-                        stat.breakOff ? aa++ : aab++;
+                        stat.breakOff ? aab++ : aa++;
                         break;
                     case RankType.PH_APlus:
-                        stat.breakOff ? ap++ : apb++;
+                        stat.breakOff ? apb++ : ap++;
                         break;
                     case RankType.PH_A:
-                        stat.breakOff ? a++ : ab++;
+                        stat.breakOff ? ab++ : a++;
                         break;
                     case RankType.PH_B:
-                        stat.breakOff ? b++ : bb++;
+                        stat.breakOff ? bb++ : b++;
                         break;
                     case RankType.PH_C:
-                        stat.breakOff ? c++ : cb++;
+                        stat.breakOff ? cb++ : c++;
                         break;
                     case RankType.PH_D:
-                        stat.breakOff ? d++ : db++;
+                        stat.breakOff ? db++ : d++;
                         break;
                     case RankType.PH_F:
-                        stat.breakOff ? f++ : fb++;
+                        stat.breakOff ? fb++ : f++;
                         break;
                 }
             }
@@ -171,8 +172,8 @@ const usePatternDialog = () => {
         })
     };
 
-    const updateData = (ptid: number, rank: RankType, breakOff: boolean) => {
-        user.user.userStatus.set(ptid, {rank, breakOff});
+    const updateData = (ptid: number, data: UserData) => {
+        user.user.userStatus.set(ptid, data);
         updateRecord(ptid);
 
         // 창 닫기
@@ -181,11 +182,11 @@ const usePatternDialog = () => {
         }
     };
 
-    const updateMultipleData = (rank: RankType, breakOff: boolean) => {
+    const updateMultipleData = (data: UserData) => {
         const checked = document.querySelectorAll("input[id=ptnsel]:checked");
         for (let i = 0; i < checked.length; i++) {
             const ptid = (checked[i] as HTMLInputElement).value;
-            user.user.userStatus.set(parseInt(ptid), {rank, breakOff});
+            user.user.userStatus.set(parseInt(ptid), data);
             updateRecord(parseInt(ptid));
         }
 
@@ -197,10 +198,12 @@ const usePatternDialog = () => {
 
     const updateRecord = (ptid: number) => {
         const img = document.getElementById("cs" + ptid);
+        const boimg = document.getElementById("bo" + ptid);
         const data = user.user.userStatus.get(ptid);
 
-        if (data && img) {
+        if (data && img && boimg) {
             img.setAttribute("src", `${process.env.PUBLIC_URL}/img/${rankToText(data.rank)}.png`);
+            data.breakOff && boimg.setAttribute("src", `${process.env.PUBLIC_URL}/img/phrank/breakoff.png`);
         }
     };
 

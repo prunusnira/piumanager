@@ -43,7 +43,7 @@ const useFileMenu = (
             apiCheckSaved(savedId)
             .then(d => {
                 status.setShareData(true);
-                setAnalyzeData(atob(d.data[0].saved))
+                setAnalyzeData(decodeURIComponent(atob(d.data[0].saved)))
                 setAnalyzeType('saved')
             })
         }
@@ -158,7 +158,7 @@ const useFileMenu = (
     }
 
     const callbackOpen = (result: string) => {
-        const str = atob(result)
+        const str = decodeURIComponent(atob(result))
         setAnalyzeData(str)
         setAnalyzeType('load')
     }
@@ -171,15 +171,18 @@ const useFileMenu = (
         const keys = user.user.userStatus.keys()
         for(let i = 0; i < user.user.userStatus.size; i++) {
             const ckey = keys.next()
+            console.log(ckey)
             if(ckey.value !== "") {
                 const data = user.user.userStatus.get(ckey.value)
-                text += ckey.value + "," + data?.rank + "," + data?.breakOff ? '1' : '0' + "\n"
+                console.log(ckey.value, data?.rank, data?.breakOff)
+                text += `{"ptid":${ckey.value},"rank":${data?.rank},"breakOff":${data?.breakOff ? '1' : '0'},"lv":${data?.lv},"side":${data?.side}}\n`
             }
         }
+        console.log(text)
         
         // 데이터를 새 파일(임시)에 쓰고 다운로드
         const elem = document.createElement("a")
-        elem.setAttribute("href", "data:text/plain;charset=utf-8,"+btoa(text))
+        elem.setAttribute("href", "data:text/plain;charset=utf-8,"+btoa(encodeURIComponent(text)))
         elem.setAttribute("download", `piudata_${user.user.userName}_${unixTimeToText(new Date().getTime())}.csv`)
         elem.style.display = 'none'
         document.body.appendChild(elem)

@@ -14,10 +14,11 @@ import TxtPatternDlgEn from "../../../text/table/patternDlg/txtPatternDlg-en";
 import {textToRank} from "../../../data/rankTextConvert";
 import {Button} from "../../../styled/common.style";
 import {TableInputCheck, TableInputLabel} from "../tablemenu/tableMenu.style";
+import {UserData} from "../../../data/userType";
 
 interface Props {
-    updateData: (ptid: number, rank: RankType, breakOff: boolean) => void;
-    updateMultipleData: (rank: RankType, breakOff: boolean) => void;
+    updateData: (ptid: number, data: UserData) => void;
+    updateMultipleData: (data: UserData) => void;
     closeUpdatePatternDlg: () => void;
     rankCountReset: () => void;
     updateRankCount: () => void;
@@ -79,7 +80,7 @@ const PTUpdateDlgPres = observer((props: Props) => {
                             className="form-control"
                             id="grade"
                             onChange={(e) => {
-                                if(e.currentTarget.value !== '-') {
+                                if (e.currentTarget.value !== '-') {
                                     setRank(e.currentTarget.value);
                                 }
                             }}
@@ -113,7 +114,7 @@ const PTUpdateDlgPres = observer((props: Props) => {
                             className="form-control"
                             id="grade"
                             onChange={(e) => {
-                                if(e.currentTarget.value !== '-') {
+                                if (e.currentTarget.value !== '-') {
                                     setRank(e.currentTarget.value);
                                 }
                             }}
@@ -154,12 +155,29 @@ const PTUpdateDlgPres = observer((props: Props) => {
                         if (status.status.patternUpdDlgType === PatternDlgType.SINGLE) {
                             props.updateData(
                                 status.status.selectedPatternId,
-                                status.status.updateRank,
-                                isBreakOff
+                                {
+                                    rank: status.status.updateRank,
+                                    breakOff: isBreakOff,
+                                    lv: status.status.patternLv,
+                                    side: status.status.patternType === PatternType.SINGLE
+                                        ? 0
+                                        : status.status.patternType === PatternType.DOUBLE
+                                            ? 1
+                                            : 2
+                                }
                             );
                             status.status.selectedPatternId = 0;
                         } else {
-                            props.updateMultipleData(status.status.updateRank, isBreakOff);
+                            props.updateMultipleData({
+                                rank: status.status.updateRank,
+                                breakOff: isBreakOff,
+                                lv: status.status.patternLv,
+                                side: status.status.patternType === PatternType.SINGLE
+                                    ? 0
+                                    : status.status.patternType === PatternType.DOUBLE
+                                        ? 1
+                                        : 2
+                            });
                         }
                         props.rankCountReset();
                         props.updateRankCount();

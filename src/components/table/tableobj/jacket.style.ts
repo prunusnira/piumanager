@@ -1,11 +1,7 @@
 import styled from "styled-components";
 
-export const JacketDiv = styled.div<{ bgImageUrl: string }>`
+export const JacketDiv = styled.div`
   position: relative;
-  background-origin: content-box;
-  background-repeat: no-repeat;
-  background-size: 100%;
-  ${(props) => `background-image: url(${props.bgImageUrl});`}
 `;
 
 export const StepType = styled.img`
@@ -40,7 +36,7 @@ export const BreakOff = styled.img`
   width: 50%;
   position: absolute;
   right: 0;
-  top: 10%;
+  top: 25%;
 `;
 
 export const Removed = styled.img`

@@ -22,7 +22,6 @@ const Jacket = observer(({bgImageUrl, musicData: d, showrank}: Props) => {
 
     return (
         <JacketDiv
-            bgImageUrl={bgImageUrl}
             onClick={() => {
                 status.setPatternUpdDlgType(PatternDlgType.SINGLE);
                 status.setSelectedPatternId(d.ptid);
@@ -30,14 +29,14 @@ const Jacket = observer(({bgImageUrl, musicData: d, showrank}: Props) => {
                 status.setShowPatternUpdateDialog(true);
             }}
         >
-            {(d.steptype === 1 || d.steptype === 2) && (
-                <StepType
-                    alt="steptype"
-                    src={`${process.env.PUBLIC_URL}/img/${d.steptype === 1 ? "half" : ""}${
-                        d.steptype === 2 ? "perf" : ""
-                    }.png`}
-                />
-            )}
+            {/*{(d.steptype === 1 || d.steptype === 2) && (*/}
+            {/*    <StepType*/}
+            {/*        alt="steptype"*/}
+            {/*        src={`${process.env.PUBLIC_URL}/img/${d.steptype === 1 ? "half" : ""}${*/}
+            {/*            d.steptype === 2 ? "perf" : ""*/}
+            {/*        }.png`}*/}
+            {/*    />*/}
+            {/*)}*/}
             {ver !== "" && (
                 <Version alt="version" src={`${process.env.PUBLIC_URL}/img/ver/${ver}.png`}/>
             )}
@@ -49,12 +48,11 @@ const Jacket = observer(({bgImageUrl, musicData: d, showrank}: Props) => {
                 display={showrank}
                 src={`${process.env.PUBLIC_URL}/img/${rankToText(d.rank)}.png`}
             />
-            {
-                d.breakOff && <BreakOff
-                    alt="breakoff"
-                    src={`${process.env.PUBLIC_URL}/img/phrank/breakoff.png`}
-                />
-            }
+            <BreakOff
+                alt="breakoff"
+                id={`bo${d.ptid}`}
+                src={`${process.env.PUBLIC_URL}/img/phrank/empty.png`}
+            />
             <JacketImg
                 alt="jacket"
                 src={`${CommonData.imgUrl}${d.musicid}.png`}

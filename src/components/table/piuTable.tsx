@@ -19,6 +19,7 @@ import { textToRank } from "../../data/rankTextConvert";
 import { observer } from "mobx-react";
 import useTableMenu from "./tablemenu/useTableMenu";
 import { PIUTableWrapper } from "./piuTable.style";
+import {UserData} from "../../data/userType";
 
 const PIUTable = observer(() => {
     const { user, status } = IntegratedStore;
@@ -87,11 +88,17 @@ const PIUTable = observer(() => {
             for (let i = 1; i < str.length; i++) {
                 const cur = str[i].split(",");
                 if (cur[0] !== "") {
-                    if(cur.length === 3) {
-                        user.user.userStatus.set(parseInt(cur[0]), {rank: textToRank(cur[1]), breakOff: cur[2] === '1'});
+                    if(cur.length === 2) {
+                        user.user.userStatus.set(parseInt(cur[0]), {rank: textToRank(cur[1]), breakOff: false, lv: -1, side: -1});
                     }
                     else {
-                        user.user.userStatus.set(parseInt(cur[0]), {rank: textToRank(cur[1]), breakOff: false});
+                        const json = JSON.parse(cur.join(','))
+                        user.user.userStatus.set(json.ptid, {
+                            rank: json.rank,
+                            breakOff: json.breakOff,
+                            lv: json.lv,
+                            side: json.side,
+                        });
                     }
                 }
             }

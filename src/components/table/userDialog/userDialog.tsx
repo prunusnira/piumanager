@@ -43,10 +43,6 @@ const UserDialog = observer((props: Props) => {
         }
     }, [status.status.userDlgType, language.language]);
 
-    useEffect(() => {
-        console.log("test");
-    }, [status.status.showUserDialog]);
-
     const nameInpRef = React.createRef<HTMLInputElement>();
     const lvInpRef = React.createRef<HTMLInputElement>();
 
