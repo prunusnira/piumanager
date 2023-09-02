@@ -1,31 +1,30 @@
-import {title} from "process";
 import React, {useState} from "react";
-import IntegratedStore from "../../../mobx/integratedStore";
+import Store from "../../../mobx/store";
 import {PatternDlgType} from "../../../data/patternDlgType";
 import {BreakOff, JacketDiv, JacketImg, New, Rank, Removed, Version} from "./jacket.style";
 import {observer} from "mobx-react";
-import {MusicData} from "../../../data/musicData";
+import {IMusic} from "../../../data/IMusic";
 import {StepType} from "./jacket.style";
-import {convertVersion} from "../../tools/convertVersion";
+import {convertVersion} from "../../../tools/convertVersion";
 import CommonData from "../../../data/commonData";
-import {rankToText} from "../../../data/rankTextConvert";
+import {rankToText} from "../../../tools/rankTextConvert";
 
 type Props = {
     bgImageUrl: string;
-    musicData: MusicData;
+    musicData: IMusic;
     showrank: boolean;
 };
 
 const Jacket = observer(({bgImageUrl, musicData: d, showrank}: Props) => {
     const [ver] = useState(convertVersion(d.version));
-    const {status} = IntegratedStore;
+    const {status, language} = Store;
 
     return (
         <JacketDiv
             onClick={() => {
                 status.setPatternUpdDlgType(PatternDlgType.SINGLE);
                 status.setSelectedPatternId(d.ptid);
-                status.setSelectedMusicTitle(title);
+                status.setSelectedMusicTitle(language.language === 'ko' ? d.title_ko : d.title_en);
                 status.setShowPatternUpdateDialog(true);
             }}
         >

@@ -1,5 +1,5 @@
 import React from "react";
-import IntegratedStore from "../../mobx/integratedStore";
+import Store from "../../mobx/store";
 import { observer } from "mobx-react";
 
 import TxtHeaderKo from "../../text/header/txtHeader-ko";
@@ -14,7 +14,7 @@ type HeaderProps = {
 };
 
 const HeaderPres = observer((props: HeaderProps) => {
-    const { language } = IntegratedStore;
+    const { language } = Store;
 
     const TxtHeader =
         language.language === "ko"

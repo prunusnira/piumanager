@@ -5,6 +5,7 @@ const emptyUser: UserType = {
     userName: '',
     userLv: 0,
     userStatus: new Map(),
+    userSkill: 0,
 }
 
 class StoreUser {

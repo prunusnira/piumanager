@@ -11,6 +11,7 @@ type UserType = {
     userName: string,
     userLv: number,
     userStatus: Map<number, UserData>, // mid, data
+    userSkill: number,
 }
 
 export default UserType

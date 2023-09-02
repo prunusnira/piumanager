@@ -46,6 +46,17 @@ class StoreTable {
     public setTable = (t: MusicTable) => {
         this.table = t
     }
+
+    public resetTable = () => {
+        this.table.over.data = [];
+        this.table.high.data = [];
+        this.table.normalhigh.data = [];
+        this.table.normal.data = [];
+        this.table.normaleasy.data = [];
+        this.table.easy.data = [];
+        this.table.below.data = [];
+        this.table.random.data = [];
+    }
 }
 
 const Table = new StoreTable()

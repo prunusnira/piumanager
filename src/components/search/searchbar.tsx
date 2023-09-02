@@ -5,7 +5,7 @@ import TxtSearchKo from "../../text/search/txtSearch-ko";
 import TxtSearchJp from "../../text/search/txtSearch-jp";
 import TxtSearchEn from "../../text/search/txtSearch-en";
 import TxtSearchCn from "../../text/search/txtSearch-cn";
-import IntegratedStore from "../../mobx/integratedStore";
+import Store from "../../mobx/store";
 import { SearchBarElem, SearchBarWrapper, SearchButton } from "./searchbar.style";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -19,7 +19,7 @@ interface Props {
 }
 
 const SearchBar = observer((props: Props) => {
-    const { language } = IntegratedStore;
+    const { language } = Store;
 
     const TxtSearch =
         language.language === "ko"

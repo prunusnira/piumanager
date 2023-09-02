@@ -1,36 +1,36 @@
-import { MusicData } from "./musicData";
+import { IMusic } from "./IMusic";
 
 export type MusicTable = {
     over: {
         title: string,
-        data: MusicData[]
+        data: IMusic[]
     },
     high: {
         title: string,
-        data: MusicData[]
+        data: IMusic[]
     },
     normalhigh: {
         title: string,
-        data: MusicData[]
+        data: IMusic[]
     },
     normal: {
         title: string,
-        data: MusicData[]
+        data: IMusic[]
     },
     normaleasy: {
         title: string,
-        data: MusicData[]
+        data: IMusic[]
     },
     easy: {
         title: string,
-        data: MusicData[]
+        data: IMusic[]
     },
     below: {
         title: string,
-        data: MusicData[]
+        data: IMusic[]
     },
     random: {
         title: string,
-        data: MusicData[]
+        data: IMusic[]
     },
 }

@@ -1,14 +1,14 @@
 import { PatternType } from "../data/patternType"
 import {makeAutoObservable} from 'mobx'
-import StatusType from "../data/statusType"
+import {IStatus} from "../data/IStatus"
 import { ResetType } from "../data/resetType"
 import { UserDlgType } from "../data/userDlgType"
 import { PatternDlgType } from "../data/patternDlgType"
 import { ShareDlgType } from "../data/shareDlgType"
 import { RankType } from "../data/rankType"
-import {emptyRankCount, RankCountType} from "../data/rankCountType";
+import {emptyRankCount, IRankCount} from "../data/IRankCount";
 
-const defaultStatus: StatusType = {
+const defaultStatus: IStatus = {
     patternType: PatternType.SINGLE,
     patternLv: 0,
     isShareData: false,
@@ -54,7 +54,7 @@ class StoreStatus {
      * Not recommended to use
      * @param s new status
      */
-    public setStatus_NotSafe = (s: StatusType) => {
+    public setStatus_NotSafe = (s: IStatus) => {
         this.status = s
     }
 
@@ -62,7 +62,7 @@ class StoreStatus {
         this.status = defaultStatus
     }
 
-    public setRankCount = (count: RankCountType) => {
+    public setRankCount = (count: IRankCount) => {
         this.status.rankcount = count;
     }
 
@@ -106,7 +106,7 @@ class StoreStatus {
         this.status.showUserDialog = show;
     }
 
-    public setShowResetDialog = (show: boolean) => {
+    public setShowUserResetDialog = (show: boolean) => {
         this.status.showUserResetDialog = show;
     }
 
