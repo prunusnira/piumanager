@@ -1,5 +1,4 @@
 import React from "react";
-import Store from "../../../mobx/store";
 import CommonData from "../../../data/commonData";
 import { IMusic } from "../../../data/IMusic";
 import { observer } from "mobx-react";
@@ -13,6 +12,9 @@ import {
 } from "./musicItem.style";
 import { ButtonEmpty } from "../../../styled/common.style";
 import Jacket from "./jacket";
+import {useRecoilState, useRecoilValue} from "recoil";
+import {atomLanguage} from "../../../recoil/language";
+import {atomStatus} from "../../../recoil/status";
 
 interface Props {
     list: Array<IMusic>;
@@ -22,14 +24,15 @@ interface Props {
 }
 
 const MusicItem = observer((props: Props) => {
-    const { status, language } = Store;
+    const language = useRecoilValue(atomLanguage);
+    const [status, setStatus] = useRecoilState(atomStatus);
 
     return (
         <>
             {props.list.map((d, i) => {
-                const title = language.language === "ko" ? d.title_ko : d.title_en;
+                const title = language === "ko" ? d.title_ko : d.title_en;
 
-                if(!status.status.showRemovedPattern && d.removedPattern === 1) return <></>;
+                if(!status.showRemovedPattern && d.removedPattern === 1) return <></>;
 
                 return (
                     <ObjWrapper key={props.keyv + i}>
@@ -52,8 +55,11 @@ const MusicItem = observer((props: Props) => {
                         <NameWrapper>
                             <ButtonEmpty
                                 onClick={() => {
-                                    status.status.selectedPatternId = d.ptid;
-                                    status.status.selectedMusicTitle = title;
+                                    setStatus({
+                                        ...status,
+                                        selectedPatternId: d.ptid,
+                                        selectedMusicTitle: title
+                                    })
                                 }}
                             >
                                 {title}

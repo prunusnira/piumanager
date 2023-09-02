@@ -3,7 +3,6 @@ import { faImages, faShareAltSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { unixTimeToText } from "../../../tools/unixTimeToText";
 import MusicItem from "../tableobj/musicItem";
-import Store from "../../../mobx/store";
 import { observer } from "mobx-react";
 import { PatternType } from "../../../data/patternType";
 import {
@@ -19,13 +18,37 @@ import {
 import { Button } from "../../../styled/common.style";
 import {TextCommon, TextCommonProfile, TextTableTitle, TextTitleSub} from "../../../styled/common.font";
 import useShare from "../../../hooks/useShare";
+import useSkillPoint from "../../../hooks/useSkillPoint";
+import {useRecoilValue} from "recoil";
+import {atomStatus} from "../../../recoil/status";
+import {atomUser} from "../../../recoil/user";
+import {
+    atomTableBelow, atomTableEasy,
+    atomTableHigh, atomTableNE,
+    atomTableNH, atomTableNormal,
+    atomTableOver,
+    atomTableRandom, atomTableTitle
+} from "../../../recoil/table";
 
 const ComponentPIUTable = observer(() => {
-    const { status, user, table } = Store;
+    const status = useRecoilValue(atomStatus)
+    const user = useRecoilValue(atomUser)
+    // const table = useRecoilValue(atomTable)
+    const tableTitle = useRecoilValue(atomTableTitle);
+    const tableOver = useRecoilValue(atomTableOver)
+    const tableHigh = useRecoilValue(atomTableHigh)
+    const tableNormalHigh = useRecoilValue(atomTableNH)
+    const tableNormal = useRecoilValue(atomTableNormal)
+    const tableNormalEasy = useRecoilValue(atomTableNE)
+    const tableEasy = useRecoilValue(atomTableEasy)
+    const tableBelow = useRecoilValue(atomTableBelow)
+    const tableRandom = useRecoilValue(atomTableRandom)
+
     const {scrShot, shareURL} = useShare();
+    const {skillSingle, skillDouble} = useSkillPoint();
 
     return (
-        <ScoreTableWrapper display={status.status.isUserLoaded} id="targetTable">
+        <ScoreTableWrapper display={status.isUserLoaded} id="targetTable">
             <ScoreTableTitle>
                 <TextTableTitle>Pump It Up Clear Table</TextTableTitle>
                 <ScoreTableTitleMenu>
@@ -33,8 +56,8 @@ const ComponentPIUTable = observer(() => {
                         onClick={() => {
                             scrShot(
                                 "targetTable",
-                                `piu_${user.user.userName}_${status.status.patternType}_${
-                                    status.status.patternLv
+                                `piu_${user.userName}_${status.patternType}_${
+                                    status.patternLv
                                 }_${unixTimeToText(new Date().getTime())}.jpg`
                             );
                         }}
@@ -49,150 +72,156 @@ const ComponentPIUTable = observer(() => {
             <ScoreTableProfile>
                 <ScoreTableUserData>
                     <TextTitleSub>PLAYER</TextTitleSub>
-                    <TextCommonProfile>{user.user.userName}</TextCommonProfile>
+                    <TextCommonProfile>{user.userName}</TextCommonProfile>
                 </ScoreTableUserData>
                 <ScoreTableUserData>
                     <TextTitleSub>
-                        SKILL POINTS
+                        SKILL POINTS (SINGLE)
                     </TextTitleSub>
-                    <TextCommonProfile>{user.user.userSkill}</TextCommonProfile>
+                    <TextCommonProfile>{skillSingle.toFixed(2)}</TextCommonProfile>
+                </ScoreTableUserData>
+                <ScoreTableUserData>
+                    <TextTitleSub>
+                        SKILL POINTS (DOUBLE)
+                    </TextTitleSub>
+                    <TextCommonProfile>{skillDouble.toFixed(2)}</TextCommonProfile>
                 </ScoreTableUserData>
             </ScoreTableProfile>
             <ScoreTableClearCount>
-                <TextCommon>SSS+: {status.status.rankcount.sssp} (BO {status.status.rankcount.ssspb})</TextCommon>
-                <TextCommon>SSS: {status.status.rankcount.sss} (BO {status.status.rankcount.sssb})</TextCommon>
-                <TextCommon>SS+: {status.status.rankcount.ssp} (BO {status.status.rankcount.sspb})</TextCommon>
-                <TextCommon>SS: {status.status.rankcount.ss} (BO {status.status.rankcount.ssb})</TextCommon>
-                <TextCommon>S+: {status.status.rankcount.sp} (BO {status.status.rankcount.spb})</TextCommon>
-                <TextCommon>S: {status.status.rankcount.s} (BO {status.status.rankcount.sb})</TextCommon>
-                <TextCommon>AAA+: {status.status.rankcount.aaap} (BO {status.status.rankcount.aaapb})</TextCommon>
-                <TextCommon>AAA: {status.status.rankcount.aaa} (BO {status.status.rankcount.aaab})</TextCommon>
-                <TextCommon>AA+: {status.status.rankcount.aap} (BO {status.status.rankcount.aapb})</TextCommon>
-                <TextCommon>AA: {status.status.rankcount.aa} (BO {status.status.rankcount.aab})</TextCommon>
-                <TextCommon>A+: {status.status.rankcount.ap} (BO {status.status.rankcount.apb})</TextCommon>
-                <TextCommon>A: {status.status.rankcount.a} (BO {status.status.rankcount.ab})</TextCommon>
-                <TextCommon>B: {status.status.rankcount.b} (BO {status.status.rankcount.bb})</TextCommon>
-                <TextCommon>C: {status.status.rankcount.c} (BO {status.status.rankcount.cb})</TextCommon>
-                <TextCommon>D: {status.status.rankcount.d} (BO {status.status.rankcount.db})</TextCommon>
-                <TextCommon>F: {status.status.rankcount.f} (BO {status.status.rankcount.fb})</TextCommon>
+                <TextCommon>SSS+: {status.rankcount.sssp} (BO {status.rankcount.ssspb})</TextCommon>
+                <TextCommon>SSS: {status.rankcount.sss} (BO {status.rankcount.sssb})</TextCommon>
+                <TextCommon>SS+: {status.rankcount.ssp} (BO {status.rankcount.sspb})</TextCommon>
+                <TextCommon>SS: {status.rankcount.ss} (BO {status.rankcount.ssb})</TextCommon>
+                <TextCommon>S+: {status.rankcount.sp} (BO {status.rankcount.spb})</TextCommon>
+                <TextCommon>S: {status.rankcount.s} (BO {status.rankcount.sb})</TextCommon>
+                <TextCommon>AAA+: {status.rankcount.aaap} (BO {status.rankcount.aaapb})</TextCommon>
+                <TextCommon>AAA: {status.rankcount.aaa} (BO {status.rankcount.aaab})</TextCommon>
+                <TextCommon>AA+: {status.rankcount.aap} (BO {status.rankcount.aapb})</TextCommon>
+                <TextCommon>AA: {status.rankcount.aa} (BO {status.rankcount.aab})</TextCommon>
+                <TextCommon>A+: {status.rankcount.ap} (BO {status.rankcount.apb})</TextCommon>
+                <TextCommon>A: {status.rankcount.a} (BO {status.rankcount.ab})</TextCommon>
+                <TextCommon>B: {status.rankcount.b} (BO {status.rankcount.bb})</TextCommon>
+                <TextCommon>C: {status.rankcount.c} (BO {status.rankcount.cb})</TextCommon>
+                <TextCommon>D: {status.rankcount.d} (BO {status.rankcount.db})</TextCommon>
+                <TextCommon>F: {status.rankcount.f} (BO {status.rankcount.fb})</TextCommon>
             </ScoreTableClearCount>
 
             <ScoreTableLv>
-                {status.status.patternType === PatternType.SINGLE
+                {status.patternType === PatternType.SINGLE
                     ? "Single"
-                    : status.status.patternType === PatternType.DOUBLE
+                    : status.patternType === PatternType.DOUBLE
                         ? "Double"
                         : "CO-OP"}
-                &nbsp; Lv.{status.status.patternLv}
+                &nbsp; Lv.{status.patternLv}
             </ScoreTableLv>
 
-            {table.table.over.data.length > 0 && (
+            {tableOver.length > 0 && (
                 <DataWrapper bgColor={"#ffadc5"} id="divOver">
-                    <DataTitle id="catOver">{table.table.over.title}</DataTitle>
+                    <DataTitle id="catOver">{tableTitle.over}</DataTitle>
                     <DataInner id="lvOver">
                         <MusicItem
-                            list={table.table.over.data}
+                            list={tableOver}
                             keyv="ov"
-                            showrank={status.status.showTableRank}
-                            showcheck={status.status.showTableCheck}
+                            showrank={status.showTableRank}
+                            showcheck={status.showTableCheck}
                         />
                     </DataInner>
                 </DataWrapper>
             )}
 
-            {table.table.high.data.length > 0 && (
+            {tableHigh.length > 0 && (
                 <DataWrapper bgColor={"#ffa9b0"} id="divHigh">
-                    <DataTitle id="catHigh">{table.table.high.title}</DataTitle>
+                    <DataTitle id="catHigh">{tableTitle.high}</DataTitle>
                     <DataInner id="lvHigh">
                         <MusicItem
-                            list={table.table.high.data}
+                            list={tableHigh}
                             keyv="hi"
-                            showrank={status.status.showTableRank}
-                            showcheck={status.status.showTableCheck}
+                            showrank={status.showTableRank}
+                            showcheck={status.showTableCheck}
                         />
                     </DataInner>
                 </DataWrapper>
             )}
 
-            {table.table.normalhigh.data.length > 0 && (
+            {tableNormalHigh.length > 0 && (
                 <DataWrapper bgColor={"#ffdda6"} id="divNH">
-                    <DataTitle id="catNH">{table.table.normalhigh.title}</DataTitle>
+                    <DataTitle id="catNH">{tableTitle.normalhigh}</DataTitle>
                     <DataInner id="lvNH">
                         <MusicItem
-                            list={table.table.normalhigh.data}
+                            list={tableNormalHigh}
                             keyv="nh"
-                            showrank={status.status.showTableRank}
-                            showcheck={status.status.showTableCheck}
+                            showrank={status.showTableRank}
+                            showcheck={status.showTableCheck}
                         />
                     </DataInner>
                 </DataWrapper>
             )}
 
-            {table.table.normal.data.length > 0 && (
+            {tableNormal.length > 0 && (
                 <DataWrapper bgColor={"#f8e5d0"} id="divNormal">
-                    <DataTitle id="catNormal">{table.table.normal.title}</DataTitle>
+                    <DataTitle id="catNormal">{tableTitle.normal}</DataTitle>
                     <DataInner id="lvNormal">
                         <MusicItem
-                            list={table.table.normal.data}
+                            list={tableNormal}
                             keyv="nr"
-                            showrank={status.status.showTableRank}
-                            showcheck={status.status.showTableCheck}
+                            showrank={status.showTableRank}
+                            showcheck={status.showTableCheck}
                         />
                     </DataInner>
                 </DataWrapper>
             )}
 
-            {table.table.normaleasy.data.length > 0 && (
+            {tableNormalEasy.length > 0 && (
                 <DataWrapper bgColor={"#a9e2c5"} id="divNE">
-                    <DataTitle id="catNE">{table.table.normaleasy.title}</DataTitle>
+                    <DataTitle id="catNE">{tableTitle.normaleasy}</DataTitle>
                     <DataInner id="lvNE">
                         <MusicItem
-                            list={table.table.normaleasy.data}
+                            list={tableNormalEasy}
                             keyv="ne"
-                            showrank={status.status.showTableRank}
-                            showcheck={status.status.showTableCheck}
+                            showrank={status.showTableRank}
+                            showcheck={status.showTableCheck}
                         />
                     </DataInner>
                 </DataWrapper>
             )}
 
-            {table.table.easy.data.length > 0 && (
+            {tableEasy.length > 0 && (
                 <DataWrapper bgColor={"#bbd1e8"} id="divEasy">
-                    <DataTitle id="catEasy">{table.table.easy.title}</DataTitle>
+                    <DataTitle id="catEasy">{tableTitle.easy}</DataTitle>
                     <DataInner id="lvEasy">
                         <MusicItem
-                            list={table.table.easy.data}
+                            list={tableEasy}
                             keyv="ez"
-                            showrank={status.status.showTableRank}
-                            showcheck={status.status.showTableCheck}
+                            showrank={status.showTableRank}
+                            showcheck={status.showTableCheck}
                         />
                     </DataInner>
                 </DataWrapper>
             )}
 
-            {table.table.below.data.length > 0 && (
+            {tableBelow.length > 0 && (
                 <DataWrapper bgColor={"#c6d6f7"} id="divBelow">
-                    <DataTitle id="catBelow">{table.table.below.title}</DataTitle>
+                    <DataTitle id="catBelow">{tableTitle.below}</DataTitle>
                     <DataInner id="lvBelow">
                         <MusicItem
-                            list={table.table.below.data}
+                            list={tableBelow}
                             keyv="be"
-                            showrank={status.status.showTableRank}
-                            showcheck={status.status.showTableCheck}
+                            showrank={status.showTableRank}
+                            showcheck={status.showTableCheck}
                         />
                     </DataInner>
                 </DataWrapper>
             )}
 
-            {table.table.random.data.length > 0 && (
+            {tableRandom.length > 0 && (
                 <DataWrapper bgColor={"#ab95d4"} id="divRandom">
-                    <DataTitle id="catRandom">{table.table.random.title}</DataTitle>
+                    <DataTitle id="catRandom">{tableTitle.random}</DataTitle>
                     <DataInner id="lvRandom">
                         <MusicItem
-                            list={table.table.random.data}
+                            list={tableRandom}
                             keyv="rd"
-                            showrank={status.status.showTableRank}
-                            showcheck={status.status.showTableCheck}
+                            showrank={status.showTableRank}
+                            showcheck={status.showTableCheck}
                         />
                     </DataInner>
                 </DataWrapper>

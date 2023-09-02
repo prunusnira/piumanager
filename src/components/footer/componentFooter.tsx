@@ -6,17 +6,18 @@ import TxtFooterKo from "../../text/footer/txtFooter-ko";
 import TxtFooterJp from "../../text/footer/txtFooter-jp";
 import TxtFooterCn from "../../text/footer/txtFooter-cn";
 import TxtFooterEn from "../../text/footer/txtFooter-en";
-import Store from "../../mobx/store";
 import { useEffect } from "react";
 import Language from "../../data/language";
 import { FooterRow, FooterWrapper } from "./componentFooter.style";
+import {useRecoilState} from "recoil";
+import {atomLanguage} from "../../recoil/language";
 
 const ComponentFooter = observer(() => {
-    const { language } = Store;
+    const [language, setLanguage] = useRecoilState(atomLanguage);
 
     useEffect(() => {
-        if (language.language === "") {
-            language.setLanguage(new Language().getLang());
+        if (language === "") {
+            setLanguage(new Language().getLang());
         }
     }, [language]);
 
@@ -26,11 +27,11 @@ const ComponentFooter = observer(() => {
     };
 
     const TxtFooter =
-        language.language === "ko"
+        language === "ko"
             ? TxtFooterKo
-            : language.language === "jp"
+            : language === "jp"
             ? TxtFooterJp
-            : language.language === "cn"
+            : language === "cn"
             ? TxtFooterCn
             : TxtFooterEn;
 
@@ -38,19 +39,19 @@ const ComponentFooter = observer(() => {
         <FooterWrapper>
             <FooterRow>Language Select:</FooterRow>
             <FooterRow>
-                <Link to="#no_div" className="link-style1" onClick={() => language.setLanguage("ko")}>
+                <Link to="#no_div" className="link-style1" onClick={() => setLanguage("ko")}>
                     한국어
                 </Link>
                 &nbsp;
-                <Link to="#no_div" className="link-style1" onClick={() => language.setLanguage("jp")}>
+                <Link to="#no_div" className="link-style1" onClick={() => setLanguage("jp")}>
                     日本語
                 </Link>
                 &nbsp;
-                <Link to="#no_div" className="link-style1" onClick={() => language.setLanguage("cn")}>
+                <Link to="#no_div" className="link-style1" onClick={() => setLanguage("cn")}>
                     中文简体
                 </Link>
                 &nbsp;
-                <Link to="#no_div" className="link-style1" onClick={() => language.setLanguage("en")}>
+                <Link to="#no_div" className="link-style1" onClick={() => setLanguage("en")}>
                     English
                 </Link>
             </FooterRow>

@@ -1,49 +1,51 @@
 import {useEffect} from "react";
-import Store from "../mobx/store";
-import {rankToText, textToRank} from "../tools/rankTextConvert";
+import {rankToText} from "../tools/rankTextConvert";
 import {RankType} from "../data/rankType";
-import {PatternDlgType} from "../data/patternDlgType";
-import {UserData} from "../data/userType";
+import {IPattern} from "../data/IPattern";
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {atomPaternUpdateDialog, atomStatus} from "../recoil/status";
+import {atomUser} from "../recoil/user";
+import {emptyRankCount} from "../data/IRankCount";
+import useSkillPoint from "./useSkillPoint";
 
 const usePatternDialog = () => {
-    const {status, user} = Store;
+    const [status, setStatus] = useRecoilState(atomStatus);
+    const user = useRecoilValue(atomUser);
+    const {order, calculate} = useSkillPoint();
+    const setPatternUpdateDialog = useSetRecoilState(atomPaternUpdateDialog);
 
     // 테이블 데이터 변경 이후에 수행하는 effect
     useEffect(() => {
-        for (let i = 0; i < status.status.ptIdList.length; i++) {
-            const ptid = status.status.ptIdList[i];
+        for (let i = 0; i < status.ptIdList.length; i++) {
+            const ptid = status.ptIdList[i];
 
-            if (user.user.userStatus.has(ptid)) {
-                const data = user.user.userStatus.get(ptid);
+            if (user.userPattern.has(ptid)) {
+                const data = user.userPattern.get(ptid);
                 if (data) updateData(ptid, {rank: data.rank, breakOff: data.breakOff, side: data.side, lv: data.lv});
             }
         }
-        status.status.selectedPatternId = 0;
+        setStatus({
+            ...status,
+            selectedPatternId: 0
+        })
         rankCountReset();
         updateRankCount();
-    }, [status.status.ptIdList]);
-
-    // 업데이트 창 열기
-    const openUpdatePatternDialog = (ptid: number, title: string) => {
-        status.status.showPtUpdDlg = true;
-        status.status.selectedMusicTitle = title;
-        status.status.selectedPatternId = ptid;
-        status.status.patternUpdDlgType = PatternDlgType.SINGLE;
-    };
-
-    const openUpdatePatternMultiple = () => {
-        status.status.showPtUpdDlg = true;
-        status.status.patternUpdDlgType = PatternDlgType.MULTIPLE;
-    };
+    }, [status.ptIdList]);
 
     // 업데이트 창 닫기
     const closeUpdatePatternDlg = () => {
-        status.status.selectedPatternId = 0;
-        status.status.showPtUpdDlg = false;
+        setStatus({
+            ...status,
+            selectedPatternId: 0,
+        })
+        setPatternUpdateDialog(false)
     };
 
     const rankCountReset = () => {
-        status.resetRankCount();
+        setStatus({
+            ...status,
+            rankcount: emptyRankCount
+        })
     };
 
     const updateRankCount = () => {
@@ -80,9 +82,9 @@ const usePatternDialog = () => {
         let db = 0;
         let fb = 0;
 
-        for (let i = 0; i < status.status.ptIdList.length; i++) {
-            if (user.user.userStatus.has(status.status.ptIdList[i])) {
-                const stat = user.user.userStatus.get(status.status.ptIdList[i]);
+        for (let i = 0; i < status.ptIdList.length; i++) {
+            if (user.userPattern.has(status.ptIdList[i])) {
+                const stat = user.userPattern.get(status.ptIdList[i]);
                 switch (stat?.rank) {
                     case RankType.PH_SSSPlus:
                         stat.breakOff ? ssspb++ : sssp++;
@@ -136,79 +138,76 @@ const usePatternDialog = () => {
             }
         }
 
-        status.setRankCount({
-            sssp,
-            sss,
-            ssp,
-            ss,
-            sp,
-            s,
-            aaap,
-            aaa,
-            aap,
-            aa,
-            ap,
-            a,
-            b,
-            c,
-            d,
-            f,
-            ssspb,
-            sssb,
-            sspb,
-            ssb,
-            spb,
-            sb,
-            aaapb,
-            aaab,
-            aapb,
-            aab,
-            apb,
-            ab,
-            bb,
-            cb,
-            db,
-            fb
+        setStatus({
+            ...status,
+            rankcount: {
+                sssp,
+                sss,
+                ssp,
+                ss,
+                sp,
+                s,
+                aaap,
+                aaa,
+                aap,
+                aa,
+                ap,
+                a,
+                b,
+                c,
+                d,
+                f,
+                ssspb,
+                sssb,
+                sspb,
+                ssb,
+                spb,
+                sb,
+                aaapb,
+                aaab,
+                aapb,
+                aab,
+                apb,
+                ab,
+                bb,
+                cb,
+                db,
+                fb
+            }
         })
-    };
+    }
 
-    const updateData = (ptid: number, data: UserData) => {
-        user.user.userStatus.set(ptid, data);
+    const updateData = (ptid: number, data: IPattern) => {
+        user.userPattern.set(ptid, data);
         updateRecord(ptid);
 
-        // 창 닫기
-        if (status.status.showPtUpdDlg) {
-            closeUpdatePatternDlg();
-        }
+        order()
+        calculate()
+        closeUpdatePatternDlg();
     };
 
-    const updateMultipleData = (data: UserData) => {
+    const updateMultipleData = (data: IPattern) => {
         const checked = document.querySelectorAll("input[id=ptnsel]:checked");
         for (let i = 0; i < checked.length; i++) {
             const ptid = (checked[i] as HTMLInputElement).value;
-            user.user.userStatus.set(parseInt(ptid), data);
+            user.userPattern.set(parseInt(ptid), data);
             updateRecord(parseInt(ptid));
         }
 
-        // 창 닫기
-        if (status.status.showPtUpdDlg) {
-            closeUpdatePatternDlg();
-        }
+        order()
+        calculate()
+        closeUpdatePatternDlg();
     };
 
     const updateRecord = (ptid: number) => {
         const img = document.getElementById("cs" + ptid);
         const boimg = document.getElementById("bo" + ptid);
-        const data = user.user.userStatus.get(ptid);
+        const data = user.userPattern.get(ptid);
 
         if (data && img && boimg) {
             img.setAttribute("src", `${process.env.PUBLIC_URL}/img/${rankToText(data.rank)}.png`);
             data.breakOff && boimg.setAttribute("src", `${process.env.PUBLIC_URL}/img/phrank/breakoff.png`);
         }
-    };
-
-    const changeRank = (e: React.FormEvent<HTMLSelectElement>) => {
-        status.setUpdateRank(textToRank(e.currentTarget.value));
     };
 
     return {closeUpdatePatternDlg, updateMultipleData, rankCountReset, updateRankCount, updateData};

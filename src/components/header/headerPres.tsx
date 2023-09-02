@@ -1,29 +1,29 @@
 import React from "react";
-import Store from "../../mobx/store";
-import { observer } from "mobx-react";
-
+import {observer} from "mobx-react";
 import TxtHeaderKo from "../../text/header/txtHeader-ko";
 import TxtHeaderJp from "../../text/header/txtHeader-jp";
 import TxtHeaderEn from "../../text/header/txtHeader-en";
 import TxtHeaderCn from "../../text/header/txtHeader-cn";
-import { HeaderRow, HeaderWrapper } from "./headerPres.style";
-import { Button } from "../../styled/common.style";
+import {HeaderRow, HeaderWrapper} from "./headerPres.style";
+import {Button} from "../../styled/common.style";
+import {useRecoilValue} from "recoil";
+import {atomLanguage} from "../../recoil/language";
 
 type HeaderProps = {
     changeModeAlert: (t: number) => void;
 };
 
 const HeaderPres = observer((props: HeaderProps) => {
-    const { language } = Store;
+    const language = useRecoilValue(atomLanguage)
 
     const TxtHeader =
-        language.language === "ko"
+        language === "ko"
             ? TxtHeaderKo
-            : language.language === "jp"
-            ? TxtHeaderJp
-            : language.language === "cn"
-            ? TxtHeaderCn
-            : TxtHeaderEn;
+            : language === "jp"
+                ? TxtHeaderJp
+                : language === "cn"
+                    ? TxtHeaderCn
+                    : TxtHeaderEn;
 
     return (
         <HeaderWrapper>
@@ -31,10 +31,10 @@ const HeaderPres = observer((props: HeaderProps) => {
                 <img
                     alt="logo"
                     src={`${process.env.PUBLIC_URL}/logo192.png`}
-                    style={{ width: "40px", height: "40px" }}
+                    style={{width: "40px", height: "40px"}}
                 />
                 &nbsp;
-                <span style={{ fontSize: "150%" }}>Pump It Up</span>
+                <span style={{fontSize: "150%"}}>Pump It Up</span>
                 &nbsp;
                 <span>{TxtHeader.subtitle}</span>
             </HeaderRow>

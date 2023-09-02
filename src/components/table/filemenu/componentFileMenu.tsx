@@ -1,91 +1,46 @@
-import React, {useEffect, useRef} from "react";
+import React, {useRef} from "react";
 import { observer } from "mobx-react";
-
 import TxtFileMenuKo from "../../../text/table/filemenu/txtFilemenu-ko";
 import TxtFileMenuJp from "../../../text/table/filemenu/txtFilemenu-jp";
 import TxtFileMenuCn from "../../../text/table/filemenu/txtFilemenu-cn";
 import TxtFileMenuEn from "../../../text/table/filemenu/txtFilemenu-en";
-import Store from "../../../mobx/store";
 import { FileMenuButton, FileMenuHowTo, FileMenuWrapper } from "./componentFileMenu.style";
 import { Button } from "../../../styled/common.style";
 import useFileMenu from "../../../hooks/useFileMenu";
-import {textToRank} from "../../../tools/rankTextConvert";
-import axios from "axios";
-import CommonData from "../../../data/commonData";
 import DialogUserEdit from "../../../dialog/dialogUserEdit";
 import DialogUserReset from "../../../dialog/dialogUserReset";
 import useResetModal from "../../../hooks/useResetModal";
-import useTableData from "../../../hooks/useTableData";
+import {useRecoilValue} from "recoil";
+import {atomLanguage} from "../../../recoil/language";
+import {atomStatus} from "../../../recoil/status";
 
 const ComponentFileMenu = observer(() => {
-    const { language, status, user, table } = Store;
+    const language = useRecoilValue(atomLanguage)
+    const status = useRecoilValue(atomStatus)
     const fileOpenRef = useRef<HTMLInputElement>(null);
-    const [
+    const {
         checkUserBeforeNew,
         checkUserBeforeLoad,
         checkUserBeforeSave,
         setAllowUserNew,
         setAllowUserLoad,
-
-        // 분석데이터 - userDataAnalyze 파라미터
-        analyzeData,
-        analyzeType,
-    ] = useFileMenu(fileOpenRef);
-
-    const userLog = (name: string, type: string) => {
-        axios.post(`${CommonData.dataUrl}userlog/${name}/${type}`);
-    };
-
-    const userDataAnalyze = (result: string, type: string) => {
-        if (result !== "") {
-            const str = result.split("\n");
-
-            const userinfo = str[0].split(",");
-
-            for (let i = 1; i < str.length; i++) {
-                const cur = str[i].split(",");
-                if (cur[0] !== "") {
-                    if(cur.length === 2) {
-                        user.user.userStatus.set(parseInt(cur[0]), {rank: textToRank(cur[1]), breakOff: false, lv: -1, side: -1});
-                    }
-                    else {
-                        const json = JSON.parse(cur.join(','))
-                        user.user.userStatus.set(json.ptid, {
-                            rank: json.rank,
-                            breakOff: json.breakOff,
-                            lv: json.lv,
-                            side: json.side,
-                        });
-                    }
-                }
-            }
-
-            user.setUserName(userinfo[0]);
-            status.setUserLoaded(true);
-            userLog(userinfo[0], type);
-            setAllowUserLoad(false);
-        }
-    };
+    } = useFileMenu(fileOpenRef);
 
     const {runUserReset} = useResetModal(
         setAllowUserNew,
         setAllowUserLoad
     );
 
-    useEffect(() => {
-        userDataAnalyze(analyzeData, analyzeType);
-    }, [analyzeData]);
-
     const TxtFileMenu =
-        language.language === "ko"
+        language === "ko"
             ? TxtFileMenuKo
-            : language.language === "jp"
+            : language === "jp"
             ? TxtFileMenuJp
-            : language.language === "cn"
+            : language === "cn"
             ? TxtFileMenuCn
             : TxtFileMenuEn;
 
-    if (status.status.isShareData) {
+    if (status.isShareData) {
         return (
             <div>
                 <h4>{TxtFileMenu.sharedata}</h4>
@@ -126,7 +81,7 @@ const ComponentFileMenu = observer(() => {
                 />
 
                 <DialogUserReset runUserReset={runUserReset} />
-                <DialogUserEdit userLog={userLog} setAllowUserNew={setAllowUserNew} />
+                <DialogUserEdit setAllowUserNew={setAllowUserNew} />
             </FileMenuWrapper>
         );
     }

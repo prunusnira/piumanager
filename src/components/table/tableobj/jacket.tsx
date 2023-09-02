@@ -1,13 +1,14 @@
 import React, {useState} from "react";
-import Store from "../../../mobx/store";
 import {PatternDlgType} from "../../../data/patternDlgType";
 import {BreakOff, JacketDiv, JacketImg, New, Rank, Removed, Version} from "./jacket.style";
 import {observer} from "mobx-react";
 import {IMusic} from "../../../data/IMusic";
-import {StepType} from "./jacket.style";
 import {convertVersion} from "../../../tools/convertVersion";
 import CommonData from "../../../data/commonData";
 import {rankToText} from "../../../tools/rankTextConvert";
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {atomLanguage} from "../../../recoil/language";
+import {atomPaternUpdateDialog, atomStatus} from "../../../recoil/status";
 
 type Props = {
     bgImageUrl: string;
@@ -17,15 +18,20 @@ type Props = {
 
 const Jacket = observer(({bgImageUrl, musicData: d, showrank}: Props) => {
     const [ver] = useState(convertVersion(d.version));
-    const {status, language} = Store;
+    const language = useRecoilValue(atomLanguage);
+    const [status, setStatus] = useRecoilState(atomStatus);
+    const setPatternUpdateDialog = useSetRecoilState(atomPaternUpdateDialog);
 
     return (
         <JacketDiv
             onClick={() => {
-                status.setPatternUpdDlgType(PatternDlgType.SINGLE);
-                status.setSelectedPatternId(d.ptid);
-                status.setSelectedMusicTitle(language.language === 'ko' ? d.title_ko : d.title_en);
-                status.setShowPatternUpdateDialog(true);
+                setStatus({
+                    ...status,
+                    patternUpdDlgType: PatternDlgType.SINGLE,
+                    selectedPatternId: d.ptid,
+                    selectedMusicTitle: language === 'ko' ? d.title_ko : d.title_en,
+                })
+                setPatternUpdateDialog(true)
             }}
         >
             {/*{(d.steptype === 1 || d.steptype === 2) && (*/}

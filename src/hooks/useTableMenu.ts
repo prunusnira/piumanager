@@ -1,9 +1,9 @@
-import React from "react"
 import { useEffect, useRef } from "react"
-import Store from "../mobx/store"
+import {useRecoilValue} from "recoil";
+import {atomStatus} from "../recoil/status";
 
 const useTableMenu = () => {
-    const {status} = Store
+    const status = useRecoilValue(atomStatus);
 
     const selDiffSingle = useRef<HTMLSelectElement>(null)
     const selDiffDouble = useRef<HTMLSelectElement>(null)
@@ -12,19 +12,19 @@ const useTableMenu = () => {
     // 체크박스 등록/해제에 따른 effect
     useEffect(() => {
         musicTypeOnOff(0, "musarcade")
-    }, [status.status.showArcade])
+    }, [status.showArcade])
 
     useEffect(() => {
         musicTypeOnOff(1, "musshort")
-    }, [status.status.showShort])
+    }, [status.showShort])
 
     useEffect(() => {
         musicTypeOnOff(2, "musfull")
-    }, [status.status.showFull])
+    }, [status.showFull])
 
     useEffect(() => {
         musicTypeOnOff(3, "musremix")
-    }, [status.status.showRemix])
+    }, [status.showRemix])
 
     const musicTypeOnOff = (type: number, bid: string) => {
         const box = document.getElementById(bid) as HTMLInputElement;

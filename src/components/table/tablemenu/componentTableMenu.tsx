@@ -2,11 +2,9 @@ import React, {useEffect} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheckSquare} from "@fortawesome/free-solid-svg-icons";
 import {PatternType} from "../../../data/patternType";
-import Store from "../../../mobx/store";
 import {UserDlgType} from "../../../data/userDlgType";
 import {observer} from "mobx-react";
 import {PatternDlgType} from "../../../data/patternDlgType";
-
 import TxtTableMenuKo from "../../../text/table/tablemenu/txtTablemenu-ko";
 import TxtTableMenuJp from "../../../text/table/tablemenu/txtTablemenu-jp";
 import TxtTableMenuCn from "../../../text/table/tablemenu/txtTablemenu-cn";
@@ -26,35 +24,47 @@ import {
 import {Button} from "../../../styled/common.style";
 import useTableMenu from "../../../hooks/useTableMenu";
 import useTableData from "../../../hooks/useTableData";
+import {TextTableTitle, TextTitleSub} from "../../../styled/common.font";
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {atomLanguage} from "../../../recoil/language";
+import {atomPaternUpdateDialog, atomStatus, atomUserDialog} from "../../../recoil/status";
 
 const ComponentTableMenu = observer(() => {
-    const {language, status} = Store;
-    const {selDiffSingle, selDiffDouble, selDiffCoop, diffSelReset} = useTableMenu();
+    const language = useRecoilValue(atomLanguage);
+    const [status, setStatus] = useRecoilState(atomStatus);
+    const setShowUserDialog = useSetRecoilState(atomUserDialog);
+    const setPatternUpdateDialog = useSetRecoilState(atomPaternUpdateDialog);
+    const {
+        selDiffSingle,
+        selDiffDouble,
+        selDiffCoop,
+        diffSelReset,
+    } = useTableMenu();
     const {getPatterns} = useTableData();
 
     useEffect(() => {
         getPatterns();
         diffSelReset();
-    }, [status.status.patternLv, status.status.patternType]);
+    }, [status.patternLv, status.patternType]);
 
     const TxtTableMenu =
-        language.language === "ko"
+        language === "ko"
             ? TxtTableMenuKo
-            : language.language === "jp"
+            : language === "jp"
                 ? TxtTableMenuJp
-                : language.language === "cn"
+                : language === "cn"
                     ? TxtTableMenuCn
                     : TxtTableMenuEn;
 
     return (
-        <TableMenuWrapper display={status.status.isUserLoaded}>
+        <TableMenuWrapper display={status.isUserLoaded}>
             <TableMenuTitle>
-                <h4>{TxtTableMenu.menu}</h4>
+                <TextTableTitle>{TxtTableMenu.menu}</TextTableTitle>
             </TableMenuTitle>
             <TableMenuPatternWrapper>
                 <TableMenuPattern>
                     <TableMenuSubTitle>
-                        <h5>{TxtTableMenu.patternsel}</h5>
+                        <TextTitleSub>{TxtTableMenu.patternsel}</TextTitleSub>
                     </TableMenuSubTitle>
                     <TableMenuSubWrapper>
                         <TableMenuDiff>
@@ -63,8 +73,11 @@ const ComponentTableMenu = observer(() => {
                                 ref={selDiffSingle}
                                 onChange={(e) => {
                                     if (e.currentTarget.value !== "--") {
-                                        status.setPatternType(PatternType.SINGLE);
-                                        status.setPatternLv(parseInt(e.currentTarget.value));
+                                        setStatus({
+                                            ...status,
+                                            patternType: PatternType.SINGLE,
+                                            patternLv: parseInt(e.currentTarget.value),
+                                        })
                                     }
                                 }}
                             >
@@ -89,8 +102,11 @@ const ComponentTableMenu = observer(() => {
                                 ref={selDiffDouble}
                                 onChange={(e) => {
                                     if (e.currentTarget.value !== "--") {
-                                        status.setPatternType(PatternType.DOUBLE);
-                                        status.setPatternLv(parseInt(e.currentTarget.value));
+                                        setStatus({
+                                            ...status,
+                                            patternType: PatternType.DOUBLE,
+                                            patternLv: parseInt(e.currentTarget.value),
+                                        })
                                     }
                                 }}
                             >
@@ -116,8 +132,11 @@ const ComponentTableMenu = observer(() => {
                                 ref={selDiffCoop}
                                 onChange={(e) => {
                                     if (e.currentTarget.value !== "--") {
-                                        status.setPatternType(PatternType.COOP);
-                                        status.setPatternLv(parseInt(e.currentTarget.value));
+                                        setStatus({
+                                            ...status,
+                                            patternType: PatternType.COOP,
+                                            patternLv: parseInt(e.currentTarget.value),
+                                        })
                                     }
                                 }}
                             >
@@ -137,8 +156,11 @@ const ComponentTableMenu = observer(() => {
                             color="secondary"
                             style={{width: "50%"}}
                             onClick={() => {
-                                status.setShowUserDialog(true);
-                                status.setUserDlgType(UserDlgType.EDITUSER);
+                                setStatus({
+                                    ...status,
+                                    userDlgType: UserDlgType.EDITUSER
+                                })
+                                setShowUserDialog(true);
                             }}
                         >
                             {TxtTableMenu.edit}
@@ -147,8 +169,11 @@ const ComponentTableMenu = observer(() => {
                             color="secondary"
                             style={{width: "50%"}}
                             onClick={() => {
-                                status.status.showPtUpdDlg = true;
-                                status.status.patternUpdDlgType = PatternDlgType.MULTIPLE;
+                                setStatus({
+                                    ...status,
+                                    patternUpdDlgType: PatternDlgType.MULTIPLE,
+                                })
+                                setPatternUpdateDialog(true);
                             }}
                         >
                             <FontAwesomeIcon icon={faCheckSquare}/>
@@ -160,7 +185,10 @@ const ComponentTableMenu = observer(() => {
                             color="secondary"
                             style={{width: "50%"}}
                             onClick={() => {
-                                status.status.showTableCheck = !status.status.showTableCheck;
+                                setStatus({
+                                    ...status,
+                                    showTableCheck: !status.showTableCheck
+                                })
                             }}
                         >
                             <FontAwesomeIcon icon={faCheckSquare}/>
@@ -170,7 +198,10 @@ const ComponentTableMenu = observer(() => {
                             color="secondary"
                             style={{width: "50%"}}
                             onClick={() => {
-                                status.status.showTableRank = !status.status.showTableRank;
+                                setStatus({
+                                    ...status,
+                                    showTableRank: !status.showTableRank
+                                })
                             }}
                         >
                             {TxtTableMenu.rank}
@@ -192,9 +223,12 @@ const ComponentTableMenu = observer(() => {
                                 type="checkbox"
                                 value="musarcade"
                                 onChange={() => {
-                                    status.setShowArcade(!status.status.showArcade);
+                                    setStatus({
+                                        ...status,
+                                        showArcade: !status.showArcade,
+                                    })
                                 }}
-                                checked={status.status.showArcade}
+                                checked={status.showArcade}
                             />
                             <TableInputLabel htmlFor="musarcade">Arcade</TableInputLabel>
                         </TableMenuSubWrapper>
@@ -205,9 +239,12 @@ const ComponentTableMenu = observer(() => {
                                 type="checkbox"
                                 value="musshort"
                                 onChange={() => {
-                                    status.setShowShort(!status.status.showShort);
+                                    setStatus({
+                                        ...status,
+                                        showShort: !status.showShort,
+                                    })
                                 }}
-                                checked={status.status.showShort}
+                                checked={status.showShort}
                             />
                             <TableInputLabel htmlFor="musshort">Shortcut</TableInputLabel>
                         </TableMenuSubWrapper>
@@ -218,9 +255,12 @@ const ComponentTableMenu = observer(() => {
                                 type="checkbox"
                                 value="musfull"
                                 onChange={() => {
-                                    status.setShowFull(!status.status.showFull);
+                                    setStatus({
+                                        ...status,
+                                        showFull: !status.showFull,
+                                    })
                                 }}
-                                checked={status.status.showFull}
+                                checked={status.showFull}
                             />
                             <TableInputLabel htmlFor="musfull">Fullsong</TableInputLabel>
                         </TableMenuSubWrapper>
@@ -231,9 +271,12 @@ const ComponentTableMenu = observer(() => {
                                 type="checkbox"
                                 value="musremix"
                                 onChange={() => {
-                                    status.setShowRemix(!status.status.showRemix);
+                                    setStatus({
+                                        ...status,
+                                        showRemix: !status.showRemix
+                                    })
                                 }}
-                                checked={status.status.showRemix}
+                                checked={status.showRemix}
                             />
                             <TableInputLabel htmlFor="musremix">Remix</TableInputLabel>
                         </TableMenuSubWrapper>
@@ -250,9 +293,12 @@ const ComponentTableMenu = observer(() => {
                                 type="checkbox"
                                 value="withRemovedPattern"
                                 onChange={() => {
-                                    status.setShowRemoved(!status.status.showRemovedPattern);
+                                    setStatus({
+                                        ...status,
+                                        showRemovedPattern: !status.showRemovedPattern
+                                    })
                                 }}
-                                checked={status.status.showRemovedPattern}
+                                checked={status.showRemovedPattern}
                             />
                             <TableInputLabel
                                 htmlFor="withRemovedPattern">{TxtTableMenu.withRemovedPattern}</TableInputLabel>

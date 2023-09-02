@@ -1,29 +1,30 @@
-import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
-import { apiCheckSaved } from "../api/apiTable"
-import Store from "../mobx/store"
-import { unixTimeToText } from "../tools/unixTimeToText"
-import { ResetType } from "../data/resetType"
-import { UserDlgType } from "../data/userDlgType"
-
+import React, {useEffect, useState} from "react"
+import {useParams} from "react-router-dom"
+import {apiCheckSaved} from "../api/apiTable"
+import {unixTimeToText} from "../tools/unixTimeToText"
+import {ResetType} from "../data/resetType"
+import {UserDlgType} from "../data/userDlgType"
 import TxtFileMenuKo from "../text/table/filemenu/txtFilemenu-ko"
 import TxtFileMenuJp from "../text/table/filemenu/txtFilemenu-jp"
 import TxtFileMenuCn from "../text/table/filemenu/txtFilemenu-cn"
 import TxtFileMenuEn from "../text/table/filemenu/txtFilemenu-en"
-
-type FileMenuReturn = [
-    () => void,
-    () => void,
-    () => void,
-    (b: boolean) => void,
-    (b: boolean) => void,
-    string,
-    string,
-]
+import {textToRank} from "../tools/rankTextConvert";
+import {apiUserLog} from "../api/apiUserLog";
+import {atomUser} from "../recoil/user";
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {atomLanguage} from "../recoil/language";
+import {atomSaveAlertDialog, atomStatus, atomUserDialog, atomUserResetDialog} from "../recoil/status";
 
 const useFileMenu = (
     fileOpenRef: React.RefObject<HTMLInputElement>
-): FileMenuReturn => {
+) => {
+    const language = useRecoilValue(atomLanguage)
+    const [user, setUser] = useRecoilState(atomUser);
+    const [status, setStatus] = useRecoilState(atomStatus);
+    const setResetDialog = useSetRecoilState(atomUserResetDialog);
+    const setSaveDialog = useSetRecoilState(atomSaveAlertDialog);
+    const setUserDialog = useSetRecoilState(atomUserDialog);
+
     // 유저 상태 스테이터스 관리
     const [allowUserNew, setAllowUserNew] = useState(false)
     const [allowUserLoad, setAllowUserLoad] = useState(false)
@@ -42,15 +43,14 @@ const useFileMenu = (
             // DB에 공유용으로 저장된 값을 불러와서 데이터 표시
             apiCheckSaved(savedId)
             .then(d => {
-                status.setShareData(true);
+                setStatus({
+                    ...status,
+                    isShareData: true
+                })
                 setAnalyzeData(decodeURIComponent(atob(d.data[0].saved)))
                 setAnalyzeType('saved')
             })
         }
-    }, [])
-
-    useEffect(() => {
-        (window as any).callbackOpen = callbackOpen;
     }, [])
 
     useEffect(() => {
@@ -71,19 +71,24 @@ const useFileMenu = (
         }
     }, [allowUserSave])
 
-    const {language, status, user} = Store
+    useEffect(() => {
+        userDataAnalyze(analyzeData, analyzeType);
+    }, [analyzeData]);
 
     const TxtFileMenu =
-        language.language === 'ko' ? TxtFileMenuKo :
-        language.language === 'jp' ? TxtFileMenuJp :
-        language.language === 'cn' ? TxtFileMenuCn : TxtFileMenuEn
+        language === 'ko' ? TxtFileMenuKo :
+        language === 'jp' ? TxtFileMenuJp :
+        language === 'cn' ? TxtFileMenuCn : TxtFileMenuEn
 
     // 새 유저 만들기 전에 검사
     const checkUserBeforeNew = () => {
         // 사용자가 로드 된 상태 -> 알림 modal 열기
-        if(status.status.isUserLoaded) {
-            status.setResetType(ResetType.NEW);
-            status.setShowUserResetDialog(true);
+        if(status.isUserLoaded) {
+            setStatus({
+                ...status,
+                resetType: ResetType.NEW,
+            })
+            setResetDialog(true);
         }
         else {
             setAllowUserNew(true)
@@ -93,9 +98,12 @@ const useFileMenu = (
     // 유저 불러오기 전에 검사
     const checkUserBeforeLoad = () => {
         // 사용자가 로드 된 상태 -> 알림 modal 열기
-        if(status.status.isUserLoaded) {
-            status.setResetType(ResetType.LOAD);
-            status.setShowUserResetDialog(true);
+        if(status.isUserLoaded) {
+            setStatus({
+                ...status,
+                resetType: ResetType.LOAD,
+            })
+            setResetDialog(true);
         }
         else {
             // 불러오기
@@ -107,18 +115,21 @@ const useFileMenu = (
     const checkUserBeforeSave = () => {
         // 사용자가 로드 된 상태 -> 그냥 저장
         // 아니면 -> 사용자 정보가 있어야 저장 가능하다고 메시지 표시
-        if(status.status.isUserLoaded) {
+        if(status.isUserLoaded) {
             setAllowUserSave(true)
         }
         else {
-            status.setShowSaveBeforeLoad(true);
+            setSaveDialog(true);
         }
     }
 
     // 신규 사용자 생성
     const newUser = () => {
-        status.setShowUserDialog(true);
-        status.setUserDlgType(UserDlgType.NEWUSER);
+        setStatus({
+            ...status,
+            userDlgType: UserDlgType.NEWUSER
+        })
+        setUserDialog(true);
     }
 
     const loadUser = () => {
@@ -134,7 +145,10 @@ const useFileMenu = (
             fileOpen.onchange = (e: any) => {
                 // 데이터 열기
                 handleFileSelect(e.target.files[0])
-                status.setUserLoaded(true);
+                setStatus({
+                    ...status,
+                    isUserLoaded: true
+                })
                 e.target.value=''
                 fileOpen.value = ''
             }
@@ -145,62 +159,84 @@ const useFileMenu = (
         const fr = new FileReader();
         fr.onload = function(e: any) {
             const result: string = e.target.result
-            
-            if(!result.includes(",")) {
-                callbackOpen(result)
-            }
-            else {
-                setAnalyzeData(result)
-                setAnalyzeType('load')
-            }
+            const str = decodeURIComponent(atob(result))
+            setAnalyzeData(str)
+            setAnalyzeType('load')
         }
         fr.readAsText(file)
-    }
-
-    const callbackOpen = (result: string) => {
-        const str = decodeURIComponent(atob(result))
-        setAnalyzeData(str)
-        setAnalyzeType('load')
     }
 
     const saveUser = () => {
         setAllowUserSave(false)
         let text = ""
-        text += user.user.userName+"," + user.user.userLv + "\n"
+        text += user.userName+"," + user.userLv + "\n"
         
-        const keys = user.user.userStatus.keys()
-        for(let i = 0; i < user.user.userStatus.size; i++) {
+        const keys = user.userPattern.keys()
+        for(let i = 0; i < user.userPattern.size; i++) {
             const ckey = keys.next()
-            console.log(ckey)
             if(ckey.value !== "") {
-                const data = user.user.userStatus.get(ckey.value)
+                const data = user.userPattern.get(ckey.value)
                 console.log(ckey.value, data?.rank, data?.breakOff)
                 text += `{"ptid":${ckey.value},"rank":${data?.rank},"breakOff":${data?.breakOff ? '1' : '0'},"lv":${data?.lv},"side":${data?.side}}\n`
             }
         }
-        console.log(text)
         
         // 데이터를 새 파일(임시)에 쓰고 다운로드
         const elem = document.createElement("a")
         elem.setAttribute("href", "data:text/plain;charset=utf-8,"+btoa(encodeURIComponent(text)))
-        elem.setAttribute("download", `piudata_${user.user.userName}_${unixTimeToText(new Date().getTime())}.csv`)
+        elem.setAttribute("download", `piudata_${user.userName}_${unixTimeToText(new Date().getTime())}.csv`)
         elem.style.display = 'none'
         document.body.appendChild(elem)
         elem.click()
         document.body.removeChild(elem)
     }
 
-    return [
+    const userDataAnalyze = (result: string, type: string) => {
+        if (result !== "") {
+            const str = result.split("\n");
+
+            const userinfo = str[0].split(",");
+            const record = user.userPattern;
+
+            for (let i = 1; i < str.length; i++) {
+                const cur = str[i].split(",");
+                if (cur[0] !== "") {
+                    if(cur.length === 2) {
+                        record.set(parseInt(cur[0]), {rank: textToRank(cur[1]), breakOff: false, lv: -1, side: -1});
+                    }
+                    else {
+                        const json = JSON.parse(cur.join(','))
+                        record.set(json.ptid, {
+                            rank: json.rank,
+                            breakOff: json.breakOff,
+                            lv: json.lv,
+                            side: json.side,
+                        });
+                    }
+                }
+            }
+
+            setUser({
+                ...user,
+                userName: userinfo[0],
+                userPattern: record
+            });
+            setStatus({
+                ...status,
+                isUserLoaded: true
+            })
+            apiUserLog(userinfo[0], type);
+            setAllowUserLoad(false);
+        }
+    };
+
+    return {
         checkUserBeforeNew,
         checkUserBeforeLoad,
         checkUserBeforeSave,
         setAllowUserNew,
         setAllowUserLoad,
-
-        // 분석데이터 - userDataAnalyze 파라미터
-        analyzeData,
-        analyzeType,
-    ]
+    }
 }
 
 export default useFileMenu

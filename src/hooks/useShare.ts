@@ -1,11 +1,14 @@
 import html2canvas from "html2canvas"
 import { apiShareCreate } from "../api/apiTable"
-
-import Store from "../mobx/store"
 import { ShareDlgType } from "../data/shareDlgType"
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {atomUser} from "../recoil/user";
+import {atomShareDialog, atomStatus} from "../recoil/status";
 
 const useShare = () => {
-    const {user, status} = Store
+    const user = useRecoilValue(atomUser);
+    const [status,setStatus] = useRecoilState(atomStatus);
+    const setShareDialog = useSetRecoilState(atomShareDialog);
 
     const scrShot = (divname: string, filename: string) => {
         window.scrollTo(0, 0);
@@ -31,30 +34,36 @@ const useShare = () => {
     }
 
     const shareURL = () => {
-        let text = user.user.userName+"," + user.user.userLv + "\n";
+        let text = user.userName+"," + user.userLv + "\n";
         
-        const keys = user.user.userStatus.keys();
-        for(let i = 0; i < user.user.userStatus.size; i++) {
+        const keys = user.userPattern.keys();
+        for(let i = 0; i < user.userPattern.size; i++) {
             const ckey = keys.next();
             if(ckey.value !== "")
-                text += ckey.value + "," + user.user.userStatus.get(ckey.value) + "\n";
+                text += ckey.value + "," + user.userPattern.get(ckey.value) + "\n";
         }
 
         const datafixed = btoa(text);
         
         // 랜덤코드 발행
-        const code = CryptoJS.SHA1(user.user.userName+new Date().toTimeString()).toString();
+        const code = CryptoJS.SHA1(user.userName+new Date().toTimeString()).toString();
 
         apiShareCreate(code, datafixed)
         .then((res) => {
             if(res.status === 200) {
-                status.status.showShareDlg = true
-                status.status.shareDlgType = ShareDlgType.SUCCESS
-                status.status.shareCode = code
+                setStatus({
+                    ...status,
+                    shareDlgType: ShareDlgType.SUCCESS,
+                    shareCode: code,
+                })
+                setShareDialog(true);
             }
             else {
-                status.status.showShareDlg = true
-                status.status.shareDlgType = ShareDlgType.FAIL
+                setStatus({
+                    ...status,
+                    shareDlgType: ShareDlgType.FAIL,
+                })
+                setShareDialog(true);
             }
         })
     }

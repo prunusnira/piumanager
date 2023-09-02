@@ -23,12 +23,6 @@ export interface IStatus {
     showTableRank: boolean,
     showTableCheck: boolean,
 
-    showUserDialog: boolean,
-    showUserResetDialog: boolean,
-    showSaveBeforeLoadDialog: boolean,
-    showPtUpdDlg: boolean,
-    showShareDlg: boolean,
-
     userDlgType: UserDlgType,
     resetType: ResetType,
     shareDlgType: ShareDlgType,

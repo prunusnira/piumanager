@@ -1,6 +1,6 @@
 import { IMusic } from "./IMusic";
 
-export type MusicTable = {
+export interface IMusicTable {
     over: {
         title: string,
         data: IMusic[]
@@ -33,4 +33,15 @@ export type MusicTable = {
         title: string,
         data: IMusic[]
     },
+}
+
+export interface ITableTitle {
+    over: string;
+    high: string;
+    normalhigh: string;
+    normal: string;
+    normaleasy: string;
+    easy: string;
+    below: string;
+    random: string;
 }

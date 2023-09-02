@@ -1,15 +1,15 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import React from "react";
-import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { observer } from "mobx-react";
-
+import {Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
+import {observer} from "mobx-react";
 import TxtHeaderKo from "../text/header/txtHeader-ko";
 import TxtHeaderJp from "../text/header/txtHeader-jp";
 import TxtHeaderEn from "../text/header/txtHeader-en";
 import TxtHeaderCn from "../text/header/txtHeader-cn";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import Store from "../mobx/store";
-import { Button } from "../styled/common.style";
+import {faExclamationCircle} from "@fortawesome/free-solid-svg-icons";
+import {Button} from "../styled/common.style";
+import {atomLanguage} from "../recoil/language";
+import {useRecoilValue} from "recoil";
 
 type HModalProps = {
     modeAlert: boolean;
@@ -18,21 +18,21 @@ type HModalProps = {
 };
 
 const DialogModeChange = observer((props: HModalProps) => {
-    const { language } = Store;
+    const language = useRecoilValue(atomLanguage);
 
     const TxtHeader =
-        language.language === "ko"
+        language === "ko"
             ? TxtHeaderKo
-            : language.language === "jp"
-            ? TxtHeaderJp
-            : language.language === "cn"
-            ? TxtHeaderCn
-            : TxtHeaderEn;
+            : language === "jp"
+                ? TxtHeaderJp
+                : language === "cn"
+                    ? TxtHeaderCn
+                    : TxtHeaderEn;
 
     return (
         <Modal isOpen={props.modeAlert}>
             <ModalHeader>
-                <FontAwesomeIcon icon={faExclamationCircle} />
+                <FontAwesomeIcon icon={faExclamationCircle}/>
                 &nbsp;
                 {TxtHeader.modeChange.title}
             </ModalHeader>

@@ -1,14 +1,14 @@
-import React, { ChangeEvent } from "react";
-import { observer } from "mobx-react";
-
+import React, {ChangeEvent} from "react";
+import {observer} from "mobx-react";
 import TxtSearchKo from "../../text/search/txtSearch-ko";
 import TxtSearchJp from "../../text/search/txtSearch-jp";
 import TxtSearchEn from "../../text/search/txtSearch-en";
 import TxtSearchCn from "../../text/search/txtSearch-cn";
-import Store from "../../mobx/store";
-import { SearchBarElem, SearchBarWrapper, SearchButton } from "./searchbar.style";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import {SearchBarElem, SearchBarWrapper, SearchButton} from "./searchbar.style";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faSearch} from "@fortawesome/free-solid-svg-icons";
+import {useRecoilValue} from "recoil";
+import {atomLanguage} from "../../recoil/language";
 
 interface Props {
     setKeyword: (k: string) => void;
@@ -19,16 +19,16 @@ interface Props {
 }
 
 const SearchBar = observer((props: Props) => {
-    const { language } = Store;
+    const language = useRecoilValue(atomLanguage)
 
     const TxtSearch =
-        language.language === "ko"
+        language === "ko"
             ? TxtSearchKo
-            : language.language === "jp"
-            ? TxtSearchJp
-            : language.language === "cn"
-            ? TxtSearchCn
-            : TxtSearchEn;
+            : language === "jp"
+                ? TxtSearchJp
+                : language === "cn"
+                    ? TxtSearchCn
+                    : TxtSearchEn;
 
     return (
         <SearchBarWrapper>
@@ -41,7 +41,7 @@ const SearchBar = observer((props: Props) => {
                 onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => props.checkEnter(e)}
             />
             <SearchButton onClick={props.runQuery}>
-                <FontAwesomeIcon icon={faSearch} />
+                <FontAwesomeIcon icon={faSearch}/>
             </SearchButton>
         </SearchBarWrapper>
     );

@@ -4,12 +4,11 @@ import {ISearchItem} from "../../../data/ISearchItem";
 import {ISearchPattern} from "../../../data/ISearchPattern";
 import SearchResultPattern from "./searchResultPattern";
 import {observer} from "mobx-react";
-
 import TxtSearchKo from "../../../text/search/txtSearch-ko";
 import TxtSearchJp from "../../../text/search/txtSearch-jp";
 import TxtSearchEn from "../../../text/search/txtSearch-en";
 import TxtSearchCn from "../../../text/search/txtSearch-cn";
-import Store from "../../../mobx/store";
+
 import {
     ResultEmpty,
     ResultTable,
@@ -18,20 +17,22 @@ import {
     ResultTitle,
     ResultDiffData,
 } from "./searchResult.style";
+import {useRecoilValue} from "recoil";
+import {atomLanguage} from "../../../recoil/language";
 
 interface Props {
     list: Array<ISearchItem>;
 }
 
 const SearchResult = observer((props: Props) => {
-    const {language} = Store;
+    const language = useRecoilValue(atomLanguage);
 
     const TxtSearch =
-        language.language === "ko"
+        language === "ko"
             ? TxtSearchKo
-            : language.language === "jp"
+            : language === "jp"
                 ? TxtSearchJp
-                : language.language === "cn"
+                : language === "cn"
                     ? TxtSearchCn
                     : TxtSearchEn;
 
@@ -55,7 +56,7 @@ const SearchResult = observer((props: Props) => {
                 <ResultData>
                     <ResultTitle>
                         {(function () {
-                            if (language.language === "ko") {
+                            if (language === "ko") {
                                 return d.title_ko;
                             } else {
                                 return d.title_en;

@@ -2,11 +2,8 @@ import React, {useState} from "react";
 import {Modal, ModalHeader, ModalBody, ModalFooter, Row, Col} from "reactstrap";
 import {useEffect} from "react";
 import {observer} from "mobx-react";
-import {RankType} from "../data/rankType";
-import Store from "../mobx/store";
 import {PatternDlgType} from "../data/patternDlgType";
 import {PatternType} from "../data/patternType";
-
 import TxtPatternDlgKo from "../text/table/patternDlg/txtPatternDlg-ko";
 import TxtPatternDlgJp from "../text/table/patternDlg/txtPatternDlg-jp";
 import TxtPatternDlgCn from "../text/table/patternDlg/txtPatternDlg-cn";
@@ -14,21 +11,25 @@ import TxtPatternDlgEn from "../text/table/patternDlg/txtPatternDlg-en";
 import {textToRank} from "../tools/rankTextConvert";
 import {Button} from "../styled/common.style";
 import {TableInputCheck, TableInputLabel} from "../components/table/tablemenu/componentTableMenu.style";
-import {UserData} from "../data/userType";
 import usePatternDialog from "../hooks/usePatternDialog";
+import {useRecoilState, useRecoilValue} from "recoil";
+import {atomLanguage} from "../recoil/language";
+import {atomPaternUpdateDialog, atomStatus} from "../recoil/status";
 
 const DialogPatternUpdate = observer(() => {
-    const {status, language} = Store;
+    const language = useRecoilValue(atomLanguage)
+    const [status, setStatus] = useRecoilState(atomStatus)
+    const showPatternUpdateDialog = useRecoilValue(atomPaternUpdateDialog)
 
     const {closeUpdatePatternDlg, updateMultipleData, rankCountReset, updateRankCount, updateData} =
         usePatternDialog();
 
     const TxtPatternDlg =
-        language.language === "ko"
+        language === "ko"
             ? TxtPatternDlgKo
-            : language.language === "jp"
+            : language === "jp"
                 ? TxtPatternDlgJp
-                : language.language === "cn"
+                : language === "cn"
                     ? TxtPatternDlgCn
                     : TxtPatternDlgEn;
 
@@ -38,34 +39,37 @@ const DialogPatternUpdate = observer(() => {
     const [isBreakOff, setBreakOff] = useState(false);
 
     useEffect(() => {
-        if (status.status.patternUpdDlgType === PatternDlgType.SINGLE) {
+        if (status.patternUpdDlgType === PatternDlgType.SINGLE) {
             setDlgTitle(TxtPatternDlg.patternUpdDlgTitle);
-            setMusicTitle(status.status.selectedMusicTitle);
+            setMusicTitle(status.selectedMusicTitle);
         } else {
             setDlgTitle(TxtPatternDlg.patternAllUpdDlgTitle);
             setMusicTitle(TxtPatternDlg.patternAllUpdDlgTitle);
         }
-    }, [status.status.showPtUpdDlg, status.status.patternUpdDlgType]);
+    }, [showPatternUpdateDialog, status.patternUpdDlgType]);
 
     useEffect(() => {
-        status.setUpdateRank(textToRank(rank));
+        setStatus({
+            ...status,
+            updateRank: textToRank(rank)
+        })
     }, [rank]);
 
     return (
-        <Modal isOpen={status.status.showPtUpdDlg}>
+        <Modal isOpen={showPatternUpdateDialog}>
             <ModalHeader>{dlgTitle}</ModalHeader>
             <ModalBody>
                 <Row>
                     <Col xs="12">
                         {musicTitle}
                         <br/>
-                        {status.status.patternType === PatternType.SINGLE
+                        {status.patternType === PatternType.SINGLE
                             ? "Single"
-                            : status.status.patternType === PatternType.DOUBLE
+                            : status.patternType === PatternType.DOUBLE
                                 ? "Double"
                                 : "CO-OP"}
                         &nbsp;
-                        {status.status.patternLv}
+                        {status.patternLv}
                     </Col>
                 </Row>
                 <hr/>
@@ -148,29 +152,32 @@ const DialogPatternUpdate = observer(() => {
                 <Button
                     color="secondary"
                     onClick={() => {
-                        if (status.status.patternUpdDlgType === PatternDlgType.SINGLE) {
+                        if (status.patternUpdDlgType === PatternDlgType.SINGLE) {
                             updateData(
-                                status.status.selectedPatternId,
+                                status.selectedPatternId,
                                 {
-                                    rank: status.status.updateRank,
+                                    rank: status.updateRank,
                                     breakOff: isBreakOff,
-                                    lv: status.status.patternLv,
-                                    side: status.status.patternType === PatternType.SINGLE
+                                    lv: status.patternLv,
+                                    side: status.patternType === PatternType.SINGLE
                                         ? 0
-                                        : status.status.patternType === PatternType.DOUBLE
+                                        : status.patternType === PatternType.DOUBLE
                                             ? 1
                                             : 2
                                 }
                             );
-                            status.status.selectedPatternId = 0;
+                            setStatus({
+                                ...status,
+                                selectedPatternId: 0,
+                            })
                         } else {
                             updateMultipleData({
-                                rank: status.status.updateRank,
+                                rank: status.updateRank,
                                 breakOff: isBreakOff,
-                                lv: status.status.patternLv,
-                                side: status.status.patternType === PatternType.SINGLE
+                                lv: status.patternLv,
+                                side: status.patternType === PatternType.SINGLE
                                     ? 0
-                                    : status.status.patternType === PatternType.DOUBLE
+                                    : status.patternType === PatternType.DOUBLE
                                         ? 1
                                         : 2
                             });
