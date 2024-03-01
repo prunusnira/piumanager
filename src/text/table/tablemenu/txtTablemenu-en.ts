@@ -6,6 +6,9 @@ const TxtTableMenu = {
     display: "On/Off",
     rank: "Rank",
     songtype: "Select type of music to show on the list",
+    option: "Option",
+    withRemovedMusic: "Show removed songs",
+    withRemovedPattern: "Show removed patterns",
     diff: {
         random: "?",
         below: "-",

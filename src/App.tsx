@@ -1,13 +1,15 @@
 import React from "react";
-import { Route } from "react-router-dom";
-import Main from "./components/main/mainContainer";
+import { Route, Routes } from "react-router-dom";
+import PageMain from "./page/main/pageMain";
 import { observer } from "mobx-react";
 
 const App = observer(() => {
     return (
         <div className="App">
-            <Route path="/saved/:savedId" component={Main} />
-            <Route exact path="/" component={Main} />
+            <Routes>
+                <Route path="/" element={<PageMain />} />
+                <Route path="/saved/:savedId" element={<PageMain />} />
+            </Routes>
         </div>
     );
 });

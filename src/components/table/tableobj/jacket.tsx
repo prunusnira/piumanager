@@ -1,55 +1,68 @@
-import { title } from "process";
-import React, { useState } from "react";
-import IntegratedStore from "../../../mobx/integratedStore";
-import { PatternDlgType } from "../data/patternDlgType";
-import { JacketDiv, JacketImg, New, Rank, Version } from "./jacket.style";
-import { observer } from "mobx-react";
-import { MusicData } from "../data/musicData";
-import { StepType } from "./jacket.style";
-import { convertVersion } from "../../tools/convertVersion";
-import CommonData from "../data/commonData";
+import React, {useState} from "react";
+import {PatternDlgType} from "../../../data/patternDlgType";
+import {BreakOff, JacketDiv, JacketImg, New, Rank, Removed, Version} from "./jacket.style";
+import {observer} from "mobx-react";
+import {IMusic} from "../../../data/IMusic";
+import {convertVersion} from "../../../tools/convertVersion";
+import CommonData from "../../../data/commonData";
+import {rankToText} from "../../../tools/rankTextConvert";
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {atomLanguage} from "../../../recoil/language";
+import {atomPaternUpdateDialog, atomStatus} from "../../../recoil/status";
+import {IPattern} from "../../../data/IPattern";
+import {RankType} from "../../../data/rankType";
 
 type Props = {
+    pattern?: IPattern;
     bgImageUrl: string;
-    musicData: MusicData;
+    musicData: IMusic;
     showrank: boolean;
 };
 
-const Jacket = observer(({ bgImageUrl, musicData: d, showrank }: Props) => {
-    const [ver] = useState(convertVersion(d.version));
-    const { status } = IntegratedStore;
+const Jacket = observer(({pattern, bgImageUrl, musicData, showrank}: Props) => {
+    const language = useRecoilValue(atomLanguage);
+    const [status, setStatus] = useRecoilState(atomStatus);
+    const setPatternUpdateDialog = useSetRecoilState(atomPaternUpdateDialog);
 
     return (
         <JacketDiv
-            bgImageUrl={bgImageUrl}
             onClick={() => {
-                status.status.patternUpdDlgType = PatternDlgType.SINGLE;
-                status.status.selectedPatternId = d.ptid;
-                status.status.selectedMusicTitle = title;
-                status.status.showPtUpdDlg = true;
+                setStatus({
+                    ...status,
+                    patternUpdDlgType: PatternDlgType.SINGLE,
+                    selectedPatternId: musicData.ptid,
+                    selectedMusicTitle: language === 'ko' ? musicData.title_ko : musicData.title_en,
+                })
+                setPatternUpdateDialog(true)
             }}
         >
-            {(d.steptype === 1 || d.steptype === 2) && (
-                <StepType
-                    alt="steptype"
-                    src={`${process.env.PUBLIC_URL}/img/${d.steptype === 1 ? "half" : ""}${
-                        d.steptype === 2 ? "perf" : ""
-                    }.png`}
-                />
-            )}
-            {ver !== "" && (
-                <Version alt="version" src={`${process.env.PUBLIC_URL}/img/ver/${ver}.png`} />
-            )}
-            {d.newpattern === 1 && <New alt="new" src={`${process.env.PUBLIC_URL}/img/new.png`} />}
+            {/*{(d.steptype === 1 || d.steptype === 2) && (*/}
+            {/*    <StepType*/}
+            {/*        alt="steptype"*/}
+            {/*        src={`${process.env.PUBLIC_URL}/img/${d.steptype === 1 ? "half" : ""}${*/}
+            {/*            d.steptype === 2 ? "perf" : ""*/}
+            {/*        }.png`}*/}
+            {/*    />*/}
+            {/*)}*/}
+            {convertVersion(musicData.version) !== '' &&
+                <Version alt="version" src={`${process.env.PUBLIC_URL}/img/ver/${convertVersion(musicData.version)}.png`}/>
+            }
+            {musicData.newpattern === 1 && <New alt="new" src={`${process.env.PUBLIC_URL}/img/new.png`}/>}
+            {musicData.removedPattern === 1 && <Removed alt={'removed'} src={`${process.env.PUBLIC_URL}/img/removed.png`}/>}
             <Rank
                 alt="rank"
-                id={`cs${d.ptid}`}
+                id={`cs${musicData.ptid}`}
                 display={showrank}
-                src={`${process.env.PUBLIC_URL}/img/grade_${d.rank}.png`}
+                src={`${process.env.PUBLIC_URL}/img/${rankToText(pattern?.rank || RankType.NP)}.png`}
+            />
+            <BreakOff
+                alt="breakoff"
+                id={`bo${musicData.ptid}`}
+                src={`${process.env.PUBLIC_URL}/img/phrank/empty.png`}
             />
             <JacketImg
                 alt="jacket"
-                src={`${CommonData.imgUrl}${d.musicid}.png`}
+                src={`${CommonData.imgUrl}${musicData.musicid}.png`}
                 onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = `${process.env.PUBLIC_URL}/img/empty.png`;

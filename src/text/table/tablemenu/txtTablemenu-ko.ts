@@ -6,6 +6,9 @@ const TxtTableMenu = {
     display: "표시",
     rank: "랭크",
     songtype: "표시할 음악 타입 선택",
+    option: "옵션",
+    withRemovedMusic: "삭제된 곡 표시",
+    withRemovedPattern: "삭제된 패턴 표시",
     diff: {
         random: "?",
         below: "급",

@@ -1,14 +1,14 @@
 import React from "react";
-import CommonData from "../../table/data/commonData";
-import SearchItemData from "../searchItems/searchItemData";
+import CommonData from "../../../data/commonData";
+import {ISearchItem} from "../../../data/ISearchItem";
+import {ISearchPattern} from "../../../data/ISearchPattern";
 import SearchResultPattern from "./searchResultPattern";
-import { observer } from "mobx-react";
-
+import {observer} from "mobx-react";
 import TxtSearchKo from "../../../text/search/txtSearch-ko";
 import TxtSearchJp from "../../../text/search/txtSearch-jp";
 import TxtSearchEn from "../../../text/search/txtSearch-en";
 import TxtSearchCn from "../../../text/search/txtSearch-cn";
-import IntegratedStore from "../../../mobx/integratedStore";
+
 import {
     ResultEmpty,
     ResultTable,
@@ -17,22 +17,24 @@ import {
     ResultTitle,
     ResultDiffData,
 } from "./searchResult.style";
+import {useRecoilValue} from "recoil";
+import {atomLanguage} from "../../../recoil/language";
 
 interface Props {
-    list: Array<SearchItemData>;
+    list: Array<ISearchItem>;
 }
 
 const SearchResult = observer((props: Props) => {
-    const { language } = IntegratedStore;
+    const language = useRecoilValue(atomLanguage);
 
     const TxtSearch =
-        language.language === "ko"
+        language === "ko"
             ? TxtSearchKo
-            : language.language === "jp"
-            ? TxtSearchJp
-            : language.language === "cn"
-            ? TxtSearchCn
-            : TxtSearchEn;
+            : language === "jp"
+                ? TxtSearchJp
+                : language === "cn"
+                    ? TxtSearchCn
+                    : TxtSearchEn;
 
     if (props.list.length === 0) {
         return <ResultEmpty>{TxtSearch.listEmpty}</ResultEmpty>;
@@ -54,7 +56,7 @@ const SearchResult = observer((props: Props) => {
                 <ResultData>
                     <ResultTitle>
                         {(function () {
-                            if (language.language === "ko") {
+                            if (language === "ko") {
                                 return d.title_ko;
                             } else {
                                 return d.title_en;
@@ -62,8 +64,8 @@ const SearchResult = observer((props: Props) => {
                         })()}
                     </ResultTitle>
                     <ResultDiffData>
-                        {d.patterns.map((d) => {
-                            return <SearchResultPattern pt={d} />;
+                        {d.patterns.map((pt: ISearchPattern) => {
+                            return <SearchResultPattern pt={pt}/>;
                         })}
                     </ResultDiffData>
                 </ResultData>

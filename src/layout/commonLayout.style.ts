@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const Outer = styled.main`
+export const LayoutWrapper = styled.main`
     display: flex;
     flex-direction: column;
     justify-content: center;

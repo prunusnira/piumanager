@@ -1,8 +1,8 @@
 import React from "react";
 import { Button } from "../../../styled/common.style";
-import SearchPatternData from "../searchItems/searchPatternData";
+import {ISearchPattern} from "../../../data/ISearchPattern";
 
-const SearchResultPattern: React.FC<{ pt: SearchPatternData }> = (pt) => {
+const SearchResultPattern: React.FC<{ pt: ISearchPattern }> = (pt) => {
     const process = () => {
         let type;
         if (pt.pt.sdtype === 0) {

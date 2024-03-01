@@ -1,22 +1,114 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable-jp-dynamic-subset.css");
 
-  
-	background-color: black;
-	background-position: center;
-	font-family: 'Noto Sans KR', sans-serif;
-	color: white;
-	min-height:100%;
-	position:relative;
-	padding-bottom: 50px;
+html, body {
+    height: 100%;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+body {
+    margin: 0;
+    font-family: "Pretendard JP Variable", "Pretendard JP", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Hiragino Sans", "Apple SD Gothic Neo", Meiryo, "Noto Sans JP", "Noto Sans KR", "Malgun Gothic", Osaka, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    background-color: black;
+    background-position: center;
+    color: white;
+    min-height: 100%;
+    position: relative;
+    padding-bottom: 50px;
+}
+
+span {
+    /* 테마 변경에 따라 달라짐 */
+    color: white;
+}
+
+div {
+    color: white;
+}
+
+p {
+    /* 테마 변경에 따라 달라짐 */
+    color: white;
+}
+
+.div-lineadd {
+    border-bottom: 1px solid black;
+}
+
+.piu-left {
+    font-size: 200%;
+    text-align: center;
+    color: black;
+    width: 100%;
+}
+
+.link-style1 {
+    color: rgb(255, 169, 222);
+}
+
+.link-style1:hover {
+    color: rgb(255, 124, 205);
+}
+
+.link-style2 {
+    color:rgb(16, 50, 90);
+    text-shadow: 1px 1px 1px white, -1px 1px 1px white,
+    1px 1px 1px white, 1px -1px 1px white,
+    1px 0 1px white, 0 1px 1px white,
+    -1px 0 1px white, 0 -1px 1px white;
+    font-size: 80%;
+    font-weight: bold;
+    line-height: 1.5em;
+    height: 3em;
+    overflow: hidden;
+    /* word-wrap only works for p */
+}
+
+.card {
+    border: none;
+}
+
+.card-header {
+    background-color: rgb(37, 37, 37);
+}
+
+.card-body {
+    background-color: rgb(65, 65, 65);
+}
+
+.modal-header {
+    background-color: rgb(37, 37, 37);
+}
+
+.modal-body {
+    background-color: rgb(65, 65, 65);
+}
+
+.hide-scrollbar {
+    overflow: "-moz-hidden-unscrollable";
+    overflow: "hidden";
+}
+
+.btn {
+    outline: auto;
+}
+
+.btn:hover {
+    background-color: #eeef3e;
+    color: #000000;
+}
+
+.nowrap {
+    padding: 0px;
+    margin: 0px;
+}
+
+.div-pattern {
+    padding: 1px;
+}
+
+.div-chkbox {
+    width: 20px;
+    height: 20px;
 }

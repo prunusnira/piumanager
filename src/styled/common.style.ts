@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { ButtonLeft, ButtonRight } from "./color";
+import { ButtonLeft, ButtonRight } from "./common.color";
 
 export const Anchor = styled.a``;
 
