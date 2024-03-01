@@ -16,6 +16,11 @@ export const atomTableTitle = atom<ITableTitle>({
     }
 })
 
+export const atomTable = atom<IMusic[]>({
+    key: 'atomTable',
+    default: [],
+});
+
 export const atomTableOver = atom<Array<IMusic>>({
     key: 'atomTableOver',
     default: []

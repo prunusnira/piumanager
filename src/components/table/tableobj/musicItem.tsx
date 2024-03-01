@@ -15,8 +15,10 @@ import Jacket from "./jacket";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {atomLanguage} from "../../../recoil/language";
 import {atomStatus} from "../../../recoil/status";
+import {IPattern} from "../../../data/IPattern";
 
 interface Props {
+    pattern: Map<number, IPattern>;
     list: Array<IMusic>;
     keyv: string;
     showcheck: boolean;
@@ -26,6 +28,10 @@ interface Props {
 const MusicItem = observer((props: Props) => {
     const language = useRecoilValue(atomLanguage);
     const [status, setStatus] = useRecoilState(atomStatus);
+
+    const getUserData = (ptid: number) => {
+        return props.pattern.get(ptid);
+    }
 
     return (
         <>
@@ -47,6 +53,7 @@ const MusicItem = observer((props: Props) => {
                         </CheckBoxWrapper>
                         <JacketWrapper>
                             <Jacket
+                                pattern={getUserData(d.ptid)}
                                 bgImageUrl={`${CommonData.imgUrl}${d.musicid}.png`}
                                 musicData={d}
                                 showrank={props.showrank}

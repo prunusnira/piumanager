@@ -85,8 +85,7 @@ const ComponentFooter = observer(() => {
                     GitHub
                 </a>
             </FooterRow>
-            <FooterRow>Version PHOENIX 2.00: Sep. 1, 2023</FooterRow>
-            <FooterRow>Version XX 1.4: Apr. 17, 2022</FooterRow>
+            <FooterRow>Version 2.1: Mar. 1, 2024</FooterRow>
 
             <FooterRow>&nbsp;</FooterRow>
 

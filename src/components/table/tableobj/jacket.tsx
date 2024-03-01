@@ -9,15 +9,17 @@ import {rankToText} from "../../../tools/rankTextConvert";
 import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 import {atomLanguage} from "../../../recoil/language";
 import {atomPaternUpdateDialog, atomStatus} from "../../../recoil/status";
+import {IPattern} from "../../../data/IPattern";
+import {RankType} from "../../../data/rankType";
 
 type Props = {
+    pattern?: IPattern;
     bgImageUrl: string;
     musicData: IMusic;
     showrank: boolean;
 };
 
-const Jacket = observer(({bgImageUrl, musicData: d, showrank}: Props) => {
-    const [ver] = useState(convertVersion(d.version));
+const Jacket = observer(({pattern, bgImageUrl, musicData, showrank}: Props) => {
     const language = useRecoilValue(atomLanguage);
     const [status, setStatus] = useRecoilState(atomStatus);
     const setPatternUpdateDialog = useSetRecoilState(atomPaternUpdateDialog);
@@ -28,8 +30,8 @@ const Jacket = observer(({bgImageUrl, musicData: d, showrank}: Props) => {
                 setStatus({
                     ...status,
                     patternUpdDlgType: PatternDlgType.SINGLE,
-                    selectedPatternId: d.ptid,
-                    selectedMusicTitle: language === 'ko' ? d.title_ko : d.title_en,
+                    selectedPatternId: musicData.ptid,
+                    selectedMusicTitle: language === 'ko' ? musicData.title_ko : musicData.title_en,
                 })
                 setPatternUpdateDialog(true)
             }}
@@ -42,25 +44,25 @@ const Jacket = observer(({bgImageUrl, musicData: d, showrank}: Props) => {
             {/*        }.png`}*/}
             {/*    />*/}
             {/*)}*/}
-            {ver !== "" && (
-                <Version alt="version" src={`${process.env.PUBLIC_URL}/img/ver/${ver}.png`}/>
-            )}
-            {d.newpattern === 1 && <New alt="new" src={`${process.env.PUBLIC_URL}/img/new.png`}/>}
-            {d.removedPattern === 1 && <Removed alt={'removed'} src={`${process.env.PUBLIC_URL}/img/removed.png`}/>}
+            {convertVersion(musicData.version) !== '' &&
+                <Version alt="version" src={`${process.env.PUBLIC_URL}/img/ver/${convertVersion(musicData.version)}.png`}/>
+            }
+            {musicData.newpattern === 1 && <New alt="new" src={`${process.env.PUBLIC_URL}/img/new.png`}/>}
+            {musicData.removedPattern === 1 && <Removed alt={'removed'} src={`${process.env.PUBLIC_URL}/img/removed.png`}/>}
             <Rank
                 alt="rank"
-                id={`cs${d.ptid}`}
+                id={`cs${musicData.ptid}`}
                 display={showrank}
-                src={`${process.env.PUBLIC_URL}/img/${rankToText(d.rank)}.png`}
+                src={`${process.env.PUBLIC_URL}/img/${rankToText(pattern?.rank || RankType.NP)}.png`}
             />
             <BreakOff
                 alt="breakoff"
-                id={`bo${d.ptid}`}
+                id={`bo${musicData.ptid}`}
                 src={`${process.env.PUBLIC_URL}/img/phrank/empty.png`}
             />
             <JacketImg
                 alt="jacket"
-                src={`${CommonData.imgUrl}${d.musicid}.png`}
+                src={`${CommonData.imgUrl}${musicData.musicid}.png`}
                 onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = `${process.env.PUBLIC_URL}/img/empty.png`;
