@@ -1,0 +1,33 @@
+{
+  "header": {
+    "subtitle": "기록 관리 툴",
+    "table": "클리어 테이블",
+    "search": "곡명 검색",
+    "mode": {
+      "title": "모드 변경",
+      "content": "모드를 변경하면 저장되지 않은 내용은 초기화될 수 있습니다"
+    }
+  },
+  "search": {
+    "placeholder": "곡 이름을 입력해주세요",
+    "empty": "현재 검색어로 확인된 곡이 없습니다"
+  },
+  "table": {
+    "menu": {
+      "order": {
+        "title": "",
+        "name": "",
+        "version": ""
+      },
+      "display": {
+        "title": "",
+        "all": "",
+        "noplay": "",
+        "played": ""
+      },
+      "search": {
+        "placeholder": ""
+      }
+    }
+  }
+}

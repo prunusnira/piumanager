@@ -1,0 +1,11 @@
+{
+  "header": {
+    "subtitle": "",
+    "table": "",
+    "search": "",
+    "mode": {
+      "title": "모드 변경",
+      "content": "모드를 변경하면 저장되지 않은 내용은 초기화될 수 있습니다"
+    }
+  }
+}
