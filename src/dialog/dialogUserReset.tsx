@@ -1,22 +1,21 @@
 import React from "react";
 import {Col, Modal, ModalBody, ModalFooter, ModalHeader, Row} from "reactstrap";
-import {observer} from "mobx-react";
 import TxtResetModalKo from "../text/table/resetDlg/txtResetModal-ko";
 import TxtResetModalJp from "../text/table/resetDlg/txtResetModal-jp";
 import TxtResetModalCn from "../text/table/resetDlg/txtResetModal-cn";
 import TxtResetModalEn from "../text/table/resetDlg/txtResetModal-en";
 import {Button} from "../styled/common.style";
-import {useRecoilState, useRecoilValue} from "recoil";
-import {atomLanguage} from "../recoil/language";
-import {atomUserResetDialog} from "../recoil/status";
+import {useAtom, useAtomValue} from "jotai";
+import {atomLanguage} from "../atoms/language";
+import {atomUserResetDialog} from "../atoms/status";
 
 interface Props {
     runUserReset: () => void;
 }
 
-const DialogUserReset = observer((props: Props) => {
-    const language = useRecoilValue(atomLanguage);
-    const [showUserResetDialog, setUserResetDialog] = useRecoilState(atomUserResetDialog);
+const DialogUserReset = (props: Props) => {
+    const language = useAtomValue(atomLanguage);
+    const [showUserResetDialog, setUserResetDialog] = useAtom(atomUserResetDialog);
 
     const TxtResetModal =
         language === "ko"
@@ -46,6 +45,6 @@ const DialogUserReset = observer((props: Props) => {
             </ModalFooter>
         </Modal>
     );
-});
+};
 
 export default DialogUserReset;

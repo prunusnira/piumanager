@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import {Modal, ModalHeader, ModalBody, ModalFooter, Row, Col} from "reactstrap";
 import {useEffect} from "react";
-import {observer} from "mobx-react";
 import {PatternDlgType} from "../data/patternDlgType";
 import {PatternType} from "../data/patternType";
 import TxtPatternDlgKo from "../text/table/patternDlg/txtPatternDlg-ko";
@@ -12,14 +11,14 @@ import {textToRank} from "../tools/rankTextConvert";
 import {Button} from "../styled/common.style";
 import {TableInputCheck, TableInputLabel} from "../components/table/tablemenu/componentTableMenu.style";
 import usePatternDialog from "../hooks/usePatternDialog";
-import {useRecoilState, useRecoilValue} from "recoil";
-import {atomLanguage} from "../recoil/language";
-import {atomPaternUpdateDialog, atomStatus} from "../recoil/status";
+import {useAtom, useAtomValue} from "jotai";
+import {atomLanguage} from "../atoms/language";
+import {atomPaternUpdateDialog, atomStatus} from "../atoms/status";
 
-const DialogPatternUpdate = observer(() => {
-    const language = useRecoilValue(atomLanguage)
-    const [status, setStatus] = useRecoilState(atomStatus)
-    const showPatternUpdateDialog = useRecoilValue(atomPaternUpdateDialog)
+const DialogPatternUpdate = () => {
+    const language = useAtomValue(atomLanguage)
+    const [status, setStatus] = useAtom(atomStatus)
+    const showPatternUpdateDialog = useAtomValue(atomPaternUpdateDialog)
 
     const {closeUpdatePatternDlg, updateMultipleData, rankCountReset, updateRankCount, updateData} =
         usePatternDialog();
@@ -194,6 +193,6 @@ const DialogPatternUpdate = observer(() => {
             </ModalFooter>
         </Modal>
     );
-});
+};
 
 export default DialogPatternUpdate;

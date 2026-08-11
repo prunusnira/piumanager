@@ -3,7 +3,6 @@ import { faImages, faShareAltSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { unixTimeToText } from "../../../tools/unixTimeToText";
 import MusicItem from "../tableobj/musicItem";
-import { observer } from "mobx-react";
 import { PatternType } from "../../../data/patternType";
 import {
     DataInner,
@@ -19,22 +18,22 @@ import { Button } from "../../../styled/common.style";
 import {TextCommon, TextCommonProfile, TextTableTitle, TextTitleSub} from "../../../styled/common.font";
 import useShare from "../../../hooks/useShare";
 import useSkillPoint from "../../../hooks/useSkillPoint";
-import {useRecoilValue} from "recoil";
-import {atomStatus} from "../../../recoil/status";
-import {atomUser} from "../../../recoil/user";
+import {useAtomValue} from "jotai";
+import {atomStatus} from "../../../atoms/status";
+import {atomUser} from "../../../atoms/user";
 import {
     atomTable
-} from "../../../recoil/table";
+} from "../../../atoms/table";
 import {Input} from "reactstrap";
-import {atomLanguage} from "../../../recoil/language";
+import {atomLanguage} from "../../../atoms/language";
 import TxtTableOrderKo from '../../../text/table/tableOrder/txtTableOrder-ko';
 import TxtTableOrderJp from '../../../text/table/tableOrder/txtTableOrder-jp';
 import TxtTableOrderEn from '../../../text/table/tableOrder/txtTableOrder-en';
 import TxtTableOrderCn from '../../../text/table/tableOrder/txtTableOrder-cn';
 import {IMusic} from "../../../data/IMusic";
 
-const ComponentPIUTable = observer(() => {
-    const language = useRecoilValue(atomLanguage);
+const ComponentPIUTable = () => {
+    const language = useAtomValue(atomLanguage);
 
     const txtTableOrder =
         language === "ko"
@@ -45,9 +44,9 @@ const ComponentPIUTable = observer(() => {
                     ? TxtTableOrderCn
                     : TxtTableOrderEn;
 
-    const status = useRecoilValue(atomStatus)
-    const user = useRecoilValue(atomUser)
-    const table = useRecoilValue(atomTable);
+    const status = useAtomValue(atomStatus)
+    const user = useAtomValue(atomUser)
+    const table = useAtomValue(atomTable);
 
     const [
         tableData,
@@ -69,15 +68,15 @@ const ComponentPIUTable = observer(() => {
         setDataType,
     ] = useState<'all' | 'noplay' | 'played'>('all');
 
-    // const tableTitle = useRecoilValue(atomTableTitle);
-    // const tableOver = useRecoilValue(atomTableOver)
-    // const tableHigh = useRecoilValue(atomTableHigh)
-    // const tableNormalHigh = useRecoilValue(atomTableNH)
-    // const tableNormal = useRecoilValue(atomTableNormal)
-    // const tableNormalEasy = useRecoilValue(atomTableNE)
-    // const tableEasy = useRecoilValue(atomTableEasy)
-    // const tableBelow = useRecoilValue(atomTableBelow)
-    // const tableRandom = useRecoilValue(atomTableRandom)
+    // const tableTitle = useAtomValue(atomTableTitle);
+    // const tableOver = useAtomValue(atomTableOver)
+    // const tableHigh = useAtomValue(atomTableHigh)
+    // const tableNormalHigh = useAtomValue(atomTableNH)
+    // const tableNormal = useAtomValue(atomTableNormal)
+    // const tableNormalEasy = useAtomValue(atomTableNE)
+    // const tableEasy = useAtomValue(atomTableEasy)
+    // const tableBelow = useAtomValue(atomTableBelow)
+    // const tableRandom = useAtomValue(atomTableRandom)
 
     const {scrShot, shareURL} = useShare();
     const {skillSingle, skillDouble} = useSkillPoint();
@@ -354,6 +353,6 @@ const ComponentPIUTable = observer(() => {
             {/*)}*/}
         </ScoreTableWrapper>
     );
-});
+};
 
 export default ComponentPIUTable;

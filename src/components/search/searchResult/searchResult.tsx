@@ -3,7 +3,6 @@ import CommonData from "../../../data/commonData";
 import {ISearchItem} from "../../../data/ISearchItem";
 import {ISearchPattern} from "../../../data/ISearchPattern";
 import SearchResultPattern from "./searchResultPattern";
-import {observer} from "mobx-react";
 import TxtSearchKo from "../../../text/search/txtSearch-ko";
 import TxtSearchJp from "../../../text/search/txtSearch-jp";
 import TxtSearchEn from "../../../text/search/txtSearch-en";
@@ -17,15 +16,15 @@ import {
     ResultTitle,
     ResultDiffData,
 } from "./searchResult.style";
-import {useRecoilValue} from "recoil";
-import {atomLanguage} from "../../../recoil/language";
+import {useAtomValue} from "jotai";
+import {atomLanguage} from "../../../atoms/language";
 
 interface Props {
     list: Array<ISearchItem>;
 }
 
-const SearchResult = observer((props: Props) => {
-    const language = useRecoilValue(atomLanguage);
+const SearchResult = (props: Props) => {
+    const language = useAtomValue(atomLanguage);
 
     const TxtSearch =
         language === "ko"
@@ -44,7 +43,7 @@ const SearchResult = observer((props: Props) => {
                 <ResultJacket
                     alt="jacket"
                     src={`${CommonData.imgUrl}${d.musicid}.png`}
-                    onError={(e) => {
+                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                         e.currentTarget.src = `${process.env.PUBLIC_URL}/img/empty.jpg`;
                     }}
                     style={{
@@ -74,6 +73,6 @@ const SearchResult = observer((props: Props) => {
 
         return <>{rtn}</>;
     }
-});
+};
 
 export default SearchResult;

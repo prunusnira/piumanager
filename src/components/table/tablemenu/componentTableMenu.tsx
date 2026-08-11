@@ -3,7 +3,6 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheckSquare} from "@fortawesome/free-solid-svg-icons";
 import {PatternType} from "../../../data/patternType";
 import {UserDlgType} from "../../../data/userDlgType";
-import {observer} from "mobx-react";
 import {PatternDlgType} from "../../../data/patternDlgType";
 import TxtTableMenuKo from "../../../text/table/tablemenu/txtTablemenu-ko";
 import TxtTableMenuJp from "../../../text/table/tablemenu/txtTablemenu-jp";
@@ -25,15 +24,15 @@ import {Button} from "../../../styled/common.style";
 import useTableMenu from "../../../hooks/useTableMenu";
 import useTableData from "../../../hooks/useTableData";
 import {TextTableTitle, TextTitleSub} from "../../../styled/common.font";
-import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
-import {atomLanguage} from "../../../recoil/language";
-import {atomPaternUpdateDialog, atomStatus, atomUserDialog} from "../../../recoil/status";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
+import {atomLanguage} from "../../../atoms/language";
+import {atomPaternUpdateDialog, atomStatus, atomUserDialog} from "../../../atoms/status";
 
-const ComponentTableMenu = observer(() => {
-    const language = useRecoilValue(atomLanguage);
-    const [status, setStatus] = useRecoilState(atomStatus);
-    const setShowUserDialog = useSetRecoilState(atomUserDialog);
-    const setPatternUpdateDialog = useSetRecoilState(atomPaternUpdateDialog);
+const ComponentTableMenu = () => {
+    const language = useAtomValue(atomLanguage);
+    const [status, setStatus] = useAtom(atomStatus);
+    const setShowUserDialog = useSetAtom(atomUserDialog);
+    const setPatternUpdateDialog = useSetAtom(atomPaternUpdateDialog);
     const {
         selDiffSingle,
         selDiffDouble,
@@ -71,7 +70,7 @@ const ComponentTableMenu = observer(() => {
                             SINGLE
                             <TableMenuSelect
                                 ref={selDiffSingle}
-                                onChange={(e) => {
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                     if (e.currentTarget.value !== "--") {
                                         setStatus({
                                             ...status,
@@ -102,7 +101,7 @@ const ComponentTableMenu = observer(() => {
                             DOUBLE
                             <TableMenuSelect
                                 ref={selDiffDouble}
-                                onChange={(e) => {
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                     if (e.currentTarget.value !== "--") {
                                         setStatus({
                                             ...status,
@@ -135,7 +134,7 @@ const ComponentTableMenu = observer(() => {
                             CO-OP
                             <TableMenuSelect
                                 ref={selDiffCoop}
-                                onChange={(e) => {
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                                     if (e.currentTarget.value !== "--") {
                                         setStatus({
                                             ...status,
@@ -313,6 +312,6 @@ const ComponentTableMenu = observer(() => {
             </TableMenuPatternWrapper>
         </TableMenuWrapper>
     );
-});
+};
 
 export default ComponentTableMenu;

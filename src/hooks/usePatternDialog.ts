@@ -2,17 +2,17 @@ import {useEffect} from "react";
 import {rankToText} from "../tools/rankTextConvert";
 import {RankType} from "../data/rankType";
 import {IPattern} from "../data/IPattern";
-import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
-import {atomPaternUpdateDialog, atomStatus} from "../recoil/status";
-import {atomUser} from "../recoil/user";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
+import {atomPaternUpdateDialog, atomStatus} from "../atoms/status";
+import {atomUser} from "../atoms/user";
 import {emptyRankCount} from "../data/IRankCount";
 import useSkillPoint from "./useSkillPoint";
 
 const usePatternDialog = () => {
-    const [status, setStatus] = useRecoilState(atomStatus);
-    const user = useRecoilValue(atomUser);
+    const [status, setStatus] = useAtom(atomStatus);
+    const user = useAtomValue(atomUser);
     const {order, calculate} = useSkillPoint();
-    const setPatternUpdateDialog = useSetRecoilState(atomPaternUpdateDialog);
+    const setPatternUpdateDialog = useSetAtom(atomPaternUpdateDialog);
 
     // 테이블 데이터 변경 이후에 수행하는 effect
     useEffect(() => {

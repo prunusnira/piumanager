@@ -1,7 +1,6 @@
 import React from "react";
 import CommonData from "../../../data/commonData";
 import { IMusic } from "../../../data/IMusic";
-import { observer } from "mobx-react";
 import {
     CheckBox,
     CheckBoxWrapper,
@@ -12,9 +11,9 @@ import {
 } from "./musicItem.style";
 import { ButtonEmpty } from "../../../styled/common.style";
 import Jacket from "./jacket";
-import {useRecoilState, useRecoilValue} from "recoil";
-import {atomLanguage} from "../../../recoil/language";
-import {atomStatus} from "../../../recoil/status";
+import {useAtom, useAtomValue} from "jotai";
+import {atomLanguage} from "../../../atoms/language";
+import {atomStatus} from "../../../atoms/status";
 import {IPattern} from "../../../data/IPattern";
 
 interface Props {
@@ -25,9 +24,9 @@ interface Props {
     showrank: boolean;
 }
 
-const MusicItem = observer((props: Props) => {
-    const language = useRecoilValue(atomLanguage);
-    const [status, setStatus] = useRecoilState(atomStatus);
+const MusicItem = (props: Props) => {
+    const language = useAtomValue(atomLanguage);
+    const [status, setStatus] = useAtom(atomStatus);
 
     const getUserData = (ptid: number) => {
         return props.pattern.get(ptid);
@@ -77,6 +76,6 @@ const MusicItem = observer((props: Props) => {
             })}
         </>
     );
-});
+};
 
 export default MusicItem;

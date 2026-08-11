@@ -1,7 +1,7 @@
 import { PatternType } from "../data/patternType"
-import {useRecoilState, useSetRecoilState} from "recoil";
-import {atomStatus, atomUserResetDialog} from "../recoil/status";
-import {atomUser} from "../recoil/user";
+import {useAtom, useSetAtom} from "jotai";
+import {atomStatus, atomUserResetDialog} from "../atoms/status";
+import {atomUser} from "../atoms/user";
 import {
     atomTableBelow, atomTableEasy,
     atomTableHigh,
@@ -9,24 +9,24 @@ import {
     atomTableNH,
     atomTableNormal,
     atomTableOver, atomTableRandom,
-} from "../recoil/table";
+} from "../atoms/table";
 
 const useResetModal = (
     setAllowUserNew: (b: boolean) => void,
     setAllowUserLoad: (b: boolean) => void,
 ) => {
-    const [status, setStatus] = useRecoilState(atomStatus)
-    const [user, setUser] = useRecoilState(atomUser)
-    const setResetDialog = useSetRecoilState(atomUserResetDialog);
+    const [status, setStatus] = useAtom(atomStatus)
+    const [user, setUser] = useAtom(atomUser)
+    const setResetDialog = useSetAtom(atomUserResetDialog);
 
-    const setTableOver = useSetRecoilState(atomTableOver);
-    const setTableHigh = useSetRecoilState(atomTableHigh);
-    const setTableNH = useSetRecoilState(atomTableNH);
-    const setTableNormal = useSetRecoilState(atomTableNormal);
-    const setTableNE = useSetRecoilState(atomTableNE);
-    const setTableEasy = useSetRecoilState(atomTableEasy);
-    const setTableBelow = useSetRecoilState(atomTableBelow);
-    const setTableRandom = useSetRecoilState(atomTableRandom);
+    const setTableOver = useSetAtom(atomTableOver);
+    const setTableHigh = useSetAtom(atomTableHigh);
+    const setTableNH = useSetAtom(atomTableNH);
+    const setTableNormal = useSetAtom(atomTableNormal);
+    const setTableNE = useSetAtom(atomTableNE);
+    const setTableEasy = useSetAtom(atomTableEasy);
+    const setTableBelow = useSetAtom(atomTableBelow);
+    const setTableRandom = useSetAtom(atomTableRandom);
 
     const runUserReset = () => {
         setUser({

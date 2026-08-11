@@ -1,14 +1,14 @@
 import html2canvas from "html2canvas"
 import { apiShareCreate } from "../api/apiTable"
 import { ShareDlgType } from "../data/shareDlgType"
-import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
-import {atomUser} from "../recoil/user";
-import {atomShareDialog, atomStatus} from "../recoil/status";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
+import {atomUser} from "../atoms/user";
+import {atomShareDialog, atomStatus} from "../atoms/status";
 
 const useShare = () => {
-    const user = useRecoilValue(atomUser);
-    const [status,setStatus] = useRecoilState(atomStatus);
-    const setShareDialog = useSetRecoilState(atomShareDialog);
+    const user = useAtomValue(atomUser);
+    const [status,setStatus] = useAtom(atomStatus);
+    const setShareDialog = useSetAtom(atomShareDialog);
 
     const scrShot = (divname: string, filename: string) => {
         window.scrollTo(0, 0);

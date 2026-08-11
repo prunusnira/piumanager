@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react"
-import {useRecoilValue} from "recoil";
-import {atomStatus} from "../recoil/status";
+import {useAtomValue} from "jotai";
+import {atomStatus} from "../atoms/status";
 
 const useTableMenu = () => {
-    const status = useRecoilValue(atomStatus);
+    const status = useAtomValue(atomStatus);
 
     const selDiffSingle = useRef<HTMLSelectElement>(null)
     const selDiffDouble = useRef<HTMLSelectElement>(null)

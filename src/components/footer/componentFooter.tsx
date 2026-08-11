@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { observer } from "mobx-react";
 
 import TxtFooterKo from "../../text/footer/txtFooter-ko";
 import TxtFooterJp from "../../text/footer/txtFooter-jp";
@@ -9,11 +8,11 @@ import TxtFooterEn from "../../text/footer/txtFooter-en";
 import { useEffect } from "react";
 import Language from "../../data/language";
 import { FooterRow, FooterWrapper } from "./componentFooter.style";
-import {useRecoilState} from "recoil";
-import {atomLanguage} from "../../recoil/language";
+import {useAtom} from "jotai";
+import {atomLanguage} from "../../atoms/language";
 
-const ComponentFooter = observer(() => {
-    const [language, setLanguage] = useRecoilState(atomLanguage);
+const ComponentFooter = () => {
+    const [language, setLanguage] = useAtom(atomLanguage);
 
     useEffect(() => {
         if (language === "") {
@@ -93,6 +92,6 @@ const ComponentFooter = observer(() => {
             <FooterRow>Developed with ReactJS, AWS Lambda & MariaDB, Hosted on AWS S3</FooterRow>
         </FooterWrapper>
     );
-});
+};
 
 export default ComponentFooter;

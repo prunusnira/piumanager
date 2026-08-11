@@ -1,20 +1,19 @@
 import React from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { ShareDlgType } from "../data/shareDlgType";
-import { observer } from "mobx-react";
 import TxtShareDlgKo from "../text/table/shareDlg/txtShareDlg-ko";
 import TxtShareDlgJp from "../text/table/shareDlg/txtShareDlg-jp";
 import TxtShareDlgCn from "../text/table/shareDlg/txtShareDlg-cn";
 import TxtShareDlgEn from "../text/table/shareDlg/txtShareDlg-en";
 import { Button } from "../styled/common.style";
-import {useRecoilState, useRecoilValue} from "recoil";
-import {atomLanguage} from "../recoil/language";
-import {atomShareDialog, atomStatus} from "../recoil/status";
+import {useAtom, useAtomValue} from "jotai";
+import {atomLanguage} from "../atoms/language";
+import {atomShareDialog, atomStatus} from "../atoms/status";
 
-const DialogShare = observer(() => {
-    const language = useRecoilValue(atomLanguage);
-    const status = useRecoilValue(atomStatus);
-    const [showShareDialog, setShowShareDialog] = useRecoilState(atomShareDialog);
+const DialogShare = () => {
+    const language = useAtomValue(atomLanguage);
+    const status = useAtomValue(atomStatus);
+    const [showShareDialog, setShowShareDialog] = useAtom(atomShareDialog);
 
     const TxtShareDlg =
         language === "ko"
@@ -55,6 +54,6 @@ const DialogShare = observer(() => {
             </ModalFooter>
         </Modal>
     );
-});
+};
 
 export default DialogShare;

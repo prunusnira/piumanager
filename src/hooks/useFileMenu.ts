@@ -10,20 +10,20 @@ import TxtFileMenuCn from "../text/table/filemenu/txtFilemenu-cn"
 import TxtFileMenuEn from "../text/table/filemenu/txtFilemenu-en"
 import {textToRank} from "../tools/rankTextConvert";
 import {apiUserLog} from "../api/apiUserLog";
-import {atomUser} from "../recoil/user";
-import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
-import {atomLanguage} from "../recoil/language";
-import {atomSaveAlertDialog, atomStatus, atomUserDialog, atomUserResetDialog} from "../recoil/status";
+import {atomUser} from "../atoms/user";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
+import {atomLanguage} from "../atoms/language";
+import {atomSaveAlertDialog, atomStatus, atomUserDialog, atomUserResetDialog} from "../atoms/status";
 
 const useFileMenu = (
     fileOpenRef: React.RefObject<HTMLInputElement>
 ) => {
-    const language = useRecoilValue(atomLanguage)
-    const [user, setUser] = useRecoilState(atomUser);
-    const [status, setStatus] = useRecoilState(atomStatus);
-    const setResetDialog = useSetRecoilState(atomUserResetDialog);
-    const setSaveDialog = useSetRecoilState(atomSaveAlertDialog);
-    const setUserDialog = useSetRecoilState(atomUserDialog);
+    const language = useAtomValue(atomLanguage)
+    const [user, setUser] = useAtom(atomUser);
+    const [status, setStatus] = useAtom(atomStatus);
+    const setResetDialog = useSetAtom(atomUserResetDialog);
+    const setSaveDialog = useSetAtom(atomSaveAlertDialog);
+    const setUserDialog = useSetAtom(atomUserDialog);
 
     // 유저 상태 스테이터스 관리
     const [allowUserNew, setAllowUserNew] = useState(false)

@@ -1,5 +1,4 @@
 import React, {useRef} from "react";
-import { observer } from "mobx-react";
 import TxtFileMenuKo from "../../../text/table/filemenu/txtFilemenu-ko";
 import TxtFileMenuJp from "../../../text/table/filemenu/txtFilemenu-jp";
 import TxtFileMenuCn from "../../../text/table/filemenu/txtFilemenu-cn";
@@ -10,13 +9,13 @@ import useFileMenu from "../../../hooks/useFileMenu";
 import DialogUserEdit from "../../../dialog/dialogUserEdit";
 import DialogUserReset from "../../../dialog/dialogUserReset";
 import useResetModal from "../../../hooks/useResetModal";
-import {useRecoilValue} from "recoil";
-import {atomLanguage} from "../../../recoil/language";
-import {atomStatus} from "../../../recoil/status";
+import {useAtomValue} from "jotai";
+import {atomLanguage} from "../../../atoms/language";
+import {atomStatus} from "../../../atoms/status";
 
-const ComponentFileMenu = observer(() => {
-    const language = useRecoilValue(atomLanguage)
-    const status = useRecoilValue(atomStatus)
+const ComponentFileMenu = () => {
+    const language = useAtomValue(atomLanguage)
+    const status = useAtomValue(atomStatus)
     const fileOpenRef = useRef<HTMLInputElement>(null);
     const {
         checkUserBeforeNew,
@@ -85,6 +84,6 @@ const ComponentFileMenu = observer(() => {
             </FileMenuWrapper>
         );
     }
-});
+};
 
 export default ComponentFileMenu;

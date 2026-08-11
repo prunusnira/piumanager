@@ -1,20 +1,19 @@
 import React from "react";
-import {observer} from "mobx-react";
 import TxtHeaderKo from "../../text/header/txtHeader-ko";
 import TxtHeaderJp from "../../text/header/txtHeader-jp";
 import TxtHeaderEn from "../../text/header/txtHeader-en";
 import TxtHeaderCn from "../../text/header/txtHeader-cn";
 import {HeaderRow, HeaderWrapper} from "./headerPres.style";
 import {Button} from "../../styled/common.style";
-import {useRecoilValue} from "recoil";
-import {atomLanguage} from "../../recoil/language";
+import {useAtomValue} from "jotai";
+import {atomLanguage} from "../../atoms/language";
 
 type HeaderProps = {
     changeModeAlert: (t: number) => void;
 };
 
-const HeaderPres = observer((props: HeaderProps) => {
-    const language = useRecoilValue(atomLanguage)
+const HeaderPres = (props: HeaderProps) => {
+    const language = useAtomValue(atomLanguage)
 
     const TxtHeader =
         language === "ko"
@@ -44,6 +43,6 @@ const HeaderPres = observer((props: HeaderProps) => {
             </HeaderRow>
         </HeaderWrapper>
     );
-});
+};
 
 export default HeaderPres;

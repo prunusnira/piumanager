@@ -1,14 +1,13 @@
 import React, {useState} from "react";
 import {PatternDlgType} from "../../../data/patternDlgType";
 import {BreakOff, JacketDiv, JacketImg, New, Rank, Removed, Version} from "./jacket.style";
-import {observer} from "mobx-react";
 import {IMusic} from "../../../data/IMusic";
 import {convertVersion} from "../../../tools/convertVersion";
 import CommonData from "../../../data/commonData";
 import {rankToText} from "../../../tools/rankTextConvert";
-import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
-import {atomLanguage} from "../../../recoil/language";
-import {atomPaternUpdateDialog, atomStatus} from "../../../recoil/status";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
+import {atomLanguage} from "../../../atoms/language";
+import {atomPaternUpdateDialog, atomStatus} from "../../../atoms/status";
 import {IPattern} from "../../../data/IPattern";
 import {RankType} from "../../../data/rankType";
 
@@ -19,10 +18,10 @@ type Props = {
     showrank: boolean;
 };
 
-const Jacket = observer(({pattern, bgImageUrl, musicData, showrank}: Props) => {
-    const language = useRecoilValue(atomLanguage);
-    const [status, setStatus] = useRecoilState(atomStatus);
-    const setPatternUpdateDialog = useSetRecoilState(atomPaternUpdateDialog);
+const Jacket = ({pattern, bgImageUrl, musicData, showrank}: Props) => {
+    const language = useAtomValue(atomLanguage);
+    const [status, setStatus] = useAtom(atomStatus);
+    const setPatternUpdateDialog = useSetAtom(atomPaternUpdateDialog);
 
     return (
         <JacketDiv
@@ -63,13 +62,13 @@ const Jacket = observer(({pattern, bgImageUrl, musicData, showrank}: Props) => {
             <JacketImg
                 alt="jacket"
                 src={`${CommonData.imgUrl}${musicData.musicid}.png`}
-                onError={(e) => {
+                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = `${process.env.PUBLIC_URL}/img/empty.png`;
                 }}
             />
         </JacketDiv>
     );
-});
+};
 
 export default Jacket;

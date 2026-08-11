@@ -1,14 +1,14 @@
 import {RankConstant, RankType} from "../data/rankType";
 import {useEffect, useRef} from "react";
-import {atomDoubleList, atomDoubleSkill, atomSingleList, atomSingleSkill, atomUser} from "../recoil/user";
-import {useRecoilState, useRecoilValue} from "recoil";
+import {atomDoubleList, atomDoubleSkill, atomSingleList, atomSingleSkill, atomUser} from "../atoms/user";
+import {useAtom, useAtomValue} from "jotai";
 
 const useSkillPoint = () => {
-    const user = useRecoilValue(atomUser)
-    const [skillListSingle, setListSingle] = useRecoilState(atomSingleList)
-    const [skillListDouble, setListDouble] = useRecoilState(atomDoubleList)
-    const [skillSingle, setSkillSingle] = useRecoilState(atomSingleSkill)
-    const [skillDouble, setSkillDouble] = useRecoilState(atomDoubleSkill)
+    const user = useAtomValue(atomUser)
+    const [skillListSingle, setListSingle] = useAtom(atomSingleList)
+    const [skillListDouble, setListDouble] = useAtom(atomDoubleList)
+    const [skillSingle, setSkillSingle] = useAtom(atomSingleSkill)
+    const [skillDouble, setSkillDouble] = useAtom(atomDoubleSkill)
     const minSingle = useRef<number>(0)
     const minDouble = useRef<number>(0)
 

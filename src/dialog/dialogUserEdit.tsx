@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from "reactstrap";
 import { UserDlgType } from "../data/userDlgType";
-import { observer } from "mobx-react";
 import TxtUserDlgKo from "../text/table/userDlg/txtUserDlg-ko";
 import TxtUserDlgJp from "../text/table/userDlg/txtUserDlg-jp";
 import TxtUserDlgCn from "../text/table/userDlg/txtUserDlg-cn";
 import TxtUserDlgEn from "../text/table/userDlg/txtUserDlg-en";
 import { Button } from "../styled/common.style";
-import {useRecoilState, useRecoilValue} from "recoil";
-import {atomLanguage} from "../recoil/language";
-import {atomUser} from "../recoil/user";
-import {atomStatus, atomUserDialog} from "../recoil/status";
+import {useAtom, useAtomValue} from "jotai";
+import {atomLanguage} from "../atoms/language";
+import {atomUser} from "../atoms/user";
+import {atomStatus, atomUserDialog} from "../atoms/status";
 
 interface Props {
     setAllowUserNew: (b: boolean) => void;
 }
 
-const DialogUserEdit = observer(({setAllowUserNew}: Props) => {
-    const language = useRecoilValue(atomLanguage);
-    const [user, setUser] = useRecoilState(atomUser);
-    const [status, setStatus] = useRecoilState(atomStatus);
-    const [showUserDialog, setUserDialog] = useRecoilState(atomUserDialog);
+const DialogUserEdit = ({setAllowUserNew}: Props) => {
+    const language = useAtomValue(atomLanguage);
+    const [user, setUser] = useAtom(atomUser);
+    const [status, setStatus] = useAtom(atomStatus);
+    const [showUserDialog, setUserDialog] = useAtom(atomUserDialog);
 
     const TxtUserDlg =
         language === "ko"
@@ -113,6 +112,6 @@ const DialogUserEdit = observer(({setAllowUserNew}: Props) => {
             </ModalFooter>
         </Modal>
     );
-});
+};
 
 export default DialogUserEdit;

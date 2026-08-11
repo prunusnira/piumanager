@@ -1,15 +1,14 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import React from "react";
 import {Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
-import {observer} from "mobx-react";
 import TxtHeaderKo from "../text/header/txtHeader-ko";
 import TxtHeaderJp from "../text/header/txtHeader-jp";
 import TxtHeaderEn from "../text/header/txtHeader-en";
 import TxtHeaderCn from "../text/header/txtHeader-cn";
 import {faExclamationCircle} from "@fortawesome/free-solid-svg-icons";
 import {Button} from "../styled/common.style";
-import {atomLanguage} from "../recoil/language";
-import {useRecoilValue} from "recoil";
+import {atomLanguage} from "../atoms/language";
+import {useAtomValue} from "jotai";
 
 type HModalProps = {
     modeAlert: boolean;
@@ -17,8 +16,8 @@ type HModalProps = {
     closeDialog: () => void;
 };
 
-const DialogModeChange = observer((props: HModalProps) => {
-    const language = useRecoilValue(atomLanguage);
+const DialogModeChange = (props: HModalProps) => {
+    const language = useAtomValue(atomLanguage);
 
     const TxtHeader =
         language === "ko"
@@ -43,6 +42,6 @@ const DialogModeChange = observer((props: HModalProps) => {
             </ModalFooter>
         </Modal>
     );
-});
+};
 
 export default DialogModeChange;

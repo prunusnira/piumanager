@@ -5,26 +5,26 @@ import TxtTableMenuJp from "../text/table/tablemenu/txtTablemenu-jp"
 import TxtTableMenuCn from "../text/table/tablemenu/txtTablemenu-cn"
 import TxtTableMenuEn from "../text/table/tablemenu/txtTablemenu-en"
 import {RankType} from "../data/rankType"
-import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
-import {atomLanguage} from "../recoil/language";
-import {atomStatus} from "../recoil/status";
-import { atomTable } from "../recoil/table";
-import {atomUser} from "../recoil/user";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
+import {atomLanguage} from "../atoms/language";
+import {atomStatus} from "../atoms/status";
+import { atomTable } from "../atoms/table";
+import {atomUser} from "../atoms/user";
 
 const useTableData = () => {
-    const language = useRecoilValue(atomLanguage);
-    const [status, setStatus] = useRecoilState(atomStatus);
-    const setTable = useSetRecoilState(atomTable);
-    // const setTableOver = useSetRecoilState(atomTableOver);
-    // const setTableHigh = useSetRecoilState(atomTableHigh);
-    // const setTableNH = useSetRecoilState(atomTableNH);
-    // const setTableNormal = useSetRecoilState(atomTableNormal);
-    // const setTableNE = useSetRecoilState(atomTableNE);
-    // const setTableEasy = useSetRecoilState(atomTableEasy);
-    // const setTableBelow = useSetRecoilState(atomTableBelow);
-    // const setTableRandom = useSetRecoilState(atomTableRandom);
-    // const setTableTitle = useSetRecoilState(atomTableTitle);
-    const user = useRecoilValue(atomUser);
+    const language = useAtomValue(atomLanguage);
+    const [status, setStatus] = useAtom(atomStatus);
+    const setTable = useSetAtom(atomTable);
+    // const setTableOver = useSetAtom(atomTableOver);
+    // const setTableHigh = useSetAtom(atomTableHigh);
+    // const setTableNH = useSetAtom(atomTableNH);
+    // const setTableNormal = useSetAtom(atomTableNormal);
+    // const setTableNE = useSetAtom(atomTableNE);
+    // const setTableEasy = useSetAtom(atomTableEasy);
+    // const setTableBelow = useSetAtom(atomTableBelow);
+    // const setTableRandom = useSetAtom(atomTableRandom);
+    // const setTableTitle = useSetAtom(atomTableTitle);
+    const user = useAtomValue(atomUser);
 
     const TxtTableMenu =
         language === 'ko' ? TxtTableMenuKo :

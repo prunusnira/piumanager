@@ -1,18 +1,17 @@
 import React from "react";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { observer } from "mobx-react";
 import TxtSaveBeforeLoadKo from "../text/table/saveBeforeLoadDlg/txtSaveBeforeLoad-ko";
 import TxtSaveBeforeLoadJp from "../text/table/saveBeforeLoadDlg/txtSaveBeforeLoad-jp";
 import TxtSaveBeforeLoadCn from "../text/table/saveBeforeLoadDlg/txtSaveBeforeLoad-cn";
 import TxtSaveBeforeLoadEn from "../text/table/saveBeforeLoadDlg/txtSaveBeforeLoad-en";
 import { Button } from "../styled/common.style";
-import {useRecoilState, useRecoilValue} from "recoil";
-import {atomLanguage} from "../recoil/language";
-import {atomSaveAlertDialog} from "../recoil/status";
+import {useAtom, useAtomValue} from "jotai";
+import {atomLanguage} from "../atoms/language";
+import {atomSaveAlertDialog} from "../atoms/status";
 
-const DialogSaveAlert = observer(() => {
-    const language = useRecoilValue(atomLanguage);
-    const [showSaveAlertDialog, setSaveAlertDialog] = useRecoilState(atomSaveAlertDialog);
+const DialogSaveAlert = () => {
+    const language = useAtomValue(atomLanguage);
+    const [showSaveAlertDialog, setSaveAlertDialog] = useAtom(atomSaveAlertDialog);
 
     const TxtSaveBeforeLoad =
         language === "ko"
@@ -38,6 +37,6 @@ const DialogSaveAlert = observer(() => {
             </ModalFooter>
         </Modal>
     );
-});
+};
 
 export default DialogSaveAlert;

@@ -1,9 +1,8 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import PageMain from "./page/main/pageMain";
-import { observer } from "mobx-react";
 
-const App = observer(() => {
+const App = () => {
     return (
         <div className="App">
             <Routes>
@@ -12,6 +11,6 @@ const App = observer(() => {
             </Routes>
         </div>
     );
-});
+};
 
 export default App;

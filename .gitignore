@@ -25,6 +25,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # user added
-/**/*/commonData.ts
 /design
 /serverBuild
+
+.claude
+.agents
