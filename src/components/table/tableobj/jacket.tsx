@@ -38,33 +38,33 @@ const Jacket = ({pattern, bgImageUrl, musicData, showrank}: Props) => {
             {/*{(d.steptype === 1 || d.steptype === 2) && (*/}
             {/*    <StepType*/}
             {/*        alt="steptype"*/}
-            {/*        src={`${process.env.PUBLIC_URL}/img/${d.steptype === 1 ? "half" : ""}${*/}
+            {/*        src={`${import.meta.env.BASE_URL}img/${d.steptype === 1 ? "half" : ""}${*/}
             {/*            d.steptype === 2 ? "perf" : ""*/}
             {/*        }.png`}*/}
             {/*    />*/}
             {/*)}*/}
             {convertVersion(musicData.version) !== '' &&
-                <Version alt="version" src={`${process.env.PUBLIC_URL}/img/ver/${convertVersion(musicData.version)}.png`}/>
+                <Version alt="version" src={`${import.meta.env.BASE_URL}img/ver/${convertVersion(musicData.version)}.png`}/>
             }
-            {musicData.newpattern === 1 && <New alt="new" src={`${process.env.PUBLIC_URL}/img/new.png`}/>}
-            {musicData.removedPattern === 1 && <Removed alt={'removed'} src={`${process.env.PUBLIC_URL}/img/removed.png`}/>}
+            {musicData.newpattern === 1 && <New alt="new" src={`${import.meta.env.BASE_URL}img/new.png`}/>}
+            {musicData.removedPattern === 1 && <Removed alt={'removed'} src={`${import.meta.env.BASE_URL}img/removed.png`}/>}
             <Rank
                 alt="rank"
                 id={`cs${musicData.ptid}`}
                 display={showrank}
-                src={`${process.env.PUBLIC_URL}/img/${rankToText(pattern?.rank || RankType.NP)}.png`}
+                src={`${import.meta.env.BASE_URL}img/${rankToText(pattern?.rank || RankType.NP)}.png`}
             />
             <BreakOff
                 alt="breakoff"
                 id={`bo${musicData.ptid}`}
-                src={`${process.env.PUBLIC_URL}/img/phrank/empty.png`}
+                src={`${import.meta.env.BASE_URL}img/phrank/empty.png`}
             />
             <JacketImg
                 alt="jacket"
                 src={`${CommonData.imgUrl}${musicData.musicid}.png`}
                 onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                     e.currentTarget.onerror = null;
-                    e.currentTarget.src = `${process.env.PUBLIC_URL}/img/empty.png`;
+                    e.currentTarget.src = `${import.meta.env.BASE_URL}img/empty.png`;
                 }}
             />
         </JacketDiv>

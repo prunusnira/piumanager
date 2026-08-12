@@ -2,25 +2,23 @@
   "name": "piumanager",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1106.0",
     "@aws-sdk/credential-provider-ini": "^3.973.12",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.6",
-    "@testing-library/react": "^14.3.1",
     "@types/cors": "^2.8.19",
     "@types/crypto-js": "^4.2.2",
     "@types/express": "^4.17.25",
     "@types/glob": "^8.1.0",
-    "@types/jest": "^29.5.14",
     "@types/node": "^20.19.43",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
     "@types/reactstrap": "^8.7.2",
-    "awesome-typescript-loader": "^5.2.1",
     "axios": "^1.19.0",
     "bootstrap": "^5.3.8",
     "cors": "^2.8.6",
@@ -29,47 +27,25 @@
     "file-url": "^4.0.0",
     "glob": "^10.5.0",
     "html2canvas": "^1.4.1",
-    "jest-dom": "^4.0.0",
     "jotai": "^2.20.2",
     "mariadb": "^3.5.3",
-    "process": "^0.11.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.30.4",
-    "react-scripts": "^5.0.1",
     "reactstrap": "^9.2.3",
-    "strip-ansi": "6.0.1",
     "styled-components": "^6.5.1",
     "typescript": "5.1.6"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
     "aws": "aws s3 sync ./build s3://s3-bc-pium --profile=s3-banpick"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "prettier-plugin-multiline-arrays": "^2.0.1"
-  },
-  "resolutions": {
-    "strip-ansi": "6.0.0"
+    "@vitejs/plugin-react": "^6.0.5",
+    "prettier-plugin-multiline-arrays": "^2.0.1",
+    "vite": "^8.2.1"
   }
 }

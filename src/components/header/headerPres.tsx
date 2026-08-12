@@ -29,7 +29,7 @@ const HeaderPres = (props: HeaderProps) => {
             <HeaderRow>
                 <img
                     alt="logo"
-                    src={`${process.env.PUBLIC_URL}/logo192.png`}
+                    src={`${import.meta.env.BASE_URL}logo192.png`}
                     style={{width: "40px", height: "40px"}}
                 />
                 &nbsp;

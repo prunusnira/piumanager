@@ -44,7 +44,7 @@ const SearchResult = (props: Props) => {
                     alt="jacket"
                     src={`${CommonData.imgUrl}${d.musicid}.png`}
                     onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                        e.currentTarget.src = `${process.env.PUBLIC_URL}/img/empty.jpg`;
+                        e.currentTarget.src = `${import.meta.env.BASE_URL}img/empty.jpg`;
                     }}
                     style={{
                         width: "100%",

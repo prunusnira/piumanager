@@ -205,8 +205,8 @@ const usePatternDialog = () => {
         const data = user.userPattern.get(ptid);
 
         if (data && img && boimg) {
-            img.setAttribute("src", `${process.env.PUBLIC_URL}/img/${rankToText(data.rank)}.png`);
-            data.breakOff && boimg.setAttribute("src", `${process.env.PUBLIC_URL}/img/phrank/breakoff.png`);
+            img.setAttribute("src", `${import.meta.env.BASE_URL}img/${rankToText(data.rank)}.png`);
+            data.breakOff && boimg.setAttribute("src", `${import.meta.env.BASE_URL}img/phrank/breakoff.png`);
         }
     };
 
